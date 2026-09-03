@@ -1,6 +1,6 @@
 {
   "name": "wa-leg",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Fiscal Note Workbench: proof of concept for the Washington Department of Revenue",

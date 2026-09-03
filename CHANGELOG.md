@@ -5,6 +5,8 @@ Entries go under **Unreleased** as work lands. `pnpm release <version>` moves th
 
 ## Unreleased
 
+## 0.2.0 (2026-09-03)
+
 One path from draft to Committee: a fiscal note is drafted, submitted, returned with a change request or
 approved, and published for the Committee in four formats (draft → in review → changes requested → approved
 → published). Everything outside that path was removed. The design is `docs/SIMPLIFY-0.2.md`; the feed for
