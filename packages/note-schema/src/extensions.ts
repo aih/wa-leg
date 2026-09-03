@@ -171,6 +171,25 @@ export const Checkbox = Node.create({
 });
 
 /** Citation into a bill version, inserted from the bill viewer's CiteEvent. */
+/** The attributes that identify what a citation points at. */
+export interface CitationTarget {
+  billKey?: string | null;
+  versionCode?: string | null;
+  sectionId?: string | null;
+  blockId?: string | null;
+  amendmentId?: string | null;
+}
+
+/** A stable key for a citation target: bill, version, section, block and amendment. */
+export function citeKey(t: CitationTarget): string {
+  return [t.billKey, t.versionCode, t.sectionId, t.blockId, t.amendmentId].map((v) => (v == null ? '' : String(v))).join('|');
+}
+
+/** True when two citations point at the same bill, version, section, block and amendment. */
+export function sameTarget(a: CitationTarget, b: CitationTarget): boolean {
+  return citeKey(a) === citeKey(b);
+}
+
 export const BillCitation = Node.create({
   name: 'billCitation',
   group: 'inline',
@@ -194,7 +213,7 @@ export const BillCitation = Node.create({
     return [{ tag: 'a[data-role="bill-cite"]' }];
   },
   renderHTML({ node, HTMLAttributes }) {
-    return ['a', mergeAttributes({ 'data-role': 'bill-cite', class: 'bill-cite' }, HTMLAttributes), node.attrs.label ?? node.attrs.citation ?? 'cite'];
+    return ['a', mergeAttributes({ 'data-role': 'bill-cite', class: 'bill-cite', 'data-cite-key': citeKey(node.attrs as CitationTarget) }, HTMLAttributes), node.attrs.label ?? node.attrs.citation ?? 'cite'];
   },
 });
 

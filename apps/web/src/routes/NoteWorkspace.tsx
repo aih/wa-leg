@@ -289,8 +289,10 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
         setNotice(`Citation ${c.citation} is ready, but this note is read-only.`);
         return;
       }
-      editorRef.current?.insertCitation(c);
+      const result = editorRef.current?.insertCitation(c);
+      setNotice(result === 'duplicate' ? `Already cited: ${c.citation}` : null);
       setTab('editor');
+      return result;
     },
     [editing, versionLabel],
   );
