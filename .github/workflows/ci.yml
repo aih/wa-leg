@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: wa_leg
+          POSTGRES_PASSWORD: wa_leg
+          POSTGRES_DB: wa_leg
+        ports: ['5433:5432']
+        options: >-
+          --health-cmd "pg_isready -U wa_leg" --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL: postgres://wa_leg:wa_leg@localhost:5433/wa_leg
+      TEST_DATABASE_URL: postgres://wa_leg:wa_leg@localhost:5433/wa_leg_test
+      SEARCH_BACKEND: postgres
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm wa-leg db migrate
+      - run: pnpm wa-leg db seed
+      - run: pnpm --filter @wa-leg/web exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - name: Third-party licenses
+        run: pnpm third-party
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports
+          path: |
+            apps/web/playwright-report
+            THIRD_PARTY.md
+          if-no-files-found: ignore

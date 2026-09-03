@@ -1,0 +1,85 @@
+<!-- template: no-fiscal-impact | No fiscal impact -->
+<!-- No cash receipts and no expenditures. Part I marks No Fiscal Impact; Parts III-V are NONE or blank. Modeled on HB 1126 (packageID 71578) and HB 2681 EHB (77479). -->
+<article class="fiscal-note" data-template="no-fiscal-impact" data-form="FNS062" data-agency-code="140">
+<header data-part="header">
+  <h1>Department of Revenue Fiscal Note</h1>
+  <dl class="header-fields" data-role="header-fields">
+    <dt>Bill Number:</dt><dd data-slot="bill.number" data-source="request" data-readonly="true">{{bill.number}}</dd>
+    <dt>Title:</dt><dd data-slot="bill.title" data-source="request" data-readonly="true">{{bill.title}}</dd>
+    <dt>Agency:</dt><dd data-slot="agency.display" data-source="request" data-readonly="true">{{agency.code}}-{{agency.name}}</dd>
+  </dl>
+</header>
+<section data-part="I">
+  <h2>Part I: Estimates</h2>
+  <p class="checkbox"><input type="checkbox" data-slot="flags.noFiscalImpact" checked> No Fiscal Impact</p>
+  <h3>Estimated Cash Receipts to:</h3>
+  <p class="none" data-slot="receipts.summary" data-readonly="true">NONE</p>
+  <h3>Estimated Expenditures from:</h3>
+  <p class="none" data-slot="expenditures.summary" data-readonly="true">NONE</p>
+  <h3>Estimated Capital Budget Impact:</h3>
+  <p class="none" data-slot="capital.summary" data-readonly="true">NONE</p>
+  <p class="form-instruction" data-locked="true">The cash receipts and expenditure estimates on this page represent the most likely fiscal impact. Factors impacting the precision of these estimates, and alternate ranges (if appropriate), are explained in Part II.</p>
+  <p class="form-instruction" data-locked="true">Check applicable boxes and follow corresponding instructions:</p>
+  <ul class="checkboxes" data-role="impact-flags">
+    <li><input type="checkbox" data-slot="flags.over50k" data-computed="max(abs(expenditures.*.fy*),abs(receipts.*.fy*))>50000"> If fiscal impact is greater than $50,000 per fiscal year in the current biennium or in subsequent biennia, complete entire fiscal note form Parts I-V.</li>
+    <li><input type="checkbox" data-slot="flags.under50k" data-computed="not(flags.over50k)"> If fiscal impact is less than $50,000 per fiscal year in the current biennium or in subsequent biennia, complete this page only (Part I).</li>
+    <li><input type="checkbox" data-slot="flags.capital" data-computed="nonempty(capital)"> Capital budget impact, complete Part IV.</li>
+    <li><input type="checkbox" data-slot="flags.ruleMaking" data-computed="nonempty(narrative.rules)"> Requires new rule making, complete Part V.</li>
+  </ul>
+  <table class="signatures" data-role="signature-block">
+    <tr><th>Legislative Contact:</th><td data-slot="legContact.name" data-source="request">{{legContact.name}}</td><td>Phone: <span data-slot="legContact.phone" data-source="request">{{legContact.phone}}</span></td><td>Date: <span data-slot="request.date" data-source="request">{{request.date}}</span></td></tr>
+    <tr><th>Agency Preparation:</th><td data-slot="preparer.name" data-source="workflow">{{preparer.name}}</td><td>Phone: <span data-slot="preparer.phone" data-source="workflow">{{preparer.phone}}</span></td><td>Date: <span data-slot="preparer.date" data-source="workflow">{{preparer.date}}</span></td></tr>
+    <tr><th>Agency Approval:</th><td data-slot="approver.name" data-source="workflow">{{approver.name}}</td><td>Phone: <span data-slot="approver.phone" data-source="workflow">{{approver.phone}}</span></td><td>Date: <span data-slot="approver.date" data-source="workflow">{{approver.date}}</span></td></tr>
+    <tr><th>OFM Review:</th><td data-slot="ofm.name" data-source="ofm">{{ofm.name}}</td><td>Phone: <span data-slot="ofm.phone" data-source="ofm">{{ofm.phone}}</span></td><td>Date: <span data-slot="ofm.date" data-source="ofm">{{ofm.date}}</span></td></tr>
+  </table>
+</section>
+<section data-part="II.A">
+  <h2>Part II: Narrative Explanation</h2>
+  <h3>II. A - Brief Description Of What The Measure Does That Has Fiscal Impact</h3>
+  <p class="form-instruction" data-locked="true">Significant provisions of the bill and any related workload or policy assumptions that have revenue or expenditure impact on the responding agency by section number.</p>
+  <h4>CURRENT LAW:</h4>
+  <div data-slot="narrative.currentLaw" data-type="multiline"><p>{{narrative.currentLaw}}</p></div>
+  <h4>PROPOSAL:</h4>
+  <div data-slot="narrative.proposal" data-type="multiline"><p>{{narrative.proposal}}</p></div>
+  <h4>EFFECTIVE DATE:</h4>
+  <div data-slot="narrative.effectiveDate" data-type="multiline" data-picklist="effective-date-sentences">The bill takes effect 90 days after the final adjournment of the session.</div>
+</section>
+<section data-part="II.B">
+  <h3>II. B - Cash receipts Impact</h3>
+  <p class="form-instruction" data-locked="true">Cash receipts impact of the legislation on the responding agency with the cash receipts provisions identified by section number and when appropriate, the detail of the revenue sources. Description of the factual basis of the assumptions and the method by which the cash receipts impact is derived. Explanation of how workload assumptions translate into estimates. Distinguished between one time and ongoing functions.</p>
+  <p data-slot="narrative.receipts.estimate" data-type="text" data-picklist="no-revenue-sentences">This legislation results in no revenue impact on taxes administered by the department.</p>
+  <p data-slot="narrative.receipts.reason" data-type="multiline" data-optional="true">The department requires this information to {{narrative.receipts.reasonDetail}}.</p>
+</section>
+<section data-part="II.C">
+  <h3>II. C - Expenditures</h3>
+  <p class="form-instruction" data-locked="true">Agency expenditures necessary to implement this legislation (or savings resulting from this legislation), with the provisions of the legislation that result in the expenditures (or savings) identified by section number. Description of the factual basis of the assumptions and the method by which the expenditure impact is derived. Explanation of how workload assumptions translate into cost estimates. Distinguished between one time and ongoing functions.</p>
+  <h4>ASSUMPTIONS:</h4>
+  <p data-slot="narrative.expenditures.assumptions" data-type="multiline" data-picklist="no-cost-sentences">The department will not incur any costs with the implementation of this legislation.</p>
+  <p data-slot="narrative.expenditures.absorb" data-type="multiline" data-optional="true" data-hint="Alternative used on HB 2681 EHB: costs absorbed within current funding.">The department will have minimal costs of approximately {expenditures.absorbedPerYear} per fiscal year associated with answering additional phone calls and counter inquiries from businesses, individuals, and accountants regarding tax questions and tax return preparation, and those costs will be absorbed within current funding.</p>
+</section>
+<section data-part="III">
+  <h2>Part III: Expenditure Detail</h2>
+  <h3>III. A - Expenditures by Object Or Purpose</h3>
+  <p class="none">NONE</p>
+  <h3>III. B - Detail:</h3>
+  <p class="form-instruction" data-locked="true">FTEs listed by classification and corresponding annual compensation. Totals agree with total FTEs in Part I and Part IIIA.</p>
+  <p class="none">NONE</p>
+  <h3>III. C - Expenditures By Program (optional)</h3>
+  <p class="none">NONE</p>
+</section>
+<section data-part="IV">
+  <h2>Part IV: Capital Budget Impact</h2>
+  <h3>IV. A - Capital Budget Expenditures</h3>
+  <p class="none" data-slot="capital.expenditures" data-optional="true">NONE</p>
+  <h3>IV. B - Expenditures by Object Or Purpose</h3>
+  <p class="form-instruction" data-locked="true">Acquisition and construction costs not reflected elsewhere on the fiscal note and description of potential financing methods.</p>
+  <p class="none" data-slot="capital.objects" data-optional="true">NONE</p>
+  <h3>IV. C - Capital Budget Breakout</h3>
+  <p class="none" data-slot="capital.breakout" data-optional="true">NONE</p>
+</section>
+<section data-part="V">
+  <h2>Part V: New Rule Making Required</h2>
+  <p class="form-instruction" data-locked="true">Provisions of the bill that require the agency to adopt new administrative rules or repeal/revise existing rules.</p>
+  <div data-slot="narrative.rules" data-type="multiline" data-optional="true"></div>
+</section>
+</article>

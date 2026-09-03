@@ -1,0 +1,11 @@
+[
+  { "sub": "dev-drafter", "email": "dana.drafter@dor.wa.gov.test", "name": "Dana Drafter", "roles": ["drafter"], "divisions": ["RFA"] },
+  { "sub": "dev-reviewer", "email": "rae.reviewer@dor.wa.gov.test", "name": "Rae Reviewer", "roles": ["reviewer"], "divisions": ["RFA"] },
+  { "sub": "dev-approver", "email": "avery.approver@dor.wa.gov.test", "name": "Avery Approver", "roles": ["reviewer", "approver"], "divisions": ["RFA"] },
+  { "sub": "dev-manager", "email": "morgan.manager@dor.wa.gov.test", "name": "Morgan Manager", "roles": ["manager"], "divisions": ["RFA"] },
+  { "sub": "dev-viewer", "email": "val.viewer@dor.wa.gov.test", "name": "Val Viewer", "roles": ["viewer"], "divisions": [] },
+  { "sub": "dev-template-editor", "email": "terry.templates@dor.wa.gov.test", "name": "Terry Templates", "roles": ["template_editor", "drafter"], "divisions": ["RFA"] },
+  { "sub": "dev-admin", "email": "ada.admin@dor.wa.gov.test", "name": "Ada Admin", "roles": ["admin"], "divisions": ["IT"] },
+  { "sub": "dev-both", "email": "jordan.both@dor.wa.gov.test", "name": "Jordan Both", "roles": ["drafter", "reviewer"], "divisions": ["RFA"] },
+  { "sub": "dev-exec-budget", "email": "blake.budget@dor.wa.gov.test", "name": "Blake Budget", "roles": ["reviewer", "approver"], "divisions": ["Budget"] }
+]
