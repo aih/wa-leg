@@ -1,27 +1,20 @@
-import type { Mailer } from '../src/modules/notifications/index.js';
 import type { FastifyInstance } from 'fastify';
 import { sql } from 'drizzle-orm';
 import { loadConfig, type Config } from '../src/config.js';
 import { buildApp } from '../src/app.js';
 import { createDb, type DbHandle } from '../src/db/client.js';
-import { signSession, type Principal, type OidcClient } from '../src/modules/identity/index.js';
+import { signSession, SYSTEM_PRINCIPAL, type Principal, type OidcClient } from '../src/modules/identity/index.js';
 
 export const TEST_DATABASE_URL =
   process.env.TEST_DATABASE_URL ?? 'postgres://wa_leg:wa_leg@localhost:5433/wa_leg_test';
 
+/** The four test users (apps/dev-oidc/users.json) and the system principal. */
 export const users = {
-  drafter: { userId: 'dev-drafter', displayName: 'Dana Drafter', email: 'dana@test', roles: ['drafter'], divisions: ['RFA'] },
-  drafter2: { userId: 'dev-drafter2', displayName: 'Dev Drafter Two', email: 'd2@test', roles: ['drafter'], divisions: ['RFA'] },
-  otherDivDrafter: { userId: 'dev-drafter3', displayName: 'Dev Drafter Three', email: 'd3@test', roles: ['drafter'], divisions: ['Audit'] },
-  reviewer: { userId: 'dev-reviewer', displayName: 'Rae Reviewer', email: 'rae@test', roles: ['reviewer'], divisions: ['RFA'] },
-  reviewer2: { userId: 'dev-reviewer2', displayName: 'Rae Reviewer Two', email: 'rae2@test', roles: ['reviewer'], divisions: ['RFA'] },
-  approver: { userId: 'dev-approver', displayName: 'Avery Approver', email: 'avery@test', roles: ['reviewer', 'approver'], divisions: ['RFA'] },
-  execBudget: { userId: 'dev-exec-budget', displayName: 'Blake Budget', email: 'blake@test', roles: ['reviewer', 'approver'], divisions: ['Budget'] },
-  manager: { userId: 'dev-manager', displayName: 'Morgan Manager', email: 'morgan@test', roles: ['manager'], divisions: ['RFA'] },
-  viewer: { userId: 'dev-viewer', displayName: 'Val Viewer', email: 'val@test', roles: ['viewer'], divisions: [] },
-  templateEditor: { userId: 'dev-template-editor', displayName: 'Terry Templates', email: 'terry@test', roles: ['template_editor', 'drafter'], divisions: ['RFA'] },
-  admin: { userId: 'dev-admin', displayName: 'Ada Admin', email: 'ada@test', roles: ['admin'], divisions: ['IT'] },
-  both: { userId: 'dev-both', displayName: 'Jordan Both', email: 'jordan@test', roles: ['drafter', 'reviewer'], divisions: ['RFA'] },
+  drafter: { userId: 'dev-drafter', displayName: 'Dana Drafter', email: 'dana.drafter@dor.wa.gov.test', roles: ['drafter'], divisions: ['RFA'] },
+  reviewer: { userId: 'dev-reviewer', displayName: 'Rae Reviewer', email: 'rae.reviewer@dor.wa.gov.test', roles: ['reviewer'], divisions: ['RFA'] },
+  viewer: { userId: 'dev-committee', displayName: 'Cam Committee', email: 'cam.committee@dor.wa.gov.test', roles: ['viewer'], divisions: [] },
+  both: { userId: 'dev-both', displayName: 'Jordan Both', email: 'jordan.both@dor.wa.gov.test', roles: ['drafter', 'reviewer'], divisions: ['RFA'] },
+  admin: SYSTEM_PRINCIPAL,
 } satisfies Record<string, Principal>;
 
 export function testConfig(overrides: Partial<Record<keyof Config, string>> = {}): Config {
@@ -51,10 +44,10 @@ export interface TestContext {
   close(): Promise<void>;
 }
 
-export async function createTestApp(overrides: Partial<Record<keyof Config, string>> = {}, extra: { mailer?: Mailer } = {}): Promise<TestContext> {
+export async function createTestApp(overrides: Partial<Record<keyof Config, string>> = {}): Promise<TestContext> {
   const config = testConfig(overrides);
   const handle = createDb(config.DATABASE_URL, 5);
-  const app = await buildApp({ config, dbHandle: handle, oidc: fakeOidc, workers: false, mailer: extra.mailer });
+  const app = await buildApp({ config, dbHandle: handle, oidc: fakeOidc, workers: false });
   await app.ready();
   const tokens = new Map<string, string>();
   return {
@@ -75,6 +68,9 @@ export async function createTestApp(overrides: Partial<Record<keyof Config, stri
     },
   };
 }
+
+/** Tables the note tests reset between files (children first). */
+export const NOTE_TABLES = ['bills', 'bill_versions', 'amendments', 'hearings', 'prior_fiscal_notes', 'outbox', 'outbox_consumptions', 'search_docs', 'notes', 'note_revisions', 'note_documents', 'note_comments', 'note_comment_messages', 'note_change_requests', 'note_exports', 'templates', 'reference_sets', 'audit_log', 'workflow_instances', 'workflow_transitions'];
 
 /** Remove all rows from the given tables (children first). */
 export async function truncate(handle: DbHandle, tables: string[]): Promise<void> {

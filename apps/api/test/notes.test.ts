@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Logger } from 'pino';
 import { findAll, textOf, type PMNode } from '@wa-leg/note-schema';
-import { createTestApp, truncate, users, type TestContext } from './helpers.js';
+import { NOTE_TABLES, createTestApp, truncate, users, type TestContext } from './helpers.js';
 import { DirectoryFetcher, ingestLegiscanBills, readDataset } from '../src/modules/bills/index.js';
 import { seedTemplates } from '../src/modules/templates/index.js';
 import { seedReference } from '../src/modules/reference/index.js';
@@ -18,7 +18,7 @@ let revisionId: string;
 
 beforeAll(async () => {
   t = await createTestApp({ SEARCH_BACKEND: 'postgres' });
-  await truncate(t.handle, ['bills', 'bill_versions', 'amendments', 'hearings', 'prior_fiscal_notes', 'outbox', 'outbox_consumptions', 'search_docs', 'notes', 'note_revisions', 'note_documents', 'note_comments', 'note_comment_messages', 'note_locks', 'templates', 'reference_sets', 'audit_log']);
+  await truncate(t.handle, NOTE_TABLES);
   await seedUsers(t.app.db);
   await seedTemplates(t.app.db, t.config.TEMPLATES_DIR);
   await seedReference(t.app.db, t.config.REFERENCE_DIR);
@@ -46,10 +46,9 @@ describe('templates and reference', () => {
     expect(one.headers.etag).toBeTruthy();
   });
 
-  it('template editing needs the template_editor role and creates a new version', async () => {
-    const denied = await t.app.inject({ method: 'PUT', url: '/api/v1/templates/no-fiscal-impact', headers: await t.as(users.drafter), payload: { description: 'x' } });
-    expect(denied.statusCode).toBe(403);
-    const ok = await t.app.inject({ method: 'PUT', url: '/api/v1/templates/no-fiscal-impact', headers: await t.as(users.templateEditor), payload: { description: 'Edited in a test' } });
+  it('template editing is admin only and creates a new version', async () => {
+    for (const u of [users.drafter, users.reviewer]) expect((await t.app.inject({ method: 'PUT', url: '/api/v1/templates/no-fiscal-impact', headers: await t.as(u), payload: { description: 'x' } })).statusCode).toBe(403);
+    const ok = await t.app.inject({ method: 'PUT', url: '/api/v1/templates/no-fiscal-impact', headers: await t.as(users.admin), payload: { description: 'Edited in a test' } });
     expect(ok.statusCode).toBe(200);
     expect(ok.json().version).toBe(2);
     const list = await t.app.inject({ method: 'GET', url: '/api/v1/templates', headers: await t.as(users.drafter) });
@@ -78,34 +77,39 @@ describe('templates and reference', () => {
   });
 });
 
-describe('notes: create, document autosave with If-Match, versions, comments, locks', () => {
+describe('notes: create, document autosave with If-Match, versions, comments', () => {
   it('a reviewer creates a note on SHB 2402 from the sales-use-tax-exemption template', async () => {
     const res = await t.app.inject({
       method: 'POST',
       url: '/api/v1/notes',
       headers: await t.as(users.reviewer),
-      payload: { billKey: 'WA:2025-26:HB2402', versionCode: 'S', templateId: 'sales-use-tax-exemption', drafterId: 'dev-drafter', request: { requestId: '2402-1-1', legContact: { name: 'Jane Legislative', phone: '360-786-7100' }, tenYearRequested: false }, priority: 'high' },
+      payload: { billKey: 'WA:2025-26:HB2402', versionCode: 'S', templateId: 'sales-use-tax-exemption', drafterId: 'dev-drafter' },
     });
     expect(res.statusCode).toBe(201);
     const s = res.json();
     revisionId = s.noteRevisionId;
-    expect(s).toMatchObject({ billKey: 'WA:2025-26:HB2402', versionCode: 'S', versionLabel: 'SHB 2402', kind: 'note', state: 'todo', drafterStatus: 'to-do', headVersion: 1, templateId: 'sales-use-tax-exemption', priority: 'high', editable: true });
+    expect(s).toMatchObject({ billKey: 'WA:2025-26:HB2402', versionCode: 'S', versionLabel: 'SHB 2402', state: 'draft', headVersion: 1, templateId: 'sales-use-tax-exemption', editable: true, reviewer: null });
+    expect(s).not.toHaveProperty('priority');
+    expect(s).not.toHaveProperty('confidential');
+    expect(s).not.toHaveProperty('deadlines');
     expect(s.drafter.userId).toBe('dev-drafter');
     expect(s.billTitle).toMatch(/phthalates/i);
     // Events for the workflow and search modules.
     const events = (await t.app.db.execute((await import('drizzle-orm')).sql`SELECT type FROM outbox WHERE payload->>'noteRevisionId' = ${revisionId} ORDER BY event_id`)).rows.map((r: any) => r.type);
-    expect(events).toEqual(expect.arrayContaining(['note.created', 'fiscal_note.requested']));
+    expect(events).toEqual(['note.created']);
   });
 
-  it('drafters cannot create fiscal notes but may create estimates for themselves', async () => {
-    const denied = await t.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await t.as(users.drafter), payload: { billKey: 'WA:2025-26:HB2402', versionCode: 'S' } });
-    expect(denied.statusCode).toBe(403);
-    const ok = await t.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await t.as(users.drafter), payload: { billKey: 'WA:2025-26:SB6137', versionCode: 'I', kind: 'estimate', templateId: 'no-fiscal-impact' } });
+  it('a drafter creates for themselves; removed fields are rejected', async () => {
+    const ok = await t.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await t.as(users.drafter), payload: { billKey: 'WA:2025-26:SB6137', versionCode: 'I', templateId: 'no-fiscal-impact' } });
     expect(ok.statusCode).toBe(201);
-    expect(ok.json().kind).toBe('estimate');
     expect(ok.json().drafter.userId).toBe('dev-drafter');
-    const unknownVersion = await t.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await t.as(users.reviewer), payload: { billKey: 'WA:2025-26:HB2402', versionCode: 'S9' } });
+    expect(ok.json().state).toBe('draft');
+    const denied = await t.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await t.as(users.drafter), payload: { billKey: 'WA:2025-26:SB6137', versionCode: 'I', templateId: 'no-fiscal-impact', drafterId: 'dev-both' } });
+    expect(denied.statusCode).toBe(403);
+    const unknownVersion = await t.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await t.as(users.reviewer), payload: { billKey: 'WA:2025-26:HB2402', versionCode: 'S9', templateId: 'no-fiscal-impact', drafterId: 'dev-drafter' } });
     expect(unknownVersion.statusCode).toBe(400);
+    const noTemplate = await t.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await t.as(users.reviewer), payload: { billKey: 'WA:2025-26:HB2402', versionCode: 'S', drafterId: 'dev-drafter' } });
+    expect(noTemplate.statusCode).toBe(400);
   });
 
   it('the head document is the instantiated template with tokens filled and slots highlighted', async () => {
@@ -118,9 +122,6 @@ describe('notes: create, document autosave with If-Match, versions, comments, lo
     const doc = d.doc as PMNode;
     const billNo = findAll(doc, 'slot').find((s) => s.attrs?.slot === 'bill.number')!;
     expect(textOf(billNo)).toBe('2402 S HB');
-    const contact = findAll(doc, 'noteCell').find((s) => s.attrs?.slot === 'legContact.name')!;
-    expect(textOf(contact)).toBe('Jane Legislative');
-    expect(textOf(findAll(doc, 'slot').find((s) => s.attrs?.slot === 'legContact.phone')!)).toBe('360-786-7100');
     expect(findAll(doc, 'noteTable').some((n) => n.attrs?.role === 'cash-receipts')).toBe(true);
     const fte = findAll(doc, 'noteTable').find((n) => n.attrs?.role === 'fte-by-class')!;
     expect((fte.content ?? []).filter((r) => r.attrs?.rowKind === 'class').length).toBe(12);
@@ -128,15 +129,17 @@ describe('notes: create, document autosave with If-Match, versions, comments, lo
 
   it('visibility follows the permission matrix', async () => {
     expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}`, headers: await t.as(users.viewer) })).statusCode).toBe(403);
-    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}`, headers: await t.as(users.otherDivDrafter) })).statusCode).toBe(403);
-    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}`, headers: await t.as(users.drafter2) })).statusCode).toBe(200); // same division
+    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}`, headers: await t.as(users.drafter) })).statusCode).toBe(200);
+    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}`, headers: await t.as(users.both) })).statusCode).toBe(200); // reviewer role
     expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}`, headers: await t.as(users.reviewer) })).statusCode).toBe(200);
     const denial = await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit?action=permission.denied&objectId=' + revisionId, headers: await t.as(users.admin) });
-    expect(denial.json().length).toBeGreaterThanOrEqual(2);
+    expect(denial.json().length).toBeGreaterThanOrEqual(1);
     const onBill = await t.app.inject({ method: 'GET', url: '/api/v1/bills/2025-26/HB2402/notes', headers: await t.as(users.viewer) });
     expect(onBill.json()).toEqual([]);
     const onBillReviewer = await t.app.inject({ method: 'GET', url: '/api/v1/bills/2025-26/HB2402/notes', headers: await t.as(users.reviewer) });
     expect(onBillReviewer.json().map((n: any) => n.noteRevisionId)).toContain(revisionId);
+    const mine = await t.app.inject({ method: 'GET', url: '/api/v1/notes?assignee=me', headers: await t.as(users.drafter) });
+    expect(mine.json().map((n: any) => n.noteRevisionId)).toContain(revisionId);
   });
 
   it('autosave uses If-Match: a stale version gets 412 with the current head, force stores a new head', async () => {
@@ -184,7 +187,7 @@ describe('notes: create, document autosave with If-Match, versions, comments, lo
     const head = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/document`, headers: await t.as(users.reviewer) })).json();
     const asReviewer = await t.app.inject({ method: 'PUT', url: `/api/v1/notes/${revisionId}/document`, headers: { ...(await t.as(users.reviewer)), 'if-match': `"${head.version}"` }, payload: { doc: head.doc, mode: 'limited' } });
     expect(asReviewer.statusCode).toBe(403);
-    const asOther = await t.app.inject({ method: 'PUT', url: `/api/v1/notes/${revisionId}/document`, headers: { ...(await t.as(users.drafter2)), 'if-match': `"${head.version}"` }, payload: { doc: head.doc, mode: 'limited' } });
+    const asOther = await t.app.inject({ method: 'PUT', url: `/api/v1/notes/${revisionId}/document`, headers: { ...(await t.as(users.both)), 'if-match': `"${head.version}"` }, payload: { doc: head.doc, mode: 'limited' } });
     expect(asOther.statusCode).toBe(403);
   });
 
@@ -226,22 +229,10 @@ describe('notes: create, document autosave with If-Match, versions, comments, lo
     threads = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/comments`, headers: await t.as(users.drafter) })).json();
     expect(threads[0].status).toBe('resolved');
     expect(threads[0].messages.length).toBe(2);
-    // Viewers cannot comment; a different drafter cannot delete the reviewer's thread.
+    // Viewers cannot comment; the drafter cannot delete the reviewer's thread.
     expect((await t.app.inject({ method: 'POST', url: `/api/v1/notes/${revisionId}/comments`, headers: await t.as(users.viewer), payload: { anchorText: 'x', body: 'y' } })).statusCode).toBe(403);
-    expect((await t.app.inject({ method: 'DELETE', url: `/api/v1/notes/${revisionId}/comments/c_test1`, headers: await t.as(users.drafter2) })).statusCode).toBe(403);
+    expect((await t.app.inject({ method: 'DELETE', url: `/api/v1/notes/${revisionId}/comments/c_test1`, headers: await t.as(users.drafter) })).statusCode).toBe(403);
     expect((await t.app.inject({ method: 'DELETE', url: `/api/v1/notes/${revisionId}/comments/c_test1`, headers: await t.as(users.reviewer) })).statusCode).toBe(204);
-  });
-
-  it('soft locks: the holder renews, another editor gets 409, release frees it', async () => {
-    const mine = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${revisionId}/lock`, headers: await t.as(users.drafter) });
-    expect(mine.statusCode).toBe(200);
-    expect(mine.json().holder).toBe('dev-drafter');
-    // A manager reassigns to drafter2 in a later milestone; here another editor is refused by can() first.
-    const status = await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/lock`, headers: await t.as(users.reviewer) });
-    expect(status.json().lock.holder).toBe('dev-drafter');
-    const released = await t.app.inject({ method: 'DELETE', url: `/api/v1/notes/${revisionId}/lock`, headers: await t.as(users.drafter) });
-    expect(released.statusCode).toBe(204);
-    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/lock`, headers: await t.as(users.reviewer) })).json().lock).toBeNull();
   });
 
   it('validates the head and lists the note history in the audit log', async () => {
@@ -252,26 +243,7 @@ describe('notes: create, document autosave with If-Match, versions, comments, lo
     expect(audit.statusCode).toBe(200);
     const actions = audit.json().map((a: any) => a.action);
     expect(actions).toEqual(expect.arrayContaining(['note.create', 'note.document_save', 'note.snapshot', 'note.restore', 'note.comment_create', 'note.comment_delete']));
-    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/audit`, headers: await t.as(users.drafter2) })).statusCode).toBe(403);
-  });
-
-  it('a new revision for a new bill version clones the document', async () => {
-    const res = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${revisionId}/revisions`, headers: await t.as(users.reviewer), payload: { versionCode: 'I' } });
-    expect(res.statusCode).toBe(201);
-    const s = res.json();
-    expect(s.previousRevisionId).toBe(revisionId);
-    expect(s.versionCode).toBe('I');
-    expect(s.headVersion).toBe(1);
-    const parent = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}`, headers: await t.as(users.reviewer) })).json();
-    expect(parent.supersededBy).toBe(s.noteRevisionId);
-    const doc = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${s.noteRevisionId}/document`, headers: await t.as(users.drafter) })).json();
-    expect(textOf(findAll(doc.doc as PMNode, 'slot').find((x) => x.attrs?.slot === 'bill.number')!)).toBe('2402 S HB');
-    // Metadata patch.
-    const patched = await t.app.inject({ method: 'PATCH', url: `/api/v1/notes/${revisionId}`, headers: await t.as(users.reviewer), payload: { confidential: true, identifier: 'DOR-2026-042' } });
-    expect(patched.json()).toMatchObject({ confidential: true, identifier: 'DOR-2026-042' });
-    // Confidential now: the same-division drafter loses access; the assigned drafter keeps it.
-    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}`, headers: await t.as(users.drafter2) })).statusCode).toBe(403);
-    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}`, headers: await t.as(users.drafter) })).statusCode).toBe(200);
+    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/audit`, headers: await t.as(users.viewer) })).statusCode).toBe(403);
   });
 
   it('indexes internal notes for search with visibility from the note state', async () => {

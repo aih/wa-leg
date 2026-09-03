@@ -52,7 +52,7 @@ export async function templatesRoutes(app: FastifyInstance): Promise<void> {
   r.put(
     '/templates/:id',
     {
-      schema: { tags: ['templates'], summary: 'Update a template (template_editor role); creates a new template version', params: z.object({ id: z.string() }), body: z.object({ name: z.string().optional(), description: z.string().optional(), html: z.string().optional(), tags: z.array(z.string()).optional(), kind: z.enum(['document', 'snippet']).optional(), mode: z.enum(['limited', 'full']).optional() }), response: { 200: TemplateSchema } },
+      schema: { tags: ['templates'], summary: 'Update a template (admin); creates a new template version', params: z.object({ id: z.string() }), body: z.object({ name: z.string().optional(), description: z.string().optional(), html: z.string().optional(), tags: z.array(z.string()).optional(), kind: z.enum(['document', 'snippet']).optional(), mode: z.enum(['limited', 'full']).optional() }), response: { 200: TemplateSchema } },
       preHandler: app.requireAuth,
     },
     async (req) => {

@@ -10,7 +10,7 @@ import type { Db } from '../../../db/client.js';
 import { writeAudit } from '../../../lib/audit.js';
 import { emitEvent } from '../../../lib/outbox.js';
 import { forbidden, notFound, unavailable, unprocessable } from '../../../lib/errors.js';
-import { can, type Principal } from '../../identity/index.js';
+import type { Principal } from '../../identity/index.js';
 import type { NotesService } from '../service.js';
 import { docToDocx } from './docx.js';
 import { docToHtmlDocument } from './html.js';
@@ -48,7 +48,7 @@ export class ExportService {
   async export(p: Principal, noteRevisionId: string, opts: { format: ExportFormat; version?: number; comments?: boolean; strict?: boolean }, requestId: string): Promise<ExportResult> {
     const ctx = await this.notes.assertCan(p, 'note.export', noteRevisionId, requestId);
     const summary = await this.notes.summary(noteRevisionId, ctx);
-    const participant = can(p, 'note.edit', ctx.res) || can(p, 'note.review', ctx.res) || can(p, 'note.assign', ctx.res) || p.roles.includes('admin') || p.roles.includes('reviewer') || p.roles.includes('manager') || summary.drafter?.userId === p.userId;
+    const participant = p.roles.includes('admin') || p.roles.includes('reviewer') || summary.drafter?.userId === p.userId;
     let version = opts.version;
     if (version === undefined) version = participant ? summary.headVersion : (summary.approvedVersion ?? undefined);
     if (version === undefined) throw notFound('Approved version');
@@ -58,8 +58,8 @@ export class ExportService {
     const missing = unfilledSlots(doc);
     if ((opts.strict || opts.format === 'xml') && missing.length) throw unprocessable('unfilled_slots', `${missing.length} required slot(s) are empty`, { unfilledSlots: missing });
     const facts = await this.notes.billFacts(summary.billKey, p);
-    const title = `${summary.versionLabel} ${summary.kind === 'estimate' ? 'Fiscal Estimate' : 'Fiscal Note'}`;
-    const footer = ['Form FN (Rev 1/00)', summary.requestId ? `Request # ${summary.requestId}` : null, `Bill # ${summary.versionLabel}`, 'FNS062 Department of Revenue Fiscal Note', summary.identifier].filter(Boolean).join('   ');
+    const title = `${summary.versionLabel} Fiscal Note`;
+    const footer = ['Form FN (Rev 1/00)', `Bill # ${summary.versionLabel}`, 'FNS062 Department of Revenue Fiscal Note'].join('   ');
     const comments = opts.comments ? await this.commentMap(noteRevisionId) : undefined;
     let body: Buffer;
     switch (opts.format) {
@@ -73,13 +73,13 @@ export class ExportService {
         break;
       }
       case 'docx':
-        body = await docToDocx(doc, { title, requestId: summary.requestId, billNumber: summary.versionLabel, identifier: summary.identifier, comments });
+        body = await docToDocx(doc, { title, billNumber: summary.versionLabel, comments });
         break;
       case 'xml': {
         const estimate = extractEstimateData(doc);
         body = Buffer.from(
           this.fns.render({
-            header: { billNumber: summary.versionLabel, billTitle: facts?.title ?? summary.billTitle ?? '', agencyCode: '140', agencyName: 'Department of Revenue', requestId: summary.requestId, versionLabel: summary.versionLabel, preparedBy: { name: summary.drafter?.displayName ?? '', date: stored.updatedAt.slice(0, 10) } },
+            header: { billNumber: summary.versionLabel, billTitle: facts?.title ?? summary.billTitle ?? '', agencyCode: '140', agencyName: 'Department of Revenue', versionLabel: summary.versionLabel, preparedBy: { name: summary.drafter?.displayName ?? '', date: stored.updatedAt.slice(0, 10) } },
             doc,
             estimate,
             mode: stored.mode,
@@ -111,7 +111,7 @@ export class ExportService {
     const row = (await this.db.execute(sql`SELECT * FROM note_exports WHERE id = ${exportId} AND note_revision_id = ${noteRevisionId}`)).rows[0] as any;
     if (!row) throw notFound('Export');
     const summary = await this.notes.summary(noteRevisionId);
-    if (summary.approvedVersion !== null && row.document_version !== summary.approvedVersion && !(can(p, 'note.edit', (await this.notes.resource(noteRevisionId)).res) || p.roles.some((r) => ['reviewer', 'manager', 'admin', 'approver'].includes(r)) || summary.drafter?.userId === p.userId)) throw forbidden('Only the approved version is available');
+    if (summary.approvedVersion !== null && row.document_version !== summary.approvedVersion && !(p.roles.some((r) => ['reviewer', 'admin'].includes(r)) || summary.drafter?.userId === p.userId)) throw forbidden('Only the approved version is available');
     const body = readFileSync(row.path);
     return { exportId, format: row.format, version: row.document_version, filename: `${summary.versionLabel.replace(/\s+/g, '_')}_fiscal_note_v${row.document_version}.${row.format}`, contentType: row.content_type, body };
   }

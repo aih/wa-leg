@@ -38,8 +38,8 @@ db.command('seed')
 const demo = program.command('demo').description('Demo scenario');
 demo
   .command('seed')
-  .description('Create ten notes on ten different bills, one per workflow state, as the test users (docs/DEMO.md)')
-  .option('--reset', 'Delete every existing note, workflow instance and notification first')
+  .description('Create five notes on five bills, one per status, as the test users (docs/DEMO.md)')
+  .option('--reset', 'Delete every existing note and workflow instance first')
   .action(async (o: { reset?: boolean }) => {
     const { buildApp } = await import('./app.js');
     const { seedDemo } = await import('./db/demo.js');

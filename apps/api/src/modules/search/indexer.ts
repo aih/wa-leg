@@ -117,7 +117,7 @@ export class SearchIndexer {
         heading: (t.tags ?? []).join(' '),
         url: `/admin/templates#${t.id}`,
         visibility: 'restricted',
-        allowed_roles: ['drafter', 'reviewer', 'approver', 'manager', 'template_editor', 'admin'],
+        allowed_roles: ['drafter', 'reviewer', 'admin'],
         allowed_user_ids: [],
         updated_at: new Date().toISOString(),
         source_hash: null,
@@ -156,7 +156,7 @@ export class SearchIndexer {
       if (ev.payload.billKey) await this.indexBill(ev.payload.billKey);
     };
     bus.subscribe('search:bills', ['bill.created', 'bill.version_added', 'bill.amendment_added', 'bill.status_changed', 'hearing.scheduled', 'hearing.rescheduled', 'hearing.cancelled'], reindexBill);
-    bus.subscribe('search:notes', ['note.created', 'note.revision_created', 'note.document_saved', 'note.transitioned', 'note.approved', 'note.superseded'], async (ev) => {
+    bus.subscribe('search:notes', ['note.created', 'note.document_saved', 'note.transitioned', 'note.approved', 'note.published'], async (ev) => {
       const id = ev.payload.noteRevisionId as string | undefined;
       if (id) await this.indexNote(id, { reindexBill: ev.type !== 'note.document_saved' || !!ev.payload.metadata });
     });

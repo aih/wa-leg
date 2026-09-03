@@ -9,26 +9,38 @@ import { writeAudit } from '../../lib/audit.js';
 const AnyObject = z.looseObject({});
 const noteId = z.object({ id: z.string().uuid() });
 
-const RequestSchema = z.object({
-  requestId: z.string().optional(),
-  requestedAt: z.string().optional(),
-  requestedBy: z.string().optional(),
-  legContact: z.object({ name: z.string().optional(), phone: z.string().optional() }).optional(),
-  tenYearRequested: z.boolean().optional(),
-});
+const UserRefSchema = z.object({ userId: z.string(), displayName: z.string().optional() });
 
-export const NoteRevisionSummarySchema = z.looseObject({
+export const NoteRevisionSummarySchema = z.object({
   noteRevisionId: z.string(),
   noteId: z.string(),
   billKey: z.string(),
+  biennium: z.string(),
+  billId: z.string(),
+  billTitle: z.string().optional(),
   versionCode: z.string(),
   versionLabel: z.string(),
-  kind: z.enum(['note', 'estimate']),
-  state: z.string(),
-  drafterStatus: z.string(),
-  reviewerStatus: z.string(),
+  state: z.enum(['draft', 'in_review', 'changes_requested', 'approved', 'published']),
+  drafter: UserRefSchema.nullable(),
+  reviewer: UserRefSchema.nullable(),
   headVersion: z.number(),
+  approvedVersion: z.number().nullable(),
+  publishedAt: z.string().nullable(),
+  publishedBy: UserRefSchema.nullable(),
+  publishedVersion: z.number().nullable(),
+  templateId: z.string().nullable(),
+  templateVersion: z.number().nullable(),
+  mode: z.enum(['limited', 'full']),
   editable: z.boolean(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export const CreateNoteBodySchema = z.object({
+  billKey: z.string(),
+  versionCode: z.string(),
+  templateId: z.string(),
+  drafterId: z.string().optional(),
 });
 
 export function notesRoutes(svc: NotesService) {
@@ -40,69 +52,37 @@ export function notesRoutes(svc: NotesService) {
       {
         schema: {
           tags: ['notes'],
-          summary: 'Create a note and its first revision for a bill version (or amendment)',
-          body: z.object({
-            billKey: z.string(),
-            versionCode: z.string(),
-            amendmentId: z.string().optional(),
-            kind: z.enum(['note', 'estimate']).default('note'),
-            templateId: z.string().optional(),
-            cloneFromRevisionId: z.string().uuid().optional(),
-            request: RequestSchema.optional(),
-            confidential: z.boolean().default(false),
-            drafterId: z.string().optional(),
-            priority: z.enum(['low', 'normal', 'high', 'urgent']).optional(),
-          }),
+          summary: 'Create a note in draft for a bill version from a template. Reviewers name the drafter; a drafter creates for themselves.',
+          body: CreateNoteBodySchema,
           response: { 201: NoteRevisionSummarySchema },
         },
         preHandler: app.requireAuth,
       },
-      async (req, reply) => reply.code(201).send((await svc.create(req.principal!, req.body, req.id)) as never),
+      async (req, reply) => reply.code(201).send(await svc.create(req.principal!, req.body, req.id)),
     );
 
     r.get(
       '/notes',
       {
-        schema: { tags: ['notes'], summary: 'List note revisions visible to the caller', querystring: z.object({ billKey: z.string().optional(), state: z.string().optional(), assignee: z.string().optional(), page: z.coerce.number().int().min(1).default(1), size: z.coerce.number().int().min(1).max(200).default(50) }), response: { 200: z.array(NoteRevisionSummarySchema) } },
+        schema: { tags: ['notes'], summary: 'Note revisions visible to the caller', querystring: z.object({ billKey: z.string().optional(), state: z.string().optional(), assignee: z.string().optional(), page: z.coerce.number().int().min(1).default(1), size: z.coerce.number().int().min(1).max(200).default(50) }), response: { 200: z.array(NoteRevisionSummarySchema) } },
         preHandler: app.requireAuth,
       },
-      async (req) => (await svc.listVisible(req.principal!, req.query)) as never,
+      async (req) => svc.listVisible(req.principal!, req.query),
     );
 
     r.get(
       '/bills/:biennium/:id/notes',
-      { schema: { tags: ['notes'], summary: 'Note revisions on this bill visible to the caller, grouped by version', params: z.object({ biennium: z.string(), id: z.string() }), response: { 200: z.array(NoteRevisionSummarySchema) } }, preHandler: app.requireAuth },
-      async (req) => (await svc.forBill(req.principal!, `WA:${req.params.biennium}:${req.params.id.toUpperCase()}`)) as never,
+      { schema: { tags: ['notes'], summary: 'Note revisions on this bill visible to the caller', params: z.object({ biennium: z.string(), id: z.string() }), response: { 200: z.array(NoteRevisionSummarySchema) } }, preHandler: app.requireAuth },
+      async (req) => svc.forBill(req.principal!, `WA:${req.params.biennium}:${req.params.id.toUpperCase()}`),
     );
 
     r.get(
       '/notes/:id',
-      { schema: { tags: ['notes'], summary: 'Note revision summary (bill, version, request, workflow state, deadlines, assignees)', params: noteId, response: { 200: NoteRevisionSummarySchema } }, preHandler: app.requireAuth },
+      { schema: { tags: ['notes'], summary: 'Note revision summary (bill, version, state, drafter, reviewer, publication)', params: noteId, response: { 200: NoteRevisionSummarySchema } }, preHandler: app.requireAuth },
       async (req) => {
         const ctx = await svc.assertCan(req.principal!, 'note.read', req.params.id, req.id);
-        return (await svc.summary(req.params.id, ctx)) as never;
+        return svc.summary(req.params.id, ctx);
       },
-    );
-
-    r.patch(
-      '/notes/:id',
-      { schema: { tags: ['notes'], summary: 'Update metadata (confidential flag, priority, request fields, identifier override per B.RFA.03)', params: noteId, body: z.object({ confidential: z.boolean().optional(), priority: z.enum(['low', 'normal', 'high', 'urgent']).optional(), identifier: z.string().optional(), request: RequestSchema.optional() }), response: { 200: NoteRevisionSummarySchema } }, preHandler: app.requireAuth },
-      async (req) => (await svc.patch(req.principal!, req.params.id, req.body, req.id)) as never,
-    );
-
-    r.get(
-      '/notes/:id/context',
-      { schema: { tags: ['notes'], summary: 'Template token context for this note revision', params: noteId, response: { 200: AnyObject } }, preHandler: app.requireAuth },
-      async (req) => {
-        await svc.assertCan(req.principal!, 'note.read', req.params.id, req.id);
-        return (await svc.templateContext(req.params.id, req.principal!)) as unknown as Record<string, unknown>;
-      },
-    );
-
-    r.post(
-      '/notes/:id/revisions',
-      { schema: { tags: ['notes'], summary: 'Create the next revision for a new bill version or amendment, cloning the document', params: noteId, body: z.object({ versionCode: z.string(), amendmentId: z.string().optional() }), response: { 201: NoteRevisionSummarySchema } }, preHandler: app.requireAuth },
-      async (req, reply) => reply.code(201).send((await svc.createRevision(req.principal!, req.params.id, req.body, req.id)) as never),
     );
 
     r.get(
@@ -188,28 +168,6 @@ export function notesRoutes(svc: NotesService) {
       },
     );
 
-    r.post(
-      '/notes/:id/lock',
-      { schema: { tags: ['notes'], summary: 'Acquire a soft edit lock', params: noteId, response: { 200: AnyObject, 409: AnyObject } }, preHandler: app.requireAuth },
-      async (req) => (await svc.lock(req.principal!, req.params.id)) as unknown as Record<string, unknown>,
-    );
-    r.get(
-      '/notes/:id/lock',
-      { schema: { tags: ['notes'], summary: 'Current lock holder', params: noteId, response: { 200: AnyObject } }, preHandler: app.requireAuth },
-      async (req) => {
-        await svc.assertCan(req.principal!, 'note.read', req.params.id, req.id);
-        return { lock: await svc.lockStatus(req.params.id) };
-      },
-    );
-    r.delete(
-      '/notes/:id/lock',
-      { schema: { tags: ['notes'], summary: 'Release the lock', params: noteId, response: { 204: z.null() } }, preHandler: app.requireAuth },
-      async (req, reply) => {
-        await svc.unlock(req.principal!, req.params.id);
-        return reply.code(204).send(null);
-      },
-    );
-
     r.get(
       '/notes/:id/comments',
       { schema: { tags: ['notes'], summary: 'Comment threads', params: noteId, response: { 200: z.array(AnyObject) } }, preHandler: app.requireAuth },
@@ -243,48 +201,6 @@ export function notesRoutes(svc: NotesService) {
       '/notes/:id/comments/:cid/messages',
       { schema: { tags: ['notes'], summary: 'Reply in a thread', params: noteId.extend({ cid: z.string() }), body: z.object({ body: z.string().min(1) }), response: { 201: z.object({ id: z.string() }) } }, preHandler: app.requireAuth },
       async (req, reply) => reply.code(201).send(await svc.reply(req.principal!, req.params.id, req.params.cid, req.body.body, req.id)),
-    );
-
-    // ---- change requests ----
-    r.get(
-      '/notes/:id/change-requests',
-      { schema: { tags: ['notes'], summary: 'Change requests on this revision (newest first) with their items', params: noteId, response: { 200: z.array(AnyObject) } }, preHandler: app.requireAuth },
-      async (req) => {
-        await svc.assertCan(req.principal!, 'note.read', req.params.id, req.id);
-        return (await svc.listChangeRequests(req.params.id)) as unknown as Record<string, unknown>[];
-      },
-    );
-    r.post(
-      '/notes/:id/change-requests',
-      { schema: { tags: ['notes'], summary: 'Record a change request (the workflow module calls this after REQUEST_CHANGES or EXEC_RETURN)', params: noteId, body: z.object({ transitionSeq: z.number().int().optional(), event: z.string().optional(), summary: z.string() }), response: { 201: AnyObject } }, preHandler: app.requireAuth },
-      async (req, reply) => {
-        if (!can(req.principal!, 'note.assign')) throw forbidden('Only reviewers may open a change request');
-        return reply.code(201).send((await svc.recordChangeRequest(req.principal!, req.params.id, req.body, req.id)) as unknown as Record<string, unknown>);
-      },
-    );
-    r.post(
-      '/notes/:id/change-requests/:crId/items/:itemId/address',
-      { schema: { tags: ['notes'], summary: 'Mark an item addressed, citing how (the linked comment thread is answered and resolved)', params: noteId.extend({ crId: z.string().uuid(), itemId: z.string().uuid() }), body: z.object({ resolution: z.string().min(1) }), response: { 200: z.object({ ok: z.boolean() }) } }, preHandler: app.requireAuth },
-      async (req) => {
-        await svc.addressChangeRequestItem(req.principal!, req.params.id, req.params.crId, req.params.itemId, req.body, req.id);
-        return { ok: true };
-      },
-    );
-    r.post(
-      '/notes/:id/change-requests/:crId/items/:itemId/reopen',
-      { schema: { tags: ['notes'], summary: 'Reopen an addressed item', params: noteId.extend({ crId: z.string().uuid(), itemId: z.string().uuid() }), body: z.object({ reason: z.string().optional() }).default({}), response: { 200: z.object({ ok: z.boolean() }) } }, preHandler: app.requireAuth },
-      async (req) => {
-        await svc.reopenChangeRequestItem(req.principal!, req.params.id, req.params.crId, req.params.itemId, req.body, req.id);
-        return { ok: true };
-      },
-    );
-    r.post(
-      '/notes/:id/change-requests/:crId/close',
-      { schema: { tags: ['notes'], summary: 'Close the request once every item is addressed', params: noteId.extend({ crId: z.string().uuid() }), body: z.object({ resolution: z.string().min(1) }), response: { 200: z.object({ ok: z.boolean() }), 409: AnyObject } }, preHandler: app.requireAuth },
-      async (req) => {
-        await svc.closeChangeRequest(req.principal!, req.params.id, req.params.crId, req.body, req.id);
-        return { ok: true };
-      },
     );
 
     // ---- exports ----
