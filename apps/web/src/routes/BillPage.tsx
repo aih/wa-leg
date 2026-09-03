@@ -9,13 +9,11 @@ import { defaultUrlBuilder } from '../bill/cite';
 import { BillSidebar } from '../components/BillSidebar';
 import { ApiError } from '../lib/api';
 import { NewNoteForm } from '../notes/NewNoteForm';
-import { NoteList } from '../notes/NoteList';
-import { ApprovedNotePanel } from '../notes/ApprovedNotePanel';
+import { PublishedNotePanel } from '../notes/PublishedNotePanel';
 import { notesApi, useResource } from '../notes/api';
 import { useSession } from '../lib/session';
 
-/** Bill page: viewer on the left, the approved-note panel (milestone 7) on the right. Until then the
- *  right pane lists emitted citations. */
+/** Bill page: viewer on the left; the published note and the new-note form on the right. */
 export function BillPage() {
   const { biennium, id, code } = useParams();
   const navigate = useNavigate();
@@ -93,12 +91,12 @@ export function BillPage() {
           right={
             <div className="note-pane pad">
               {bill.data && <BillSidebar bill={bill.data} currentCode={version.data?.version.code ?? code ?? bill.data.currentVersionCode} />}
-              {bill.data && <ApprovedNotePanel bill={bill.data} currentCode={version.data?.version.code ?? code ?? bill.data.currentVersionCode} notes={notes.data ?? []} />}
-              <section aria-labelledby="notes-h" className="bill-notes">
-                <h2 id="notes-h">Fiscal notes</h2>
-                <NoteList notes={(notes.data ?? []).filter((n) => !!principal && (n.state !== 'approved' || principal.roles.some((r) => ['drafter', 'reviewer', 'manager', 'admin', 'approver'].includes(r))))} showBill={false} empty={principal ? 'No drafts you can see on this bill.' : 'Sign in to see drafts.'} />
-                {bill.data && <NewNoteForm bill={bill.data} currentCode={version.data?.version.code ?? code ?? bill.data.currentVersionCode} />}
-              </section>
+              {bill.data && <PublishedNotePanel bill={bill.data} currentCode={version.data?.version.code ?? code ?? bill.data.currentVersionCode} notes={notes.data ?? []} />}
+              {bill.data && (
+                <section className="bill-notes">
+                  <NewNoteForm bill={bill.data} currentCode={version.data?.version.code ?? code ?? bill.data.currentVersionCode} />
+                </section>
+              )}
               {cites.length > 0 && (
                 <section aria-labelledby="cites-h" className="cite-list">
                   <h2 id="cites-h">Citations emitted</h2>

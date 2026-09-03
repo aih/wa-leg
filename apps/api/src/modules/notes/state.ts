@@ -1,29 +1,18 @@
-// Workflow state of a note revision, read through the workflow module's API. Until that module is registered
-// the note's own drafter assignment stands in, with the state `in_progress`.
+// Workflow state of a note revision, read from the workflow module. A revision without an instance is a draft
+// with the revision's own drafter.
 import type { FastifyInstance } from 'fastify';
 import type { WorkflowState } from '@wa-leg/workflow-machine';
-import { internalCall } from '../../lib/internal.js';
 
 export interface NoteState {
   state: WorkflowState;
   drafterId: string | null;
   reviewerId: string | null;
-  execChain: { userId: string; division?: string }[];
-  execIndex: number;
   version?: number;
   instanceId?: string;
-  supersededBy?: string | null;
-  deadlines?: { kind: string; dueAt: string; warnAt?: string }[];
 }
 
 export async function readNoteState(app: FastifyInstance, noteRevisionId: string, fallbackDrafterId: string | null): Promise<NoteState> {
-  if (app.hasDecorator('workflowSvc')) {
-    try {
-      const w = await internalCall<{ state: WorkflowState; drafterId: string | null; reviewerId: string | null; execChain: { userId: string; division?: string }[]; execIndex: number; version: number; instanceId: string; supersededBy?: string | null; deadlines?: { kind: string; dueAt: string; warnAt?: string }[] }>(app, `/notes/${noteRevisionId}/workflow`);
-      return { state: w.state, drafterId: w.drafterId, reviewerId: w.reviewerId, execChain: w.execChain ?? [], execIndex: w.execIndex ?? 0, version: w.version, instanceId: w.instanceId, supersededBy: w.supersededBy ?? null, deadlines: w.deadlines ?? [] };
-    } catch (err) {
-      if ((err as { status?: number }).status !== 404) throw err;
-    }
-  }
-  return { state: 'in_progress', drafterId: fallbackDrafterId, reviewerId: null, execChain: [], execIndex: 0 };
+  const row = app.hasDecorator('workflowSvc') ? await app.workflowSvc.instanceByNote(noteRevisionId) : null;
+  if (row) return { state: row.state, drafterId: row.drafter_id, reviewerId: row.reviewer_id, version: row.version, instanceId: row.id };
+  return { state: 'draft', drafterId: fallbackDrafterId, reviewerId: null };
 }

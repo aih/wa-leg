@@ -5,8 +5,8 @@ import type { DocType, Facet, SearchBackend, SearchDoc, SearchHit, SearchRequest
 import { SYNONYMS } from './synonyms.js';
 
 export const INDEX_VERSION = 'v1';
-export const INDICES: DocType[] = ['bill', 'section', 'amendment', 'fiscal_note', 'rcw_section', 'template'];
-const INDEX_NAME: Record<DocType, string> = { bill: 'bills', section: 'bill_sections', amendment: 'amendments', fiscal_note: 'fiscal_notes', rcw_section: 'rcw_sections', template: 'templates' };
+export const INDICES: DocType[] = ['bill', 'section', 'amendment', 'fiscal_note', 'rcw_section'];
+const INDEX_NAME: Record<DocType, string> = { bill: 'bills', section: 'bill_sections', amendment: 'amendments', fiscal_note: 'fiscal_notes', rcw_section: 'rcw_sections' };
 
 const analysis = {
   char_filter: { ampersand: { type: 'mapping', mappings: ['& => and'] } },
@@ -40,7 +40,6 @@ const common = {
   committee: { properties: { id: kw, name: kw, chamber: kw } },
   has_fiscal_note: { type: 'boolean' },
   fiscal_note_status: kw,
-  assigned_user_ids: kw,
   rcw_cites: kw,
   rcw_chapters: kw,
   rcw_titles: kw,
@@ -110,9 +109,6 @@ export const MAPPINGS: Record<DocType, Record<string, unknown>> = {
     source: kw,
     package_id: kw,
     ofm_kind: kw,
-    note_version: { type: 'integer' },
-    author_id: kw,
-    reviewer_ids: kw,
   },
   rcw_section: {
     ...common,
@@ -123,12 +119,6 @@ export const MAPPINGS: Record<DocType, Record<string, unknown>> = {
     caption: text,
     affected_by: { type: 'object', enabled: false },
     affected_by_bill_keys: kw,
-  },
-  template: {
-    ...common,
-    template_id: kw,
-    name: text,
-    kind: kw,
   },
 };
 
@@ -254,7 +244,6 @@ export class OpenSearchBackend implements SearchBackend {
     if (f.version_code) out.push({ term: { version_code: f.version_code } });
     if (f.bill_key) out.push({ term: { bill_key: f.bill_key } });
     if (f.date_from || f.date_to) out.push({ range: { last_action_date: { ...(f.date_from ? { gte: f.date_from } : {}), ...(f.date_to ? { lte: f.date_to } : {}) } } });
-    if (f.assigned_to_me) out.push({ term: { assigned_user_ids: principal.userId } });
     return out;
   }
 
@@ -299,7 +288,7 @@ export class OpenSearchBackend implements SearchBackend {
       size: req.size,
       from: (req.page - 1) * req.size,
       track_total_hits: 10_000,
-      indices_boost: [{ [this.alias('bill')]: 2.0 }, { [this.alias('fiscal_note')]: 1.5 }, { [this.alias('section')]: 1.0 }, { [this.alias('amendment')]: 0.9 }, { [this.alias('rcw_section')]: 0.8 }, { [this.alias('template')]: 0.7 }],
+      indices_boost: [{ [this.alias('bill')]: 2.0 }, { [this.alias('fiscal_note')]: 1.5 }, { [this.alias('section')]: 1.0 }, { [this.alias('amendment')]: 0.9 }, { [this.alias('rcw_section')]: 0.8 }],
       query: { bool: { must, filter, should: [{ term: { is_latest_version: { value: true, boost: 1.5 } } }, { range: { last_action_date: { gte: 'now-30d', boost: 1.2 } } }] } },
       sort,
       // Inner hits carry no highlight: highlighting section bodies three times per group is the costly part.
@@ -324,9 +313,9 @@ export class OpenSearchBackend implements SearchBackend {
         rcw_title: { terms: { field: 'rcw_titles', size: 20 } },
       },
     };
-    // Documents without a bill_key (templates, RCW sections) collapse into one group; search them separately.
+    // Documents without a bill_key (RCW sections) collapse into one group; search them separately.
     const withBill = [this.alias('bill'), this.alias('section'), this.alias('amendment'), this.alias('fiscal_note')].join(',');
-    const noBill = [this.alias('rcw_section'), this.alias('template')].join(',');
+    const noBill = this.alias('rcw_section');
     const res = await this.client.msearch({
       body: [
         { index: withBill },

@@ -35,14 +35,14 @@ describe('identity and foundation routes', () => {
   });
 
   it('login redirects to the identity provider and sets the login cookie', async () => {
-    const res = await t.app.inject({ method: 'GET', url: '/api/v1/auth/login?returnTo=/inbox' });
+    const res = await t.app.inject({ method: 'GET', url: '/api/v1/auth/login?returnTo=/notes' });
     expect(res.statusCode).toBe(302);
     expect(res.headers.location).toContain('issuer.test/authorize');
     expect(res.headers['set-cookie']).toBeTruthy();
   });
 
   it('callback exchanges the code, sets the session, records an audit row and redirects to returnTo', async () => {
-    const login = await t.app.inject({ method: 'GET', url: '/api/v1/auth/login?returnTo=/inbox' });
+    const login = await t.app.inject({ method: 'GET', url: '/api/v1/auth/login?returnTo=/notes' });
     const cookie = (login.headers['set-cookie'] as string[] | string) ?? '';
     const loginCookie = (Array.isArray(cookie) ? cookie : [cookie]).find((c) => c.startsWith('oidc_login='))!;
     const value = decodeURIComponent(loginCookie.split(';')[0]!.slice('oidc_login='.length));
@@ -52,12 +52,11 @@ describe('identity and foundation routes', () => {
       cookies: { oidc_login: value },
     });
     expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toBe('http://localhost:5173/inbox');
+    expect(res.headers.location).toBe('http://localhost:5173/notes');
     const setCookie = res.headers['set-cookie'] as string[];
     expect(setCookie.some((c) => c.startsWith('session='))).toBe(true);
-    const audit = await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit?action=auth.login', headers: await t.as(users.admin) });
-    expect(audit.statusCode).toBe(200);
-    expect(audit.json()[0]).toMatchObject({ actorId: 'dev-drafter', action: 'auth.login', objectType: 'user' });
+    const audit = (await t.app.db.execute((await import('drizzle-orm')).sql`SELECT actor_id, action, object_type FROM audit_log WHERE action = 'auth.login' ORDER BY id DESC LIMIT 1`)).rows[0] as any;
+    expect(audit).toMatchObject({ actor_id: 'dev-drafter', action: 'auth.login', object_type: 'user' });
   });
 
   it('logout clears the cookie', async () => {
@@ -83,11 +82,10 @@ describe('identity and foundation routes', () => {
     expect(res.json().checks.postgres.ok).toBe(true);
   });
 
-  it('audit query is refused for drafters and the denial is itself audited', async () => {
-    const res = await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit', headers: await t.as(users.drafter) });
-    expect(res.statusCode).toBe(403);
-    const audit = await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit?action=permission.denied', headers: await t.as(users.reviewer) });
-    expect(audit.json()[0]).toMatchObject({ actorId: 'dev-drafter', action: 'permission.denied' });
+  it('the admin audit and ingest routes are gone', async () => {
+    expect((await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit', headers: await t.as(users.admin) })).statusCode).toBe(404);
+    expect((await t.app.inject({ method: 'GET', url: '/api/v1/admin/ingest/runs', headers: await t.as(users.admin) })).statusCode).toBe(404);
+    expect((await t.app.inject({ method: 'GET', url: '/api/v1/notifications', headers: await t.as(users.drafter) })).statusCode).toBe(404);
   });
 
   it('outbox relay delivers each event once per consumer', async () => {

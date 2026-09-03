@@ -102,7 +102,7 @@ test.describe('bill viewer', () => {
   });
 
   test('bill page without a version code redirects to the current version', async ({ page }) => {
-    await loginAs(page, 'dev-viewer', '/bills/2025-26/HB2402');
+    await loginAs(page, 'dev-committee', '/bills/2025-26/HB2402');
     await expect(page).toHaveURL(/\/bills\/2025-26\/HB2402\/S$/);
   });
 

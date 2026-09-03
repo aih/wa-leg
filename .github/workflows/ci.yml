@@ -39,8 +39,10 @@ jobs:
       - run: pnpm wa-leg db migrate
       - run: pnpm wa-leg db seed
       - name: Load fixture bills for the e2e suite
-        run: pnpm wa-leg ingest legiscan apps/api/test/fixtures/legiscan --bills HB2402,SB6137,SB5814 --xml-dir packages/bill-document/fixtures
+        run: pnpm wa-leg ingest legiscan apps/api/test/fixtures/legiscan --bills HB1019,HB2402,SB6137,SB5814 --xml-dir packages/bill-document/fixtures
       - run: pnpm wa-leg search load
+      - name: Seed the demo scenario the e2e suite walks (HB 1004 and HB 2081 are skipped; their fixtures are not loaded)
+        run: pnpm wa-leg demo seed --reset
       - run: pnpm test:e2e
       - name: Third-party licenses
         run: pnpm third-party

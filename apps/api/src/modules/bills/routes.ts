@@ -1,14 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
-import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import type { BillsService } from './service.js';
-import { can } from '../identity/can.js';
-import { forbidden } from '../../lib/errors.js';
-import { writeAudit } from '../../lib/audit.js';
-import { CachingFetcher } from './ingest/lawfiles.js';
-import { finishIngestRun, ingestLegiscanBills, readDataset, recordIngestRun, refreshDocuments } from './ingest/legiscan.js';
-import type { Logger } from 'pino';
 
 const biennium = z.string().regex(/^\d{4}-\d{2}$/);
 const billId = z.string().regex(/^[HS](B|JR|JM|CR|R|I)\d{1,5}$/i);
@@ -185,53 +178,6 @@ export async function billsRoutes(app: FastifyInstance): Promise<void> {
     '/hearings',
     { schema: { tags: ['bills'], summary: 'Upcoming hearings across bills inside a window (default: next 72 hours)', querystring: z.object({ from: z.string().optional(), to: z.string().optional(), biennium: z.string().optional(), limit: z.coerce.number().int().optional() }), response: { 200: z.array(HearingSchema.extend({ biennium: z.string(), billId: z.string(), title: z.string() })) } }, preHandler: app.requireAuth },
     async (req) => (await svc.listUpcomingHearings(req.query)) as never,
-  );
-
-  // ---- admin: ingest ----
-  r.get(
-    '/admin/ingest/runs',
-    { schema: { tags: ['admin'], summary: 'Ingest run history', response: { 200: z.array(AnyObject) } }, preHandler: app.requireAuth },
-    async (req) => {
-      if (!can(req.principal!, 'ingest.run')) throw forbidden();
-      return svc.listIngestRuns();
-    },
-  );
-
-  r.post(
-    '/admin/ingest/runs',
-    {
-      schema: {
-        tags: ['admin'],
-        summary: 'Start an ingest run (legiscan dataset path or refresh)',
-        body: z.object({ source: z.enum(['legiscan', 'refresh']).default('refresh'), path: z.string().optional(), billKeys: z.array(z.string()).optional(), limit: z.number().int().optional() }),
-        response: { 202: z.object({ job_id: z.string(), status_url: z.string() }) },
-      },
-      preHandler: app.requireAuth,
-    },
-    async (req, reply) => {
-      const p = req.principal!;
-      if (!can(p, 'ingest.run')) {
-        await writeAudit(app.db, { actorId: p.userId, action: 'permission.denied', objectType: 'ingest', objectId: '*', requestId: req.id });
-        throw forbidden();
-      }
-      const id = randomUUID();
-      await recordIngestRun(app.db, { id, source: req.body.source, path: req.body.path, requestedBy: p.userId });
-      await writeAudit(app.db, { actorId: p.userId, action: 'ingest.start', objectType: 'ingest_run', objectId: id, after: req.body, requestId: req.id });
-      const deps = { db: app.db, fetcher: new CachingFetcher(app.config.LAWFILES_CACHE_DIR), log: app.log as unknown as Logger };
-      void (async () => {
-        try {
-          const stats =
-            req.body.source === 'legiscan'
-              ? await ingestLegiscanBills(deps, readDataset(req.body.path ?? app.config.LEGISCAN_DIR, { limit: req.body.limit, bills: req.body.billKeys?.map((k) => k.split(':').pop()!) }), {})
-              : await refreshDocuments(deps, { billKeys: req.body.billKeys });
-          await finishIngestRun(app.db, id, 'done', stats);
-          app.bus.kick();
-        } catch (err) {
-          await finishIngestRun(app.db, id, 'failed', {}, (err as Error).message);
-        }
-      })();
-      return reply.code(202).send({ job_id: id, status_url: '/api/v1/admin/ingest/runs' });
-    },
   );
 }
 

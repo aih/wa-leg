@@ -3,9 +3,6 @@
 import {
   AlignmentType,
   BorderStyle,
-  CommentRangeEnd,
-  CommentRangeStart,
-  CommentReference,
   Document,
   Footer,
   HeadingLevel,
@@ -31,8 +28,6 @@ export interface DocxOptions {
   requestId?: string | null;
   billNumber?: string | null;
   identifier?: string | null;
-  /** Comment threads keyed by id, emitted as Word comments when present. */
-  comments?: Map<string, { author: string; body: string; date: Date }>;
 }
 
 const TWIPS_PER_INCH = 1440;
@@ -40,13 +35,11 @@ const CONTENT_WIDTH = 6.5 * TWIPS_PER_INCH;
 
 interface Ctx {
   opts: DocxOptions;
-  commentIds: Map<string, number>;
-  bodies: { id: number; author: string; body: string; date: Date }[];
 }
 
 /** Render a note document as a .docx buffer. */
 export async function docToDocx(doc: PMNode, opts: DocxOptions): Promise<Buffer> {
-  const ctx: Ctx = { opts, commentIds: new Map(), bodies: [] };
+  const ctx: Ctx = { opts };
   const children = (doc.content ?? []).flatMap((n) => block(n, ctx));
   const footerText = ['Form FN (Rev 1/00)', opts.requestId ? `Request # ${opts.requestId}` : null, opts.billNumber ? `Bill # ${opts.billNumber}` : null, 'FNS062 Department of Revenue Fiscal Note', opts.identifier ?? null].filter(Boolean).join('   ');
   const document = new Document({
@@ -68,7 +61,6 @@ export async function docToDocx(doc: PMNode, opts: DocxOptions): Promise<Buffer>
         { reference: 'numbers', levels: [0, 1, 2].map((level) => ({ level, format: level === 1 ? LevelFormat.LOWER_LETTER : level === 2 ? LevelFormat.LOWER_ROMAN : LevelFormat.DECIMAL, text: `%${level + 1}.`, alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: 720 * (level + 1), hanging: 360 } } } })) },
       ],
     },
-    comments: ctx.bodies.length ? { children: ctx.bodies.map((c) => ({ id: c.id, author: c.author, date: c.date, children: [new Paragraph(c.body)] })) } : undefined,
     sections: [
       {
         properties: { page: { size: { width: 8.5 * TWIPS_PER_INCH, height: 11 * TWIPS_PER_INCH }, margin: { top: TWIPS_PER_INCH, right: TWIPS_PER_INCH, bottom: TWIPS_PER_INCH, left: TWIPS_PER_INCH } } },
@@ -138,47 +130,7 @@ function textOf(n: PMNode): string {
 }
 
 function inlines(nodes: PMNode[], ctx: Ctx): ParagraphChild[] {
-  const out: ParagraphChild[] = [];
-  const open = new Set<string>();
-  for (const n of nodes) {
-    // Comment marks open and close Word comment ranges when comments are exported.
-    const ids = (n.marks ?? []).filter((m) => m.type === 'comment').map((m) => String(m.attrs?.commentId));
-    if (ctx.opts.comments) {
-      for (const id of ids) {
-        if (!open.has(id) && ctx.opts.comments.has(id)) {
-          const num = commentNumber(ctx, id);
-          out.push(new CommentRangeStart(num));
-          open.add(id);
-        }
-      }
-    }
-    out.push(...inline(n, ctx));
-    if (ctx.opts.comments) {
-      for (const id of Array.from(open)) {
-        if (!ids.includes(id)) {
-          const num = commentNumber(ctx, id);
-          out.push(new CommentRangeEnd(num), new TextRun({ children: [new CommentReference(num)] }));
-          open.delete(id);
-        }
-      }
-    }
-  }
-  for (const id of open) {
-    const num = commentNumber(ctx, id);
-    out.push(new CommentRangeEnd(num), new TextRun({ children: [new CommentReference(num)] }));
-  }
-  return out;
-}
-
-function commentNumber(ctx: Ctx, id: string): number {
-  let n = ctx.commentIds.get(id);
-  if (n === undefined) {
-    n = ctx.commentIds.size;
-    ctx.commentIds.set(id, n);
-    const c = ctx.opts.comments?.get(id);
-    ctx.bodies.push({ id: n, author: c?.author ?? 'Reviewer', body: c?.body ?? '', date: c?.date ?? new Date() });
-  }
-  return n;
+  return nodes.flatMap((n) => inline(n, ctx));
 }
 
 function inline(n: PMNode, ctx: Ctx): ParagraphChild[] {

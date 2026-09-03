@@ -38,8 +38,8 @@ db.command('seed')
 const demo = program.command('demo').description('Demo scenario');
 demo
   .command('seed')
-  .description('Create ten notes on ten different bills, one per workflow state, as the test users (docs/DEMO.md)')
-  .option('--reset', 'Delete every existing note, workflow instance and notification first')
+  .description('Create five notes on five bills, one per status, as the test users (docs/DEMO.md)')
+  .option('--reset', 'Delete every existing note and workflow instance first')
   .action(async (o: { reset?: boolean }) => {
     const { buildApp } = await import('./app.js');
     const { seedDemo } = await import('./db/demo.js');
@@ -179,7 +179,7 @@ program
 program
   .command('token')
   .description('Print a bearer token for a seeded user (load tests, scripts)')
-  .requiredOption('--user <id>', 'User id, e.g. dev-viewer')
+  .requiredOption('--user <id>', 'User id, e.g. dev-committee')
   .option('--ttl <seconds>', 'Lifetime', (v) => Number(v), 3600)
   .action(async (opts: { user: string; ttl: number }) => {
     const { signSession } = await import('./modules/identity/index.js');

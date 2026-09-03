@@ -1,5 +1,5 @@
 // Builds search documents from the bills module's API responses (search.md sections 3.4-3.8).
-import { label as shortLabelOf, parse as parseRef, type BillType } from '@wa-leg/billref';
+import { label as shortLabelOf, parse as parseRef } from '@wa-leg/billref';
 import type { AmendmentDocument, BillDocument, BillSection } from '@wa-leg/bill-document';
 import { sectionText } from '@wa-leg/bill-document';
 import type { SearchDoc } from './backend.js';
@@ -72,7 +72,7 @@ export function rcwPartsOf(rcwAffected: BillSummaryLike['rcwAffected']): { cites
   return { cites: [...cites], chapters: [...chapters], titles: [...titles] };
 }
 
-export function buildBillDoc(b: BillSummaryLike, notes: { status: string; assigneeIds: string[] }[] = []): SearchDoc {
+export function buildBillDoc(b: BillSummaryLike): SearchDoc {
   const now = new Date();
   const upcoming = b.hearings.filter((h) => !h.cancelled && new Date(h.hearingAt) > now).map((h) => h.hearingAt).sort();
   const last = b.history[b.history.length - 1];
@@ -87,7 +87,6 @@ export function buildBillDoc(b: BillSummaryLike, notes: { status: string; assign
     primary: s.sponsor_type_id === 1 || s.sponsor_order === 1,
   }));
   const status = STATUS_LABEL[b.status ?? 'unknown'] ?? b.status ?? 'unknown';
-  const noteStatus = notes.some((n) => n.status === 'approved') ? 'approved' : notes.some((n) => n.status.startsWith('review') || n.status.startsWith('exec')) ? 'in_review' : notes.length ? 'draft' : b.priorFiscalNotes.length ? 'published' : null;
   const titleWords = b.title.replace(/^Concerning\s+/i, '').split(/\s+/).slice(0, 6).join(' ');
   const chapter = chapterOf(b.history);
   const doc: SearchDoc = {
@@ -112,11 +111,10 @@ export function buildBillDoc(b: BillSummaryLike, notes: { status: string; assign
     version_codes: b.versions.map((v) => v.code),
     latest_version_code: latest?.code ?? 'I',
     version_label: latest?.shortLabel ?? `${b.type} ${b.number}`,
-    has_fiscal_note: b.priorFiscalNotes.length > 0 || notes.length > 0,
-    fiscal_note_count: b.priorFiscalNotes.length + notes.length,
-    fiscal_note_status: noteStatus,
+    has_fiscal_note: b.priorFiscalNotes.length > 0,
+    fiscal_note_count: b.priorFiscalNotes.length,
+    fiscal_note_status: b.priorFiscalNotes.length ? 'published' : null,
     fiscal_note_package_ids: b.priorFiscalNotes.map((p) => String(p.packageId ?? p.id)),
-    assigned_user_ids: [...new Set(notes.flatMap((n) => n.assigneeIds))],
     rcw_cites: cites,
     rcw_chapters: chapters,
     rcw_titles: titles,
@@ -184,7 +182,7 @@ function effectiveText(s: BillSection): string {
   return out.join('\n').replace(/[ \t]+/g, ' ').trim();
 }
 
-export function buildSectionDocs(b: BillSummaryLike, doc: BillDocument, versionShortLabel: string, isLatest: boolean, notesStatus: string | null): SearchDoc[] {
+export function buildSectionDocs(b: BillSummaryLike, doc: BillDocument, versionShortLabel: string, isLatest: boolean): SearchDoc[] {
   const { cites, chapters, titles } = rcwPartsOf(b.rcwAffected);
   void cites;
   void chapters;
@@ -227,8 +225,8 @@ export function buildSectionDocs(b: BillSummaryLike, doc: BillDocument, versionS
       body: sectionText(s),
       status,
       committee: b.committee ? { name: b.committee.name } : null,
-      has_fiscal_note: b.priorFiscalNotes.length > 0 || !!notesStatus,
-      fiscal_note_status: notesStatus,
+      has_fiscal_note: b.priorFiscalNotes.length > 0,
+      fiscal_note_status: b.priorFiscalNotes.length ? 'published' : null,
       url: `/bills/${b.biennium}/${b.id}/${doc.version.code}#${s.id}`,
       visibility: 'public',
       allowed_roles: [],
@@ -353,67 +351,4 @@ export function buildRcwDocs(b: BillSummaryLike): SearchDoc[] {
       updated_at: b.updatedAt,
       source_hash: null,
     }));
-}
-
-export interface InternalNoteLike {
-  noteRevisionId: string;
-  noteId: string;
-  billKey: string;
-  versionCode: string;
-  versionLabel?: string;
-  kind: string;
-  state: string;
-  confidential: boolean;
-  drafter?: { userId: string } | null;
-  reviewer?: { userId: string } | null;
-  execChain?: { userId: string }[];
-  headVersion?: number;
-  updatedAt: string;
-  title?: string;
-  bodyText?: string;
-  requestId?: string;
-}
-
-/** Visibility for an internal note: drafts to assignees (and admins), reviews to reviewers, approved public unless confidential. */
-export function noteVisibility(n: InternalNoteLike): { visibility: 'public' | 'restricted'; allowed_roles: string[]; allowed_user_ids: string[] } {
-  const users = [n.drafter?.userId, n.reviewer?.userId, ...(n.execChain ?? []).map((e) => e.userId)].filter((u): u is string => !!u);
-  if (n.confidential) return { visibility: 'restricted', allowed_roles: ['admin', 'manager'], allowed_user_ids: users };
-  if (n.state === 'approved') return { visibility: 'public', allowed_roles: [], allowed_user_ids: [] };
-  if (n.state.startsWith('review') || n.state.startsWith('exec_review')) return { visibility: 'restricted', allowed_roles: ['reviewer', 'approver', 'manager', 'admin'], allowed_user_ids: users };
-  // Unsubmitted drafts never surface in another user's search (search.md); opening a note is governed by `can()`.
-  return { visibility: 'restricted', allowed_roles: ['admin'], allowed_user_ids: users };
-}
-
-export function buildInternalNoteDoc(n: InternalNoteLike, bill: { biennium: string; id: string; type: string; number: number; chamber: string; title: string } | null): SearchDoc {
-  const vis = noteVisibility(n);
-  const status = n.state === 'approved' ? 'approved' : n.state.startsWith('review') || n.state.startsWith('exec_review') ? 'in_review' : n.state === 'changes_requested' ? 'draft' : n.state === 'cancelled' || n.state === 'superseded' ? n.state : 'draft';
-  const type = (bill?.type ?? 'HB') as BillType;
-  const label = n.versionLabel ?? (bill ? shortLabelOf({ type, number: bill.number, versionCode: n.versionCode }) : n.versionCode);
-  return {
-    id: `fn:int:${n.noteRevisionId}`,
-    doc_type: 'fiscal_note',
-    note_id: `fn:int:${n.noteRevisionId}`,
-    source: 'internal',
-    bill_key: n.billKey,
-    biennium: bill?.biennium ?? n.billKey.split(':')[1] ?? null,
-    chamber: bill?.chamber ?? null,
-    type: bill?.type ?? null,
-    bill_number: bill?.id ?? null,
-    display: label,
-    version_code: n.versionCode,
-    version_label: label,
-    title: n.title ?? `Fiscal note: ${label}${bill ? `, ${bill.title}` : ''}`,
-    status,
-    note_version: n.headVersion ?? null,
-    author_id: n.drafter?.userId ?? null,
-    assigned_user_ids: vis.allowed_user_ids,
-    reviewer_ids: n.reviewer ? [n.reviewer.userId] : [],
-    body: n.bodyText ?? '',
-    has_fiscal_note: true,
-    fiscal_note_status: status,
-    url: `/notes/${n.noteRevisionId}`,
-    ...vis,
-    updated_at: n.updatedAt,
-    source_hash: n.headVersion ? `v${n.headVersion}` : null,
-  };
 }

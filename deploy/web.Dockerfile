@@ -1,4 +1,4 @@
-# Web image: the Vite bundle served by Caddy, which also terminates TLS and proxies /api, /oidc and /mail.
+# Web image: the Vite bundle served by Caddy, which also terminates TLS and proxies /api and /oidc.
 FROM node:22-bookworm-slim AS build
 ARG GIT_SHA=unknown
 ENV GIT_SHA=$GIT_SHA

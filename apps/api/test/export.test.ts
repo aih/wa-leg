@@ -2,9 +2,10 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inflateRawSync } from 'node:zlib';
+import { sql } from 'drizzle-orm';
 import type { Logger } from 'pino';
 import { findAll, type PMNode } from '@wa-leg/note-schema';
-import { createTestApp, truncate, users, type TestContext } from './helpers.js';
+import { NOTE_TABLES, createTestApp, truncate, users, type TestContext } from './helpers.js';
 import { DirectoryFetcher, ingestLegiscanBills, readDataset } from '../src/modules/bills/index.js';
 import { seedTemplates } from '../src/modules/templates/index.js';
 import { seedReference } from '../src/modules/reference/index.js';
@@ -41,14 +42,14 @@ const drain = async () => {
 
 beforeAll(async () => {
   t = await createTestApp({ SEARCH_BACKEND: 'postgres' });
-  await truncate(t.handle, ['bills', 'bill_versions', 'amendments', 'hearings', 'prior_fiscal_notes', 'outbox', 'outbox_consumptions', 'search_docs', 'notes', 'note_revisions', 'note_documents', 'note_comments', 'note_comment_messages', 'note_locks', 'note_exports', 'templates', 'reference_sets', 'audit_log', 'workflow_instances', 'workflow_transitions', 'workflow_assignments', 'workflow_deadlines', 'notifications']);
+  await truncate(t.handle, NOTE_TABLES);
   await seedUsers(t.app.db);
   await seedTemplates(t.app.db, t.config.TEMPLATES_DIR);
   await seedReference(t.app.db, t.config.REFERENCE_DIR);
   await ingestLegiscanBills({ db: t.app.db, fetcher: new DirectoryFetcher(XML_FIXTURES), log: t.app.log as unknown as Logger }, readDataset(LEGISCAN, { bills: ['HB2402'] }), {});
   await drain();
   // A note with figures, a formula, a citation and a comment.
-  const created = await t.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await t.as(users.reviewer), payload: { billKey: 'WA:2025-26:HB2402', versionCode: 'S', templateId: 'sales-use-tax-exemption', drafterId: 'dev-drafter', request: { requestId: '2402-1-1', legContact: { name: 'Jane Legislative', phone: '360-786-7100' } } } });
+  const created = await t.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await t.as(users.reviewer), payload: { billKey: 'WA:2025-26:HB2402', versionCode: 'S', templateId: 'sales-use-tax-exemption', drafterId: 'dev-drafter' } });
   noteId = created.json().noteRevisionId;
   await drain();
   const head = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/document`, headers: await t.as(users.drafter) })).json();
@@ -81,7 +82,7 @@ describe('exports', () => {
     const res = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=html`, headers: await t.as(users.drafter) });
     expect(res.statusCode).toBe(200);
     expect(res.headers['content-type']).toContain('text/html');
-    expect(res.headers['content-disposition']).toMatch(/attachment; filename="SHB_2402_fiscal_note_v2.html"/);
+    expect(res.headers['content-disposition']).toMatch(/attachment; filename="HB2402-S-fiscal-note.html"/);
     expect(res.body).toContain('<table class="note-table"');
     expect(res.body).toContain('(15,110,000)');
     expect(res.body).toContain('class="katex"');
@@ -89,13 +90,10 @@ describe('exports', () => {
     expect(res.body).toMatch(/href="http:\/\/localhost:5173\/bills\/2025-26\/HB2402\/S#sec-2"/);
     expect(res.body).toContain('Form FN (Rev 1/00)');
     expect(res.body).not.toContain('mark class="comment"');
-    const withComments = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=html&comments=true`, headers: await t.as(users.drafter) });
-    expect(withComments.body).toContain('Check the multiplier');
-    expect(withComments.body).toContain('mark class="comment"');
   });
 
-  it('DOCX is a Word package with the table, bold totals, OMML math and optional comments', async () => {
-    const res = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=docx&comments=true`, headers: await t.as(users.drafter) });
+  it('DOCX is a Word package with the table, bold totals and OMML math; comment marks are dropped', async () => {
+    const res = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=docx`, headers: await t.as(users.drafter) });
     expect(res.statusCode).toBe(200);
     expect(res.headers['content-type']).toContain('wordprocessingml');
     const buf = res.rawPayload;
@@ -107,15 +105,9 @@ describe('exports', () => {
     expect(xml).toContain('<m:f>'); // fraction
     expect(xml).toContain('<m:sSup>'); // superscript
     expect(xml).toContain('Sec. 2');
-    expect(xml).toContain('<w:commentRangeStart');
-    const comments = zipEntry(buf, 'word/comments.xml');
-    expect(comments).toContain('Check the multiplier');
+    expect(xml).not.toContain('commentRangeStart');
     const footer = zipEntry(buf, 'word/footer1.xml');
-    expect(footer).toContain('Request # 2402-1-1');
     expect(footer).toContain('FNS062');
-    // Without comments the ranges are absent.
-    const plain = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=docx`, headers: await t.as(users.drafter) });
-    expect(zipEntry(plain.rawPayload, 'word/document.xml')).not.toContain('commentRangeStart');
   });
 
   it('PDF renders through Chromium', async () => {
@@ -127,8 +119,8 @@ describe('exports', () => {
     expect(res.rawPayload.length).toBeGreaterThan(10_000);
   }, 60_000);
 
-  it('FNS XML emits slot values and table cells, and refuses while required slots are empty', async () => {
-    const refused = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=xml`, headers: await t.as(users.drafter) });
+  it('FNS XML emits slot values and table cells; strict=true refuses while required slots are empty', async () => {
+    const refused = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=xml&strict=true`, headers: await t.as(users.drafter) });
     expect(refused.statusCode).toBe(422);
     expect(refused.json().details.unfilledSlots.length).toBeGreaterThan(0);
     // Fill every required slot, then export.
@@ -158,54 +150,96 @@ describe('exports', () => {
     expect(res.headers['content-type']).toContain('application/xml');
     expect(res.body).toContain('<FiscalNote schemaVersion="placeholder"');
     expect(res.body).toContain('<BillNumber>SHB 2402</BillNumber>');
-    expect(res.body).toContain('<RequestNumber>2402-1-1</RequestNumber>');
     expect(res.body).toMatch(/<Field path="receipts\.gf\.fy1" type="money" value="-4310000">\(4,310,000\)<\/Field>/);
-    expect(res.body).toMatch(/<Field path="legContact\.name"[^>]*>Jane Legislative<\/Field>/);
     expect(res.body).toContain('<Fund code="001-1"');
     expect(res.body).toContain('<Biennium id="2025-27">-15110000</Biennium>');
     expect(res.body).toContain('<Section part="II.B"');
   });
 
-  it('exports are recorded, audited, listed, re-downloadable and visible in the admin audit', async () => {
-    const list = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/exports`, headers: await t.as(users.drafter) })).json();
-    expect(list.length).toBeGreaterThanOrEqual(5);
-    const first = list.find((e: any) => e.format === 'html');
-    const job = await t.app.inject({ method: 'GET', url: `/api/v1/export-jobs/${first.exportId}`, headers: await t.as(users.drafter) });
-    expect(job.json()).toMatchObject({ status: 'done', format: 'html' });
-    const again = await t.app.inject({ method: 'GET', url: job.json().url, headers: await t.as(users.drafter) });
-    expect(again.statusCode).toBe(200);
-    expect(again.body).toContain('<table class="note-table"');
-    const audit = (await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit?action=note.export', headers: await t.as(users.admin) })).json();
-    expect(audit.length).toBeGreaterThanOrEqual(5);
+  it('exports are recorded and audited', async () => {
+    const { sql } = await import('drizzle-orm');
+    const stored = (await t.app.db.execute(sql`SELECT count(*)::int AS n FROM note_exports WHERE note_revision_id = ${noteId} AND status = 'done'`)).rows[0] as any;
+    expect(Number(stored.n)).toBeGreaterThanOrEqual(4);
+    const audit = (await t.app.db.execute(sql`SELECT after FROM audit_log WHERE action = 'note.export' AND object_id = ${noteId}`)).rows as any[];
+    expect(audit.length).toBeGreaterThanOrEqual(4);
     expect(audit[0].after.format).toBeTruthy();
-    const events = (await t.app.db.execute((await import('drizzle-orm')).sql`SELECT count(*)::int AS n FROM outbox WHERE type = 'note.exported'`)).rows[0] as any;
-    expect(Number(events.n)).toBeGreaterThanOrEqual(5);
+    const events = (await t.app.db.execute(sql`SELECT count(*)::int AS n FROM outbox WHERE type = 'note.exported'`)).rows[0] as any;
+    expect(Number(events.n)).toBeGreaterThanOrEqual(4);
+  });
+});
+
+describe('published version rule', () => {
+  const send = async (u: (typeof users)[keyof typeof users], event: string) => t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/workflow`, headers: await t.as(u), payload: { event } });
+  const exportAs = async (u: (typeof users)[keyof typeof users] | null, format = 'html', extra = '', id = noteId) => t.app.inject({ method: 'GET', url: `/api/v1/notes/${id}/export?format=${format}${extra}`, headers: u ? await t.as(u) : {} });
+
+  it('a viewer gets 404 and an anonymous caller 401 on an unpublished note', async () => {
+    expect((await exportAs(users.viewer)).statusCode).toBe(404);
+    expect((await exportAs(null)).statusCode).toBe(401);
   });
 
-  it('viewers see nothing until approval, then the approved snapshot beside the bill', async () => {
-    expect((await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=html`, headers: await t.as(users.viewer) })).statusCode).toBe(403);
-    // Drafting → review → approval.
-    const send = async (u: (typeof users)[keyof typeof users], event: string) => t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/transitions`, headers: await t.as(u), payload: { event } });
-    expect((await send(users.drafter, 'SUBMIT_FOR_REVIEW')).statusCode).toBe(201);
-    expect((await send(users.reviewer, 'CLAIM_REVIEW')).statusCode).toBe(201);
+  it('an approved note exports the approved version for the reviewer, even when the head moved on', async () => {
+    expect((await send(users.drafter, 'SUBMIT')).statusCode).toBe(201);
     expect((await send(users.reviewer, 'APPROVE')).json().state).toBe('approved');
     await drain();
+    const before = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}`, headers: await t.as(users.reviewer) })).json();
+    expect(before.approvedVersion).toBe(before.headVersion);
+    // A stray head version after approval, written directly.
+    await t.app.db.execute(sql`INSERT INTO note_documents (note_revision_id, version, mode, doc_json, doc_html, doc_text, estimate_data, validation, label, updated_by)
+      SELECT note_revision_id, version + 1, mode, doc_json, doc_html, doc_text, estimate_data, validation, 'stray', updated_by FROM note_documents WHERE note_revision_id = ${noteId} AND version = ${before.headVersion}`);
+    await t.app.db.execute(sql`UPDATE note_revisions SET head_version = ${before.headVersion + 1} WHERE note_revision_id = ${noteId}`);
+    const res = await exportAs(users.reviewer);
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['x-document-version']).toBe(String(before.approvedVersion));
+    expect(res.headers['content-disposition']).toMatch(/filename="HB2402-S-fiscal-note.html"/);
+    expect(res.body).not.toContain('Published ');
+    expect((await exportAs(users.viewer)).statusCode).toBe(404);
+  });
+
+  it('a viewer gets the published version of a published note, with the published date in the footer', async () => {
+    expect((await send(users.reviewer, 'PUBLISH')).json().state).toBe('published');
+    await drain();
     const summary = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}`, headers: await t.as(users.viewer) })).json();
-    expect(summary.state).toBe('approved');
-    expect(summary.approvedVersion).toBe(summary.headVersion);
-    const versions = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/versions`, headers: await t.as(users.viewer) })).json();
-    expect(versions[0].label).toBe('Approved');
-    // The bill page lists it for anyone; the approved document is readable.
-    const onBill = (await t.app.inject({ method: 'GET', url: '/api/v1/bills/2025-26/HB2402/notes', headers: await t.as(users.viewer) })).json();
-    expect(onBill.map((n: any) => n.noteRevisionId)).toContain(noteId);
-    const approvedDoc = await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/versions/${summary.approvedVersion}`, headers: await t.as(users.viewer) });
-    expect(approvedDoc.statusCode).toBe(200);
-    // Exports for viewers default to the approved version; other versions are refused.
-    const pdfLink = await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/export?format=html`, headers: await t.as(users.viewer) });
-    expect(pdfLink.statusCode).toBe(200);
-    expect(pdfLink.headers['x-document-version']).toBe(String(summary.approvedVersion));
-    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/export?format=html&version=1`, headers: await t.as(users.viewer) })).statusCode).toBe(403);
-    const publish = (await t.app.inject({ method: 'GET', url: `/api/v1/admin/audit?action=note.publish&objectId=${noteId}`, headers: await t.as(users.admin) })).json();
-    expect(publish.length).toBe(1);
+    expect(summary.state).toBe('published');
+    expect(summary.publishedVersion).toBe(summary.approvedVersion);
+    expect(summary.headVersion).toBe(summary.publishedVersion + 1);
+    const res = await exportAs(users.viewer);
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['x-document-version']).toBe(String(summary.publishedVersion));
+    expect(res.headers['content-disposition']).toBe('inline; filename="HB2402-S-fiscal-note.html"');
+    expect(res.body).toContain('Bill # SHB 2402');
+    expect(res.body).toMatch(/Published [A-Z][a-z]+ \d{1,2}, \d{4}/);
+    // Another version is refused; drafters and reviewers also default to the published version.
+    expect((await exportAs(users.viewer, 'html', '&version=1')).statusCode).toBe(403);
+    expect((await exportAs(users.drafter)).headers['x-document-version']).toBe(String(summary.publishedVersion));
+    expect((await exportAs(users.reviewer, 'docx')).headers['content-disposition']).toBe('attachment; filename="HB2402-S-fiscal-note.docx"');
+    const docx = await exportAs(users.viewer, 'docx');
+    expect(zipEntry(docx.rawPayload, 'word/footer1.xml')).toContain('Published ');
+  });
+
+  it('PDF footer carries the published date', async () => {
+    const res = await exportAs(users.viewer, 'pdf');
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-disposition']).toBe('inline; filename="HB2402-S-fiscal-note.pdf"');
+    expect(res.rawPayload.subarray(0, 5).toString()).toBe('%PDF-');
+  }, 60_000);
+
+  it('anonymous callers get the published version only with PUBLISHED_PUBLIC=true', async () => {
+    expect((await exportAs(null)).statusCode).toBe(401);
+    const open = await createTestApp({ SEARCH_BACKEND: 'postgres', PUBLISHED_PUBLIC: 'true' });
+    try {
+      const res = await open.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/export?format=html` });
+      expect(res.statusCode).toBe(200);
+      expect(res.headers['content-disposition']).toBe('inline; filename="HB2402-S-fiscal-note.html"');
+      expect(res.body).toContain('Bill # SHB 2402');
+      // An unpublished note on the introduced version stays hidden; its drafter gets a file name without a version suffix.
+      const draft = (await open.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await open.as(users.reviewer), payload: { billKey: 'WA:2025-26:HB2402', versionCode: 'I', templateId: 'sales-use-tax-exemption', drafterId: 'dev-drafter' } })).json().noteRevisionId;
+      expect((await open.app.inject({ method: 'GET', url: `/api/v1/notes/${draft}/export?format=html` })).statusCode).toBe(404);
+      expect((await open.app.inject({ method: 'GET', url: `/api/v1/notes/${draft}/export?format=html`, headers: await open.as(users.viewer) })).statusCode).toBe(404);
+      const own = await open.app.inject({ method: 'GET', url: `/api/v1/notes/${draft}/export?format=html`, headers: await open.as(users.drafter) });
+      expect(own.statusCode).toBe(200);
+      expect(own.headers['content-disposition']).toBe('inline; filename="HB2402-fiscal-note.html"');
+    } finally {
+      await open.close();
+    }
   });
 });

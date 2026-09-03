@@ -31,7 +31,7 @@ export interface paths {
                             userId: string;
                             displayName: string;
                             email?: string;
-                            roles: ("drafter" | "reviewer" | "approver" | "manager" | "viewer" | "template_editor" | "admin")[];
+                            roles: ("drafter" | "reviewer" | "viewer" | "admin")[];
                             /** @default [] */
                             divisions: string[];
                         };
@@ -252,6 +252,8 @@ export interface paths {
                     content: {
                         "application/json": {
                             ok: boolean;
+                            version: string;
+                            commit: string;
                             checks: {
                                 [key: string]: {
                                     ok: boolean;
@@ -269,6 +271,8 @@ export interface paths {
                     content: {
                         "application/json": {
                             ok: boolean;
+                            version: string;
+                            commit: string;
                             checks: {
                                 [key: string]: {
                                     ok: boolean;
@@ -276,60 +280,6 @@ export interface paths {
                                 };
                             };
                         };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/audit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Audit log query */
-        get: {
-            parameters: {
-                query?: {
-                    objectType?: string;
-                    objectId?: string;
-                    actor?: string;
-                    action?: string;
-                    from?: string;
-                    to?: string;
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            id: number;
-                            actorId: string;
-                            action: string;
-                            objectType: string;
-                            objectId: string;
-                            before: unknown | null;
-                            after: unknown | null;
-                            requestId: string | null;
-                            at: string;
-                        }[];
                     };
                 };
             };
@@ -903,80 +853,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/ingest/runs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Ingest run history */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        }[];
-                    };
-                };
-            };
-        };
-        put?: never;
-        /** Start an ingest run (legiscan dataset path or refresh) */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /**
-                         * @default refresh
-                         * @enum {string}
-                         */
-                        source?: "legiscan" | "refresh";
-                        path?: string;
-                        billKeys?: string[];
-                        limit?: number;
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                202: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            job_id: string;
-                            status_url: string;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/search": {
         parameters: {
             query?: never;
@@ -1002,7 +878,6 @@ export interface paths {
                     version_code?: string;
                     date_from?: string;
                     date_to?: string;
-                    assigned_to_me?: boolean | string;
                     page?: number;
                     size?: number;
                     sort?: "relevance" | "date" | "bill_number";
@@ -1255,101 +1130,6 @@ export interface paths {
                 };
             };
         };
-        /** Update a template (template_editor role); creates a new template version */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        name?: string;
-                        description?: string;
-                        html?: string;
-                        tags?: string[];
-                        /** @enum {string} */
-                        kind?: "document" | "snippet";
-                        /** @enum {string} */
-                        mode?: "limited" | "full";
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            id: string;
-                            name: string;
-                            /** @enum {string} */
-                            kind: "document" | "snippet";
-                            /** @enum {string} */
-                            mode: "limited" | "full";
-                            version: number;
-                            description: string;
-                            file?: string;
-                            tags: string[];
-                            parts: string[];
-                            tables: string[];
-                            slots: {
-                                id: string;
-                                required: boolean;
-                                hint?: string;
-                            }[];
-                            tokens: string[];
-                            updatedAt: string;
-                            html: string;
-                            etag: string;
-                        };
-                    };
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/templates/{id}/preview": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Template rendered with a note's token context */
-        get: {
-            parameters: {
-                query?: {
-                    noteId?: string;
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
         put?: never;
         post?: never;
         delete?: never;
@@ -1445,7 +1225,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List note revisions visible to the caller */
+        /** Note revisions visible to the caller */
         get: {
             parameters: {
                 query?: {
@@ -1467,28 +1247,47 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": ({
+                        "application/json": {
                             noteRevisionId: string;
                             noteId: string;
                             billKey: string;
+                            biennium: string;
+                            billId: string;
+                            billTitle?: string;
                             versionCode: string;
                             versionLabel: string;
                             /** @enum {string} */
-                            kind: "note" | "estimate";
-                            state: string;
-                            drafterStatus: string;
-                            reviewerStatus: string;
+                            state: "draft" | "in_review" | "changes_requested" | "approved" | "published";
+                            drafter: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            reviewer: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
                             headVersion: number;
+                            approvedVersion: number | null;
+                            publishedAt: string | null;
+                            publishedBy: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            publishedVersion: number | null;
+                            templateId: string | null;
+                            templateVersion: number | null;
+                            /** @enum {string} */
+                            mode: "limited" | "full";
                             editable: boolean;
-                        } & {
-                            [key: string]: unknown;
-                        })[];
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
                     };
                 };
             };
         };
         put?: never;
-        /** Create a note and its first revision for a bill version (or amendment) */
+        /** Create a note in draft for a bill version from a template. Reviewers name the drafter; a drafter creates for themselves. */
         post: {
             parameters: {
                 query?: never;
@@ -1501,30 +1300,8 @@ export interface paths {
                     "application/json": {
                         billKey: string;
                         versionCode: string;
-                        amendmentId?: string;
-                        /**
-                         * @default note
-                         * @enum {string}
-                         */
-                        kind?: "note" | "estimate";
-                        templateId?: string;
-                        /** Format: uuid */
-                        cloneFromRevisionId?: string;
-                        request?: {
-                            requestId?: string;
-                            requestedAt?: string;
-                            requestedBy?: string;
-                            legContact?: {
-                                name?: string;
-                                phone?: string;
-                            };
-                            tenYearRequested?: boolean;
-                        };
-                        /** @default false */
-                        confidential?: boolean;
+                        templateId: string;
                         drafterId?: string;
-                        /** @enum {string} */
-                        priority?: "low" | "normal" | "high" | "urgent";
                     };
                 };
             };
@@ -1539,17 +1316,36 @@ export interface paths {
                             noteRevisionId: string;
                             noteId: string;
                             billKey: string;
+                            biennium: string;
+                            billId: string;
+                            billTitle?: string;
                             versionCode: string;
                             versionLabel: string;
                             /** @enum {string} */
-                            kind: "note" | "estimate";
-                            state: string;
-                            drafterStatus: string;
-                            reviewerStatus: string;
+                            state: "draft" | "in_review" | "changes_requested" | "approved" | "published";
+                            drafter: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            reviewer: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
                             headVersion: number;
+                            approvedVersion: number | null;
+                            publishedAt: string | null;
+                            publishedBy: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            publishedVersion: number | null;
+                            templateId: string | null;
+                            templateVersion: number | null;
+                            /** @enum {string} */
+                            mode: "limited" | "full";
                             editable: boolean;
-                        } & {
-                            [key: string]: unknown;
+                            createdAt: string;
+                            updatedAt: string;
                         };
                     };
                 };
@@ -1568,7 +1364,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Note revisions on this bill visible to the caller, grouped by version */
+        /** Note revisions on this bill visible to the caller */
         get: {
             parameters: {
                 query?: never;
@@ -1587,22 +1383,41 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": ({
+                        "application/json": {
                             noteRevisionId: string;
                             noteId: string;
                             billKey: string;
+                            biennium: string;
+                            billId: string;
+                            billTitle?: string;
                             versionCode: string;
                             versionLabel: string;
                             /** @enum {string} */
-                            kind: "note" | "estimate";
-                            state: string;
-                            drafterStatus: string;
-                            reviewerStatus: string;
+                            state: "draft" | "in_review" | "changes_requested" | "approved" | "published";
+                            drafter: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            reviewer: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
                             headVersion: number;
+                            approvedVersion: number | null;
+                            publishedAt: string | null;
+                            publishedBy: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            publishedVersion: number | null;
+                            templateId: string | null;
+                            templateVersion: number | null;
+                            /** @enum {string} */
+                            mode: "limited" | "full";
                             editable: boolean;
-                        } & {
-                            [key: string]: unknown;
-                        })[];
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
                     };
                 };
             };
@@ -1622,7 +1437,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Note revision summary (bill, version, request, workflow state, deadlines, assignees) */
+        /** Note revision summary (bill, version, state, drafter, reviewer, publication) */
         get: {
             parameters: {
                 query?: never;
@@ -1644,17 +1459,36 @@ export interface paths {
                             noteRevisionId: string;
                             noteId: string;
                             billKey: string;
+                            biennium: string;
+                            billId: string;
+                            billTitle?: string;
                             versionCode: string;
                             versionLabel: string;
                             /** @enum {string} */
-                            kind: "note" | "estimate";
-                            state: string;
-                            drafterStatus: string;
-                            reviewerStatus: string;
+                            state: "draft" | "in_review" | "changes_requested" | "approved" | "published";
+                            drafter: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            reviewer: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
                             headVersion: number;
+                            approvedVersion: number | null;
+                            publishedAt: string | null;
+                            publishedBy: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            publishedVersion: number | null;
+                            templateId: string | null;
+                            templateVersion: number | null;
+                            /** @enum {string} */
+                            mode: "limited" | "full";
                             editable: boolean;
-                        } & {
-                            [key: string]: unknown;
+                            createdAt: string;
+                            updatedAt: string;
                         };
                     };
                 };
@@ -1662,162 +1496,6 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Update metadata (confidential flag, priority, request fields, identifier override per B.RFA.03) */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        confidential?: boolean;
-                        /** @enum {string} */
-                        priority?: "low" | "normal" | "high" | "urgent";
-                        identifier?: string;
-                        request?: {
-                            requestId?: string;
-                            requestedAt?: string;
-                            requestedBy?: string;
-                            legContact?: {
-                                name?: string;
-                                phone?: string;
-                            };
-                            tenYearRequested?: boolean;
-                        };
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            noteRevisionId: string;
-                            noteId: string;
-                            billKey: string;
-                            versionCode: string;
-                            versionLabel: string;
-                            /** @enum {string} */
-                            kind: "note" | "estimate";
-                            state: string;
-                            drafterStatus: string;
-                            reviewerStatus: string;
-                            headVersion: number;
-                            editable: boolean;
-                        } & {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        trace?: never;
-    };
-    "/notes/{id}/context": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Template token context for this note revision */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/revisions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create the next revision for a new bill version or amendment, cloning the document */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        versionCode: string;
-                        amendmentId?: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            noteRevisionId: string;
-                            noteId: string;
-                            billKey: string;
-                            versionCode: string;
-                            versionLabel: string;
-                            /** @enum {string} */
-                            kind: "note" | "estimate";
-                            state: string;
-                            drafterStatus: string;
-                            reviewerStatus: string;
-                            headVersion: number;
-                            editable: boolean;
-                        } & {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
         delete?: never;
         options?: never;
         head?: never;
@@ -1859,9 +1537,7 @@ export interface paths {
         /** Save head document (autosave). Requires If-Match with the current version. */
         put: {
             parameters: {
-                query?: {
-                    force?: boolean | string;
-                };
+                query?: never;
                 header?: never;
                 path: {
                     id: string;
@@ -1930,7 +1606,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Document versions (autosave heads and named snapshots) */
+        /** Document versions */
         get: {
             parameters: {
                 query?: never;
@@ -1956,37 +1632,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Name a snapshot of the head */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        label?: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            version: number;
-                        };
-                    };
-                };
-            };
-        };
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2029,225 +1675,6 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/versions/{v}/restore": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Restore a version as the new head */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                    v: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            version: number;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/diff": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Redline between two document versions plus a table-cell diff */
-        get: {
-            parameters: {
-                query: {
-                    from: number;
-                    to: number;
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/validate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Validate the head document (required slots, table reconciliation) */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/lock": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Current lock holder */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        /** Acquire a soft edit lock */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-                /** @description Default Response */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        /** Release the lock */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
         options?: never;
         head?: never;
         patch?: never;
@@ -2454,7 +1881,6 @@ export interface paths {
                 query: {
                     format: "html" | "pdf" | "docx" | "xml";
                     version?: number;
-                    comments?: boolean | string;
                     strict?: boolean | string;
                 };
                 header?: never;
@@ -2479,13 +1905,12 @@ export interface paths {
             };
         };
         put?: never;
-        /** Export a document version as docx, pdf, xml (FNS placeholder), or html */
+        /** Export a document version as docx, pdf, xml (FNS placeholder), or html. Viewers and anonymous callers (PUBLISHED_PUBLIC) get the published version. */
         post: {
             parameters: {
                 query: {
                     format: "html" | "pdf" | "docx" | "xml";
                     version?: number;
-                    comments?: boolean | string;
                     strict?: boolean | string;
                 };
                 header?: never;
@@ -2509,163 +1934,6 @@ export interface paths {
                 };
             };
         };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/exports": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Stored exports of this revision */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        }[];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/exports/{exportId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Download a stored export */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                    exportId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/export-jobs/{jobId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Export job status (exports run synchronously; the job is the stored export) */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    jobId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/audit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Audit rows for this note revision */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        }[];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2679,7 +1947,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Workflow state, assignees, available events for the caller, deadlines */
+        /** Workflow state, drafter, reviewer, events available to the caller, open change request */
         get: {
             parameters: {
                 query?: never;
@@ -2698,14 +1966,88 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            [key: string]: unknown;
+                            instanceId: string;
+                            noteRevisionId: string;
+                            /** @enum {string} */
+                            state: "draft" | "in_review" | "changes_requested" | "approved" | "published";
+                            version: number;
+                            drafter: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            reviewer: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            availableEvents: {
+                                /** @enum {string} */
+                                type: "SUBMIT" | "REQUEST_CHANGES" | "APPROVE" | "PUBLISH";
+                                label: string;
+                            }[];
+                            changeRequest: {
+                                message: string;
+                                by: {
+                                    userId: string;
+                                    displayName?: string;
+                                };
+                                at: string;
+                            } | null;
+                            editable: boolean;
+                            updatedAt: string;
                         };
                     };
                 };
             };
         };
         put?: never;
-        post?: never;
+        /** Send an event: SUBMIT, REQUEST_CHANGES (message required), APPROVE, PUBLISH */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        event: "SUBMIT" | "REQUEST_CHANGES" | "APPROVE" | "PUBLISH";
+                        message?: string;
+                        expectedVersion?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            instanceId: string;
+                            state: string;
+                            version: number;
+                            seq: number;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -2748,175 +2090,6 @@ export interface paths {
             };
         };
         put?: never;
-        /** Send an event to the machine */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /** @enum {string} */
-                        event: "START" | "SUBMIT_FOR_REVIEW" | "CLAIM_REVIEW" | "REQUEST_CHANGES" | "APPROVE" | "EXEC_CLAIM" | "EXEC_DONE" | "EXEC_RETURN" | "CANCEL";
-                        comment?: string;
-                        expectedVersion?: number;
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            instanceId: string;
-                            state: string;
-                            version: number;
-                            seq: number;
-                        };
-                    };
-                };
-                /** @description Default Response */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/assign": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Assign or reassign a role */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /** @enum {string} */
-                        role: "drafter" | "reviewer" | "exec";
-                        userId: string;
-                        position?: number;
-                        dueAt?: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-                /** @description Default Response */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/exec-chain": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Set the Executive Review chain */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        chain: {
-                            userId: string;
-                            division?: string;
-                            dueAt?: string | null;
-                        }[];
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-                /** @description Default Response */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
         post?: never;
         delete?: never;
         options?: never;
@@ -2924,71 +2097,19 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/notes/{id}/workflow/duplicate": {
+    "/published": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
-        /** Duplicate the task for another revision (new instance in todo with the same assignments) */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        noteRevisionId: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/assignments": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Work queue rows for the caller (or, for assigners, another user or everyone) */
+        /** Published fiscal notes, newest first, with export URLs. Paged by limit and cursor. */
         get: {
             parameters: {
                 query?: {
-                    assignee?: string;
-                    role?: "drafter" | "reviewer" | "exec";
-                    status?: string;
-                    state?: string;
-                    dueBefore?: string;
                     limit?: number;
-                    all?: boolean | string;
+                    cursor?: string;
                 };
                 header?: never;
                 path?: never;
@@ -3003,49 +2124,31 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            [key: string]: unknown;
-                        }[];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/workflow/summary": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Counts by state for dashboards */
-        get: {
-            parameters: {
-                query?: {
-                    state?: string;
-                    drafter?: string;
-                    reviewer?: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: number;
+                            items: {
+                                revisionId: string;
+                                bill: {
+                                    biennium: string;
+                                    billId: string;
+                                    number: string;
+                                    title: string;
+                                };
+                                versionCode: string;
+                                versionLabel: string;
+                                title: string;
+                                publishedAt: string;
+                                publishedBy: {
+                                    userId: string;
+                                    displayName: string;
+                                };
+                                publishedVersion: number;
+                                exports: {
+                                    pdf: string;
+                                    docx: string;
+                                    html: string;
+                                    xml: string;
+                                };
+                            }[];
+                            nextCursor: string | null;
                         };
                     };
                 };
@@ -3053,249 +2156,6 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/workflow/unassigned-hearings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Bills with a hearing inside the window and no note */
-        get: {
-            parameters: {
-                query?: {
-                    withinHours?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        }[];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/workflow/poll-deadlines": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Run the deadline poller now (admin, tests) */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            warned: number;
-                            overdue: number;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notifications": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Inbox (unread first) */
-        get: {
-            parameters: {
-                query?: {
-                    unread?: boolean | string;
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            id: string;
-                            userId: string;
-                            type: string;
-                            title: string;
-                            body: string;
-                            payload: {
-                                [key: string]: unknown;
-                            };
-                            link: string | null;
-                            createdAt: string;
-                            readAt: string | null;
-                            emailedAt: string | null;
-                        }[];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notifications/unread-count": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Unread count for the nav badge */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            unread: number;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notifications/read-all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Mark every notification read */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            marked: number;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notifications/{id}/read": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Mark read */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
         delete?: never;
         options?: never;
         head?: never;

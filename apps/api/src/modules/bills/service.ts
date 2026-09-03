@@ -214,7 +214,7 @@ export class BillsService {
     }));
   }
 
-  /** Upcoming hearings across bills inside a window, with bill facts, for the reviewer dashboard. */
+  /** Upcoming hearings across bills inside a window, with bill facts. */
   async listUpcomingHearings(opts: { from?: string; to?: string; biennium?: string; limit?: number } = {}): Promise<(HearingRow & { biennium: string; billId: string; title: string })[]> {
     const from = opts.from ?? new Date().toISOString();
     const to = opts.to ?? new Date(Date.now() + 72 * 3_600_000).toISOString();
@@ -324,17 +324,6 @@ export class BillsService {
     if (row) return row.short_label;
     const b = (await this.db.execute(sql`SELECT type, number FROM bills WHERE bill_key = ${key}`)).rows[0] as any;
     return b ? shortLabelOf({ type: b.type, number: b.number, versionCode: code }) : `${key} ${code}`;
-  }
-
-  async listIngestRuns() {
-    const rows = (await this.db.execute(sql`SELECT * FROM ingest_runs ORDER BY started_at DESC LIMIT 50`)).rows as any[];
-    return rows.map((r) => ({ id: r.id, source: r.source, path: r.path ?? undefined, startedAt: iso(r.started_at)!, finishedAt: iso(r.finished_at), status: r.status, stats: r.stats, error: r.error ?? undefined, requestedBy: r.requested_by ?? undefined }));
-  }
-
-  async unassignedHearings(withinHours: number): Promise<HearingRow[]> {
-    const rows = (await this.db.execute(sql`SELECT h.*, b.current_version_code, b.title FROM hearings h JOIN bills b ON b.bill_key = h.bill_key
-        WHERE NOT h.cancelled AND h.hearing_at BETWEEN now() AND now() + (${withinHours} || ' hours')::interval ORDER BY h.hearing_at`)).rows as any[];
-    return rows.map((r) => ({ id: r.id, billKey: r.bill_key, versionCode: r.current_version_code ?? undefined, committee: r.committee, chamber: r.chamber ?? undefined, kind: r.kind, hearingAt: iso(r.hearing_at)!, location: r.location ?? undefined, description: r.title, cancelled: r.cancelled }));
   }
 }
 

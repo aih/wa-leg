@@ -17,14 +17,14 @@ import { HttpError } from './lib/errors.js';
 import { OutboxRelay } from './lib/outbox.js';
 import type { Logger } from 'pino';
 import { principalPlugin, identityRoutes, createOidcClient, type OidcClient } from './modules/identity/index.js';
-import { adminRoutes } from './modules/admin/index.js';
+import { healthRoutes } from './modules/health/index.js';
 import { billsRoutes, BillsService } from './modules/bills/index.js';
 import { createSearch, searchRoutes } from './modules/search/index.js';
 import { TemplatesService, templatesRoutes } from './modules/templates/index.js';
 import { ReferenceService, referenceRoutes } from './modules/reference/index.js';
 import { createNotes, notesRoutes } from './modules/notes/index.js';
 import { createWorkflow, workflowRoutes } from './modules/workflow/index.js';
-import { createNotifications, notificationsRoutes, type Mailer } from './modules/notifications/index.js';
+import { publishedRoutes } from './modules/published/index.js';
 
 export type HealthProbe = () => Promise<{ ok: boolean; detail?: string }>;
 
@@ -43,10 +43,8 @@ export interface BuildOptions {
   /** Reuse an existing pool (tests). */
   dbHandle?: DbHandle;
   oidc?: OidcClient;
-  /** Start background workers (outbox relay, pollers) on ready. Default true. */
+  /** Start the outbox relay on ready. Default true. */
   workers?: boolean;
-  /** Notification delivery adapter override (tests). */
-  mailer?: Mailer;
 }
 
 export const API_PREFIX = '/api/v1';
@@ -112,7 +110,7 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
         },
       },
       security: [{ session: [] }, { bearer: [] }],
-      tags: ['identity', 'bills', 'search', 'notes', 'templates', 'workflow', 'notifications', 'reference', 'admin'].map((name) => ({ name })),
+      tags: ['identity', 'bills', 'search', 'notes', 'templates', 'workflow', 'reference', 'published', 'health'].map((name) => ({ name })),
     },
     transform: jsonSchemaTransform,
     stripBasePath: true,
@@ -126,8 +124,7 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
   app.decorate('reference', new ReferenceService(dbHandle.db, config.CURRENT_BIENNIUM));
   const search = createSearch(app);
   const notes = createNotes(app);
-  const workflow = createWorkflow(app, { workers: opts.workers ?? true });
-  createNotifications(app, opts.mailer);
+  const workflow = createWorkflow(app);
 
   await app.register(
     async (api) => {
@@ -141,14 +138,14 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
         return { ...doc, paths };
       });
       await api.register(identityRoutes);
-      await api.register(adminRoutes);
+      await api.register(healthRoutes);
       await api.register(billsRoutes);
       await api.register(searchRoutes(search));
       await api.register(templatesRoutes);
       await api.register(referenceRoutes);
       await api.register(notesRoutes(notes));
       await api.register(workflowRoutes(workflow));
-      await api.register(notificationsRoutes(app.notificationsSvc));
+      await api.register(publishedRoutes);
       for (const mod of moduleRegistrars) await api.register(mod);
     },
     { prefix: API_PREFIX },

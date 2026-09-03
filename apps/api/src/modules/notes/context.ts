@@ -1,4 +1,4 @@
-// TemplateContext assembly for a note revision: bill version, request, principal, reference data (ARCHITECTURE.md "Templates").
+// TemplateContext assembly for a new note: bill version, principal, reference data.
 import type { FastifyInstance } from 'fastify';
 import { label as shortLabel, type BillType } from '@wa-leg/billref';
 import type { TemplateContext } from '@wa-leg/note-schema';
@@ -58,13 +58,7 @@ export function invalidateBillFacts(app: FastifyInstance, billKey?: string): voi
 export interface NoteContextInput {
   billKey: string;
   versionCode: string;
-  amendmentId?: string | null;
-  requestId?: string | null;
-  requestedAt?: string | null;
-  legContact?: { name?: string; phone?: string } | null;
-  tenYearRequested?: boolean;
   noteRevisionId?: string;
-  prior?: { requestId?: string; versionLabel?: string } | null;
 }
 
 export async function buildTemplateContext(app: FastifyInstance, input: NoteContextInput, principal: Principal | null): Promise<TemplateContext> {
@@ -73,7 +67,7 @@ export async function buildTemplateContext(app: FastifyInstance, input: NoteCont
   const type = facts?.type ?? input.billKey.split(':')[2]?.replace(/\d+$/, '') ?? 'HB';
   const number = facts?.number ?? Number(input.billKey.split(':')[2]?.replace(/^[A-Z]+/, '') ?? 0);
   const version = facts?.versions.find((v) => v.code === input.versionCode)?.shortLabel ?? shortLabel({ type: type as BillType, number, versionCode: input.versionCode });
-  const requestDate = input.requestedAt ? new Date(input.requestedAt) : new Date();
+  const requestDate = new Date();
   const mdY = `${String(requestDate.getMonth() + 1).padStart(2, '0')}/${String(requestDate.getDate()).padStart(2, '0')}/${requestDate.getFullYear()}`;
   return {
     ...base,
@@ -88,10 +82,10 @@ export async function buildTemplateContext(app: FastifyInstance, input: NoteCont
       effectiveSection: '',
       prefExemptSection: '',
     },
-    request: { date: mdY, id: input.requestId ?? undefined, tenYearRequested: !!input.tenYearRequested },
-    legContact: { name: input.legContact?.name ?? '', phone: input.legContact?.phone ?? '' },
+    request: { date: mdY, id: undefined, tenYearRequested: false },
+    legContact: { name: '', phone: '' },
     note: { id: input.noteRevisionId },
-    prior: input.prior ?? {},
+    prior: {},
     revision: { scope: '' },
   };
 }

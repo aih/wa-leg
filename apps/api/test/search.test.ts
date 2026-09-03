@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url';
 import type { Logger } from 'pino';
 import { createTestApp, truncate, users, type TestContext } from './helpers.js';
 import { DirectoryFetcher, ingestLegiscanBills, readDataset } from '../src/modules/bills/index.js';
-import { buildInternalNoteDoc } from '../src/modules/search/index.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const LEGISCAN = join(here, 'fixtures', 'legiscan');
@@ -32,10 +31,10 @@ describe('search module (postgres backend)', () => {
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body.backend).toBe('postgres');
-    expect(body.hits.map((h: any) => h.bill_key).sort()).toEqual(['WA:2025-26:HB2402', 'WA:2025-26:SB5814', 'WA:2025-26:SB6137']);
+    expect(body.hits.map((h: any) => h.bill_key).sort()).toEqual(['WA:2025-26:HB1019', 'WA:2025-26:HB2402', 'WA:2025-26:SB5814', 'WA:2025-26:SB6137']);
     const facets = (await t.app.inject({ method: 'GET', url: '/api/v1/search?q=&size=1', headers: await t.as(users.viewer) })).json().facets;
     const types = Object.fromEntries(facets.doc_type.map((f: any) => [f.key, f.count]));
-    expect(types.bill).toBe(3);
+    expect(types.bill).toBe(4);
     expect(types.section).toBeGreaterThan(10);
     expect(types.amendment).toBeGreaterThanOrEqual(2);
     expect(types.fiscal_note).toBeGreaterThanOrEqual(2);
@@ -92,50 +91,6 @@ describe('search module (postgres backend)', () => {
     expect(ok.json().hits.every((h: any) => h.bill_key.includes(':SB'))).toBe(true);
     const bad = await t.app.inject({ method: 'GET', url: '/api/v1/search?q=tax&visibility=restricted', headers: await t.as(users.viewer) });
     expect(bad.statusCode).toBe(400);
-  });
-
-  it("a reviewer's search never returns another drafter's unsubmitted draft", async () => {
-    const backend = t.app.searchSvc.backend;
-    const bill = { biennium: '2025-26', id: 'HB2402', type: 'HB', number: 2402, chamber: 'H', title: 'Concerning phthalates in medical equipment used for intravenous purposes.' };
-    const draft = buildInternalNoteDoc(
-      { noteRevisionId: 'rev-draft', noteId: 'n1', billKey: 'WA:2025-26:HB2402', versionCode: 'S', kind: 'note', state: 'in_progress', confidential: false, drafter: { userId: 'dev-drafter' }, reviewer: null, updatedAt: new Date().toISOString(), bodyText: 'Secret draft assumptions about xylophone revenue' },
-      bill,
-    );
-    const inReview = buildInternalNoteDoc(
-      { noteRevisionId: 'rev-review', noteId: 'n2', billKey: 'WA:2025-26:SB6137', versionCode: 'I', kind: 'note', state: 'review.pending', confidential: false, drafter: { userId: 'dev-drafter' }, reviewer: null, updatedAt: new Date().toISOString(), bodyText: 'Submitted note about xylophone wagering' },
-      { ...bill, id: 'SB6137', type: 'SB', number: 6137, chamber: 'S', title: 'Concerning sports wagering.' },
-    );
-    const approved = buildInternalNoteDoc(
-      { noteRevisionId: 'rev-approved', noteId: 'n3', billKey: 'WA:2025-26:SB5814', versionCode: 'S', kind: 'note', state: 'approved', confidential: false, drafter: { userId: 'dev-drafter2' }, reviewer: { userId: 'dev-reviewer' }, updatedAt: new Date().toISOString(), bodyText: 'Approved note about xylophone excise taxes' },
-      { ...bill, id: 'SB5814', type: 'SB', number: 5814, chamber: 'S', title: 'Modifying certain excise taxes.' },
-    );
-    const confidential = buildInternalNoteDoc(
-      { noteRevisionId: 'rev-conf', noteId: 'n4', billKey: 'WA:2025-26:SB5814', versionCode: 'S', kind: 'note', state: 'approved', confidential: true, drafter: { userId: 'dev-drafter2' }, reviewer: { userId: 'dev-reviewer2' }, updatedAt: new Date().toISOString(), bodyText: 'Confidential xylophone analysis' },
-      { ...bill, id: 'SB5814', type: 'SB', number: 5814, chamber: 'S', title: 'Modifying certain excise taxes.' },
-    );
-    await backend.index([draft, inReview, approved, confidential]);
-    await backend.refresh();
-    const ids = async (p: (typeof users)[keyof typeof users]) => {
-      const res = await t.app.inject({ method: 'GET', url: '/api/v1/search?q=xylophone&doc_type=fiscal_note&size=20', headers: await t.as(p) });
-      // Hits collapse to one per bill; the other visible notes on the same bill ride along as inner hits.
-      return (res.json().hits as any[]).flatMap((h) => [h.id, ...((h.inner_hits ?? []) as any[]).map((i) => i.id)]).sort();
-    };
-    // Reviewer: sees submitted and approved notes, never the unsubmitted draft or the confidential note they are not on.
-    expect(await ids(users.reviewer)).toEqual(['fn:int:rev-approved', 'fn:int:rev-review']);
-    // The reviewer assigned to the confidential note sees it.
-    expect(await ids(users.reviewer2)).toEqual(['fn:int:rev-approved', 'fn:int:rev-conf', 'fn:int:rev-review']);
-    // The drafter sees their own draft and the public approved note.
-    expect(await ids(users.drafter)).toEqual(['fn:int:rev-approved', 'fn:int:rev-draft', 'fn:int:rev-review']);
-    // Another drafter sees only the approved note.
-    expect(await ids(users.otherDivDrafter)).toEqual(['fn:int:rev-approved']);
-    // End users see approved public notes only.
-    expect(await ids(users.viewer)).toEqual(['fn:int:rev-approved']);
-    // Admins see everything.
-    expect(await ids(users.admin)).toEqual(['fn:int:rev-approved', 'fn:int:rev-conf', 'fn:int:rev-draft', 'fn:int:rev-review']);
-    // Suggest applies the same filter.
-    const sug = await t.app.inject({ method: 'GET', url: '/api/v1/search/suggest?q=Fiscal%20note', headers: await t.as(users.viewer) });
-    expect((sug.json().suggestions as any[]).every((s) => s.note_id !== 'fn:int:rev-draft')).toBe(true);
-    await backend.remove(['fn:int:rev-draft', 'fn:int:rev-review', 'fn:int:rev-approved', 'fn:int:rev-conf']);
   });
 
   it('suggest returns bill-number and title matches with the parsed reference first', async () => {

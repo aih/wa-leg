@@ -74,9 +74,6 @@ importers:
       jose:
         specifier: 6.2.10
         version: 6.2.10
-      nodemailer:
-        specifier: 9.1.1
-        version: 9.1.1
       openid-client:
         specifier: 6.8.7
         version: 6.8.7
@@ -102,9 +99,6 @@ importers:
       '@types/node':
         specifier: 22.20.1
         version: 22.20.1
-      '@types/nodemailer':
-        specifier: 8.0.1
-        version: 8.0.1
       '@types/pg':
         specifier: 8.23.1
         version: 8.23.1
@@ -172,9 +166,6 @@ importers:
       katex:
         specifier: 0.18.5
         version: 0.18.5
-      mathlive:
-        specifier: 0.110.0
-        version: 0.110.0
       react:
         specifier: 19.2.8
         version: 19.2.8
@@ -373,10 +364,6 @@ importers:
         version: 3.2.7(@types/node@22.20.1)(happy-dom@20.12.2)(supports-color@10.2.2)(tsx@4.23.13)(yaml@2.9.0)
 
   packages/workflow-machine:
-    dependencies:
-      xstate:
-        specifier: 5.32.6
-        version: 5.32.6
     devDependencies:
       typescript:
         specifier: 5.9.3
@@ -386,9 +373,6 @@ importers:
         version: 3.2.7(@types/node@22.20.1)(happy-dom@20.12.2)(supports-color@10.2.2)(tsx@4.23.13)(yaml@2.9.0)
 
 packages:
-
-  '@arnog/colors@0.5.0':
-    resolution: {integrity: sha512-NB7yqrO7qvInsqJdqz6C6mDU+2oiKmbBbk3czMS0E7KkGxLRy538tEHCsB5TKqmaxxXpi6/U120TnGl8NsDePg==}
 
   '@assemblyscript/loader@0.19.23':
     resolution: {integrity: sha512-ulkCYfFbYj01ie1MDOyxv2F6SpRN1TOj7fQxbP07D6HmeR+gr2JLSmINKjga2emB+b1L2KGrFKBTc+e00p54nw==}
@@ -484,10 +468,6 @@ packages:
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
-
-  '@cortex-js/compute-engine@0.58.0':
-    resolution: {integrity: sha512-N0+vXjVZfKwJS7ZIGvq41mojI55m5TrdDXveAXzNjzjZ9iNiNrdEzXL2EmrcP+9GCWCwTonrEeZWAIG78f3INg==}
-    engines: {node: '>=21.7.3', npm: '>=10.5.0'}
 
   '@esbuild/aix-ppc64@0.28.2':
     resolution: {integrity: sha512-XExcO+dvLKvVtNTibSTBej1NCAbaGhWn9Ww1ZPx80qsahhPFe/8jgWP0IchNe0F3HwkU7n8ejhH8bjonqht8mQ==}
@@ -1136,9 +1116,6 @@ packages:
   '@types/node@25.9.5':
     resolution: {integrity: sha512-OScDchr2fwuUmWdf4kZ9h7PcJiYDVInhJizG/biAq3cAvqwYktuy/TYGGdZNMtNTFUP7rnb0NU4TUdm82kt4Rg==}
 
-  '@types/nodemailer@8.0.1':
-    resolution: {integrity: sha512-PxpaInm8V1JQDd4j0ds5HfvWQk8JupS1C0Picb96QJsrrRDjBH+DlK7L4ZdNSqNULhiZRQHc40nLVShaGxXAMw==}
-
   '@types/pg@8.23.1':
     resolution: {integrity: sha512-fKVHpikPdg4GKks3JuLEhvwSyvwzF23hnabPy6DD8ljVbC7+6J5dQzdv4arV6jqq57djnMgs1HKBxX4P8aBI3A==}
 
@@ -1426,10 +1403,6 @@ packages:
     resolution: {integrity: sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg==}
     engines: {node: '>=22.12.0'}
 
-  complex-esm@2.1.1-esm1:
-    resolution: {integrity: sha512-IShBEWHILB9s7MnfyevqNGxV0A1cfcSnewL/4uPFiSxkcQL4Mm3FxJ0pXMtCXuWLjYz3lRRyk6OfkeDZcjD6nw==}
-    engines: {node: '>=16.14.2', npm: '>=8.5.0'}
-
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
@@ -1468,9 +1441,6 @@ packages:
     peerDependenciesMeta:
       supports-color:
         optional: true
-
-  decimal.js@10.6.0:
-    resolution: {integrity: sha512-YpgQiITW3JXGntzdUmyUR1V812Hn8T1YVXhCu+wO3OpS4eU9l4YdD3qjyiKdV6mvV29zapkMeD390UVEf2lkUg==}
 
   deep-eql@5.0.2:
     resolution: {integrity: sha512-h5k/5U50IJJFpzfL6nO9jaaumfjO/f2NjK/oYB2Djzm4p9L+3T9qWpZqZ2hAbLPuuYq9wrU08WQyBTL5GbPk5Q==}
@@ -2027,9 +1997,6 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
-  mathlive@0.110.0:
-    resolution: {integrity: sha512-UOpJsQ6h1eeN0xZULGTl1MwUB/lZLCDuzKeHvKEh7Zra8U/rtgDNrssj5PZdJtBTIV48AfEhtv6rv47AeMOxJA==}
-
   mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
     engines: {node: '>= 0.6'}
@@ -2074,10 +2041,6 @@ packages:
   node-releases@2.0.54:
     resolution: {integrity: sha512-YHs7BmmcsdAI5Ozuf8JZo6PT0mv2GIWC9vMfvUC3dp65M8hn7Ux8CPL+2oBI7juNuj9d0ndhTcznq2ODBps9cQ==}
     engines: {node: '>=18'}
-
-  nodemailer@9.1.1:
-    resolution: {integrity: sha512-izw9mVKFix6YSnC9eLgV6g1opl9DUlRio9ZNcq+Wu9Ujn2UwF+8Nl0B8nz22kEC+CTZCvinkxwJ0DeFbb6NwcQ==}
-    engines: {node: '>=6.0.0'}
 
   oauth4webapi@3.8.7:
     resolution: {integrity: sha512-4RxcKxXjuItDFZ20RRPf4YTw3kpeXJyCgJFxVzJ068A7PNJ18st2Dg90tlC1LkSDS0GecroagCLHYEIVUhCAkw==}
@@ -2689,9 +2652,6 @@ packages:
   xml@1.0.1:
     resolution: {integrity: sha512-huCv9IH9Tcf95zuYCsQraZtWnJvBtLVE0QHMOs8bWyZAFZNDcYjsPq1nEx8jKA9y+Beo9v+7OBPRisQTjinQMw==}
 
-  xstate@5.32.6:
-    resolution: {integrity: sha512-WfA8WNrh6r9osuGwVm+aIPM4jmMW2LKHV1Yv9thYpOtL4HVF/kobh95K/O8v2jDCpDmP2EoY+6uvuqHXCZ6ZLw==}
-
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
@@ -2719,8 +2679,6 @@ packages:
     resolution: {integrity: sha512-sC95tT5iHHH9gtpj6A81kh+NEaRAUFN+qlUPDUbRfOMvNf5QCBqsb3WgvnpVtK5Y+4UfA6KqufotuTvMGiTlsA==}
 
 snapshots:
-
-  '@arnog/colors@0.5.0': {}
 
   '@assemblyscript/loader@0.19.23': {}
 
@@ -2843,12 +2801,6 @@ snapshots:
 
   '@colors/colors@1.5.0':
     optional: true
-
-  '@cortex-js/compute-engine@0.58.0':
-    dependencies:
-      '@arnog/colors': 0.5.0
-      complex-esm: 2.1.1-esm1
-      decimal.js: 10.6.0
 
   '@esbuild/aix-ppc64@0.28.2':
     optional: true
@@ -3404,10 +3356,6 @@ snapshots:
     dependencies:
       undici-types: 7.24.6
 
-  '@types/nodemailer@8.0.1':
-    dependencies:
-      '@types/node': 22.20.1
-
   '@types/pg@8.23.1':
     dependencies:
       '@types/node': 22.20.1
@@ -3750,8 +3698,6 @@ snapshots:
 
   commander@15.0.0: {}
 
-  complex-esm@2.1.1-esm1: {}
-
   concat-map@0.0.1: {}
 
   convert-source-map@2.0.0: {}
@@ -3779,8 +3725,6 @@ snapshots:
       ms: 2.1.3
     optionalDependencies:
       supports-color: 10.2.2
-
-  decimal.js@10.6.0: {}
 
   deep-eql@5.0.2: {}
 
@@ -4275,10 +4219,6 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
-  mathlive@0.110.0:
-    dependencies:
-      '@cortex-js/compute-engine': 0.58.0
-
   mime-db@1.52.0: {}
 
   mime-types@2.1.35:
@@ -4310,8 +4250,6 @@ snapshots:
   natural-compare@1.4.0: {}
 
   node-releases@2.0.54: {}
-
-  nodemailer@9.1.1: {}
 
   oauth4webapi@3.8.7: {}
 
@@ -4911,8 +4849,6 @@ snapshots:
       sax: 1.6.1
 
   xml@1.0.1: {}
-
-  xstate@5.32.6: {}
 
   xtend@4.0.2: {}
 

@@ -1,7 +1,6 @@
 # One hostname. Caddy obtains and renews the certificate for $SITE_ADDRESS.
 #   /api/*   Fastify API (apps/api)
 #   /oidc/*  development OpenID Connect issuer (apps/dev-oidc); the prefix is stripped
-#   /mail/*  Mailpit inbox for the notification emails
 #   /*       the web bundle, with the SPA fallback to index.html
 {
 	email {$ACME_EMAIL}
@@ -16,10 +15,6 @@
 
 	handle_path /oidc/* {
 		reverse_proxy oidc:4801
-	}
-
-	handle /mail* {
-		reverse_proxy mail:8025
 	}
 
 	handle {
