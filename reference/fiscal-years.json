@@ -1,0 +1,23 @@
+{
+  "session": "2025-26",
+  "sessionYear": 2026,
+  "biennium": "2025-27",
+  "fiscalYears": [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035],
+  "biennia": ["2025-27", "2027-29", "2029-31"],
+  "calendarYears": [2026, 2027, 2028, 2029, 2030, 2031],
+  "sineDie": "2026-03-12",
+  "effectiveDate90Days": "2026-06-10",
+  "forecastVintage": "November 2025",
+  "localRate": "3.0",
+  "aprilShare": "52.62",
+  "octoberShare": "47.38",
+  "performanceAuditsShare": "0.16",
+  "tesYear": 2024,
+  "priorYear": 2025,
+  "priorFY": "FY 2025",
+  "cpi": { "from": "2026", "to": "2030", "pct": "3.2" },
+  "threshold1Pct": "1.0",
+  "thresholdStep": "5,000",
+  "thresholdDate": "January 1, 2030",
+  "passDate": "March 12, 2026"
+}

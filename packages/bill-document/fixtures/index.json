@@ -1,0 +1,319 @@
+[
+ {
+  "kind": "bill",
+  "file": "2402.xml",
+  "biennium": "2025-26",
+  "type": "HB",
+  "number": 2402,
+  "versionCode": "I",
+  "sha256": "sha256:738ee33df91af4df60bc27793c1a399b13274eeb5725e106a5864ed265547f1d",
+  "covers": [
+   "new-chapter",
+   "intent"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "2402-S.xml",
+  "biennium": "2025-26",
+  "type": "HB",
+  "number": 2402,
+  "versionCode": "S",
+  "sha256": "sha256:c16951a76a30765d5a7a3569cfabe55246c52c1510fcb30209922d733c5a5fa2",
+  "covers": [
+   "new-chapter",
+   "substitute"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "6137.xml",
+  "biennium": "2025-26",
+  "type": "SB",
+  "number": 6137,
+  "versionCode": "I",
+  "sha256": "sha256:296f46c63cea46496511fe391991b9e193520297b3f9ee3eeade90da2ebdc54a",
+  "covers": [
+   "amendatory"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "6137.SL.xml",
+  "biennium": "2025-26",
+  "type": "SB",
+  "number": 6137,
+  "versionCode": "SL",
+  "sha256": "sha256:3182f76ecd6991db5826a02664bc8c30d427dab6ecd0b421551c9b0507776d32",
+  "covers": [
+   "amendatory",
+   "session-law"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "1069.xml",
+  "biennium": "2025-26",
+  "type": "HB",
+  "number": 1069,
+  "versionCode": "I",
+  "sha256": "sha256:cad6c2ea0b91471b804d4157dd1951acef01dfce389d80980241b22acfc403e0",
+  "covers": [
+   "amendatory"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "1069.PL.xml",
+  "biennium": "2025-26",
+  "type": "HB",
+  "number": 1069,
+  "versionCode": "PL",
+  "sha256": "sha256:696187acfc38f85aea90f7d9e4ad55283d76bf8b6c5b2041f8709e205c932a91",
+  "covers": [
+   "amendatory",
+   "passed-legislature"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "1665.xml",
+  "biennium": "2025-26",
+  "type": "HB",
+  "number": 1665,
+  "versionCode": "I",
+  "sha256": "sha256:35868810a85fe392fb03b007abeecc02532b7c092a88edc9f4cc82d1c68d00c1",
+  "covers": [
+   "repealer",
+   "effective-date"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "1717-S.xml",
+  "biennium": "2025-26",
+  "type": "HB",
+  "number": 1717,
+  "versionCode": "S",
+  "sha256": "sha256:4919832f24bf4ee506d824833f0100669ff82003fd3225fd5a43764fb8475978",
+  "covers": [
+   "new-chapter",
+   "effective-date"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "2009.xml",
+  "biennium": "2025-26",
+  "type": "HB",
+  "number": 2009,
+  "versionCode": "I",
+  "sha256": "sha256:ee7b109734756f3f9ef170e1990b840992e0bfe3006fcd50c90ead067d61fef4",
+  "covers": [
+   "amendatory",
+   "effective-date"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "2049.xml",
+  "biennium": "2025-26",
+  "type": "HB",
+  "number": 2049,
+  "versionCode": "I",
+  "sha256": "sha256:8c3e27288f8da3df26c9b7e9717a1856eec5f612d13817ec06a4d4d17af9d965",
+  "covers": [
+   "amendatory",
+   "repealer",
+   "effective-date"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "2049-S.E.xml",
+  "biennium": "2025-26",
+  "type": "HB",
+  "number": 2049,
+  "versionCode": "S.E",
+  "sha256": "sha256:12e4726a4df067793d3f92f40817da8b01d20c0d793fa59ce95970de801921e9",
+  "covers": [
+   "amendatory",
+   "engrossed"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "2081.xml",
+  "biennium": "2025-26",
+  "type": "HB",
+  "number": 2081,
+  "versionCode": "I",
+  "sha256": "sha256:ce506c55a843d646d4b5b542b0bcf3ce10af596d087add0f4a5bf64fb5fb2a44",
+  "covers": [
+   "amendatory",
+   "part-numbered",
+   "effective-date",
+   "tax"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "2081-S.SL.xml",
+  "biennium": "2025-26",
+  "type": "HB",
+  "number": 2081,
+  "versionCode": "S.SL",
+  "sha256": "sha256:a5cfd3b39b0637392a6bec7e0f79f743917b938591bf4abc455888f5e06f7e79",
+  "covers": [
+   "amendatory",
+   "part-numbered",
+   "session-law",
+   "tax"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "5516-S.xml",
+  "biennium": "2025-26",
+  "type": "SB",
+  "number": 5516,
+  "versionCode": "S",
+  "sha256": "sha256:02989b45c1ace1678a1d138a783dcb2b68f93e0e6f13afdef3e0546dcccfff49",
+  "covers": [
+   "amendatory"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "5794.xml",
+  "biennium": "2025-26",
+  "type": "SB",
+  "number": 5794,
+  "versionCode": "I",
+  "sha256": "sha256:5a637b9a6bcd49d2ee8a39191956f69faf3b9a352840bb76f8888f1a10cc097a",
+  "covers": [
+   "amendatory",
+   "repealer",
+   "table",
+   "tax",
+   "part-numbered"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "5794-S.SL.xml",
+  "biennium": "2025-26",
+  "type": "SB",
+  "number": 5794,
+  "versionCode": "S.SL",
+  "sha256": "sha256:ea469a36753b50e5332ec734c8b8650ae0b1c229f5baa1ef5c91bd552b755fc0",
+  "covers": [
+   "amendatory",
+   "session-law",
+   "partial-veto",
+   "tax"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "5814-S.xml",
+  "biennium": "2025-26",
+  "type": "SB",
+  "number": 5814,
+  "versionCode": "S",
+  "sha256": "sha256:5da0ce23daa4637946290e0e122e33124acce370b774ae7c37d5383da0bea81a",
+  "covers": [
+   "amendatory",
+   "part-numbered",
+   "tax"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "5814-S.E.xml",
+  "biennium": "2025-26",
+  "type": "SB",
+  "number": 5814,
+  "versionCode": "S.E",
+  "sha256": "sha256:fa17ff96802bb35286c468dee40a06c83540e651c7f03e45e8cf1516955bc843",
+  "covers": [
+   "amendatory",
+   "engrossed",
+   "tax"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "1163-S2.E.xml",
+  "biennium": "2025-26",
+  "type": "HB",
+  "number": 1163,
+  "versionCode": "S2.E",
+  "sha256": "sha256:a7ea8a8debb9083bfd4bd1c0ef8b5aa036fae9e9c360eed9049018bebabd6e88",
+  "covers": [
+   "amendatory",
+   "second-substitute"
+  ]
+ },
+ {
+  "kind": "bill",
+  "file": "5506.xml",
+  "biennium": "2025-26",
+  "type": "SB",
+  "number": 5506,
+  "versionCode": "I",
+  "sha256": "sha256:1f2b5bb409c7fccb9c1aae04ce1453769c851cfd9d9a68b3d14bdb4a129d7ea3",
+  "covers": [
+   "amendatory",
+   "emergency"
+  ]
+ },
+ {
+  "kind": "amendment",
+  "file": "6137 AMH SGOV H3681.1.xml",
+  "biennium": "2025-26",
+  "billId": "SB6137",
+  "amendmentId": "6137 AMH SGOV H3681.1",
+  "baseVersion": "I",
+  "sha256": "sha256:b954c91dad7d90ecdc6d6fee30efa97403bcd5dd2950c328eab3e9c8759d5afb",
+  "covers": [
+   "striking-amendment"
+  ]
+ },
+ {
+  "kind": "amendment",
+  "file": "6137 AMS CORA S4812.1.xml",
+  "biennium": "2025-26",
+  "billId": "SB6137",
+  "amendmentId": "6137 AMS CORA S4812.1",
+  "baseVersion": "I",
+  "sha256": "sha256:a5f517b51102e0616d613c733ecb858a6d54be7725d7e3191510004dd49885a6",
+  "covers": [
+   "page-line-amendment"
+  ]
+ },
+ {
+  "kind": "amendment",
+  "file": "1069 AMS SALD S3166.1.xml",
+  "biennium": "2025-26",
+  "billId": "HB1069",
+  "amendmentId": "1069 AMS SALD S3166.1",
+  "baseVersion": "I",
+  "sha256": "sha256:090ee50c500fb8fe3cbfb1addc88de1398c441659d44abc08e9941abc85a471c",
+  "covers": [
+   "page-line-amendment"
+  ]
+ },
+ {
+  "kind": "amendment",
+  "file": "5814-S AMS BRAU S3269.1.xml",
+  "biennium": "2025-26",
+  "billId": "SB5814",
+  "amendmentId": "5814-S AMS BRAU S3269.1",
+  "baseVersion": "S",
+  "sha256": "sha256:857ffe35605947edc1fc21dc3cf198d59e77a8e04db4c341dd72b15be9fb996a",
+  "covers": [
+   "page-line-amendment"
+  ]
+ }
+]

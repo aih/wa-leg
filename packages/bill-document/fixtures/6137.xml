@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Bill type="bill" xmlns="http://leg.wa.gov/2012/document"><BillHeading><RequestNumber>S-3887.1</RequestNumber><ShortBillId>SB 6137</ShortBillId><LongBillId>SENATE BILL 6137</LongBillId><Legislature>69th Legislature</Legislature><Session>2026 Regular Session</Session><Sponsors>Senators Cortes, Nobles, Saldaña, Stanford, and Wellman</Sponsors><BillHistory><ReadDate>Read first time 01/14/26.</ReadDate><ReferredCommittee>Referred to Committee on Business, Trade &amp; Economic Development.</ReferredCommittee></BillHistory><BriefDescription>Concerning the regulated sports wagering industry.</BriefDescription></BillHeading>
+
+<BillBody>
+<BillTitle>AN ACT Relating to bolstering the regulated sports wagering industry; amending RCW 9.46.038, 9.46.0364, and 9.46.0368; and creating new sections.</BillTitle>
+<EnactedClause />
+<BillSection type="new">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>1</Value><TextRun>.  </TextRun></BillSectionNumber><P>The state has long prohibited all forms and means of gambling except where carefully and specifically authorized and regulated. The legislature intends to bolster the regulated sports wagering industry. Currently, sports wagering in Washington is offered exclusively by tribal casinos subject to gaming compacts entered pursuant to the Indian gaming regulatory act. This offering has proven to meet the state's policy of offering gambling only in a highly regulated environment that is safe for the public.</P></BillSectionHeader>
+</BillSection>
+<BillSection type="amendatory" action="amend">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>2</Value><TextRun>.  </TextRun></BillSectionNumber><SectionCite><TextRun>RCW </TextRun><TitleNumber>9</TitleNumber><TextRun>.</TextRun><ChapterNumber>46</ChapterNumber><TextRun>.</TextRun><SectionNumber>038</SectionNumber></SectionCite> and 2020 c 127 s 11 are each amended to read as follows:<Caption>Sports wagering<TextRun fontFamily="Times New Roman">—</TextRun>Defined.</Caption></BillSectionHeader>
+<P>(1)(a) For purposes of this chapter, "sports wagering" means the business of accepting wagers on any of the following sporting events, athletic events, or competitions by any system or method of wagering:</P>
+<P>(i) A professional sport or athletic event;</P>
+<P>(ii) A collegiate sport or athletic event;</P>
+<P>(iii) An Olympic or international sports competition or event;</P>
+<P>(iv) An electronic sports or esports competition or event;</P>
+<P>(v) A combination of sporting events, athletic events, or competitions listed in (a)(i) through (iv) of this subsection (1); or</P>
+<P>(vi) A portion of any sporting event, athletic event, or competition listed in (a)(i) through (iv) of this subsection (1).</P>
+<P>(b) Sports wagering does not include the business of accepting wagers on horse racing authorized pursuant to chapter 67.16 RCW.</P>
+<P>(2) For purposes of this section:</P>
+<P>(a) "Collegiate sport or athletic event" means a sport or athletic event offered or sponsored by, or played in connection with, a public or private institution that offers education services beyond the secondary level<TextRun amendingStyle="strike">, other than such an institution that is located within the state of Washington</TextRun><TextRun amendingStyle="add">. Sports wagering may not be conducted on the performance or nonperformance of any specifically named individual participant in any collegiate sport or athletic event who is enrolled in an educational institution located within the state of Washington</TextRun>.</P>
+<P>(b) "Electronic or esports event" means a live event or tournament attended or watched by members of the public where games or matches are contested in real time by players and teams and players or teams can win a prize based on their performance in the live event or tournament.</P>
+<P>(c) "Professional sport or athletic event" means an event that is not a collegiate sport or athletic event at which two or more persons participate in sports or athletic events and receive compensation in excess of actual expenses for their participation in the event. "Professional sport or athletic event" does not include any minor league sport. Sports wagering may not be conducted on any minor league sport.</P>
+<History>2020 c 127 s 11.</History>
+<RCWNoteSection>
+<AnnNote><NoteP><TextRun fontWeight="bold">Intent<TextRun fontFamily="Times New Roman">—</TextRun>Effective date<TextRun fontFamily="Times New Roman">—</TextRun>2020 c 127:</TextRun> See notes following RCW 9.46.0364.</NoteP></AnnNote>
+</RCWNoteSection>
+</BillSection>
+<BillSection type="amendatory" action="amend">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>3</Value><TextRun>.  </TextRun></BillSectionNumber><SectionCite><TextRun>RCW </TextRun><TitleNumber>9</TitleNumber><TextRun>.</TextRun><ChapterNumber>46</ChapterNumber><TextRun>.</TextRun><SectionNumber>0364</SectionNumber></SectionCite> and 2020 c 127 s 2 are each amended to read as follows:<Caption>Sports wagering authorized.</Caption></BillSectionHeader>
+<P>(1) Upon the request of a federally recognized Indian tribe or tribes in the state of Washington, the tribe's class III gaming compact may be amended pursuant to the Indian gaming regulatory act, 25 U.S.C. Sec. 2701 et seq., and RCW 9.46.360 to authorize the tribe to conduct and operate sports wagering on <TextRun amendingStyle="strike">its</TextRun> Indian lands, provided the amendment addresses: Licensing; fees associated with the gambling commission's regulation of sports wagering; how sports wagering will be conducted, operated, and regulated; issues related to criminal enforcement, including money laundering, sport integrity, and information sharing between the commission and the tribe related to such enforcement; and responsible and problem gambling. Sports wagering conducted pursuant to the gaming compact is a gambling activity authorized by this chapter.</P>
+<P>(2) Sports wagering conducted pursuant to the provisions of a class III gaming compact entered into by a tribe and the state pursuant to RCW 9.46.360 is authorized bookmaking and is not subject to civil or criminal penalties pursuant to RCW 9.46.225.</P>
+<History>2020 c 127 s 2.</History>
+<RCWNoteSection>
+<AnnNote><NoteP><TextRun fontWeight="bold">Intent<TextRun fontFamily="Times New Roman">—</TextRun>2020 c 127:</TextRun> "It has long been the policy of this state to prohibit all forms and means of gambling except where carefully and specifically authorized and regulated. The legislature intends to further this policy by authorizing sports wagering on a very limited basis by restricting it to tribal casinos in the state of Washington. Tribes have more than twenty years' experience with, and a proven track record of, successfully operating and regulating gaming facilities in accordance with tribal gaming compacts. Tribal casinos can operate sports wagering pursuant to these tribal gaming compacts, offering the benefits of the same highly regulated environment to sports wagering." [2020 c 127 s 1.]</NoteP></AnnNote>
+<AnnNote><NoteP><TextRun fontWeight="bold">Effective date<TextRun fontFamily="Times New Roman">—</TextRun>2020 c 127:</TextRun> "This act is necessary for the immediate preservation of the public peace, health, or safety, or support of the state government and its existing public institutions, and takes effect immediately [March 25, 2020]." [2020 c 127 s 15.]</NoteP></AnnNote>
+</RCWNoteSection>
+</BillSection>
+<BillSection type="amendatory" action="amend">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>4</Value><TextRun>.  </TextRun></BillSectionNumber><SectionCite><TextRun>RCW </TextRun><TitleNumber>9</TitleNumber><TextRun>.</TextRun><ChapterNumber>46</ChapterNumber><TextRun>.</TextRun><SectionNumber>0368</SectionNumber></SectionCite> and 2020 c 127 s 9 are each amended to read as follows:<Caption>Sports wagering over the internet authorized.</Caption></BillSectionHeader>
+<P>The transmission of gambling information over the internet for any sports wagering conducted and operated under this section and RCW 9.46.0364 is authorized, provided that the wager may be placed and accepted at a tribe's gaming facility only while the customer placing the wager is physically present on the premises of <TextRun amendingStyle="strike">that</TextRun> <TextRun amendingStyle="add">a</TextRun> tribe's gaming facility.</P>
+<History>2020 c 127 s 9.</History>
+<RCWNoteSection>
+<AnnNote><NoteP><TextRun fontWeight="bold">Intent<TextRun fontFamily="Times New Roman">—</TextRun>Effective date<TextRun fontFamily="Times New Roman">—</TextRun>2020 c 127:</TextRun> See notes following RCW 9.46.0364.</NoteP></AnnNote>
+</RCWNoteSection>
+</BillSection>
+<BillSection type="new">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>5</Value><TextRun>.  </TextRun></BillSectionNumber><P>If any provision of this act or its application to any person or circumstance is held invalid, the remainder of the act or the application of the provision to other persons or circumstances is not affected.</P></BillSectionHeader>
+</BillSection>
+<BillSection type="new">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>6</Value><TextRun>.  </TextRun></BillSectionNumber><P>This act may be known and cited as the sports wagering integrity act.</P></BillSectionHeader>
+</BillSection>
+</BillBody>
+</Bill>

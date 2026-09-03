@@ -1,0 +1,511 @@
+{
+ "schemaVersion": "1.0",
+ "bill": {
+  "biennium": "2025-26",
+  "chamber": "H",
+  "type": "B",
+  "number": 1069,
+  "id": "HB1069",
+  "billPageUrl": "https://app.leg.wa.gov/billsummary?BillNumber=1069&Year=2025&Initiative=false",
+  "shortTitle": "Allowing collective bargaining over contributions for certain supplemental retirement benefits."
+ },
+ "version": {
+  "code": "PL",
+  "label": "House Bill (Passed Legislature)",
+  "seq": 100,
+  "sourceHash": "sha256:696187acfc38f85aea90f7d9e4ad55283d76bf8b6c5b2041f8709e205c932a91"
+ },
+ "header": {
+  "title": "AN ACT Relating to allowing collective bargaining over contributions for certain supplemental retirement benefits; and amending RCW 41.80.020 and 41.80.040.",
+  "relatingTo": "allowing collective bargaining over contributions for certain supplemental retirement benefits",
+  "titleActions": [
+   {
+    "kind": "amending",
+    "text": "amending RCW 41.80.020 and 41.80.040",
+    "cites": [
+     {
+      "kind": "rcw",
+      "text": "RCW 41.80.020",
+      "cite": "41.80.020",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=41.80.020"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 41.80.040",
+      "cite": "41.80.040",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=41.80.040"
+     }
+    ]
+   }
+  ],
+  "sponsors": [
+   "Representatives Fosse, Low, Peterson, Griffey, Bronoske, Timmons, Nance, Goodman, Cortes, Volz, Ormsby, Scott, Mena, Davis, Macri, Stonier, Alvarado, Doglio, Bernbaum, Ryu, Ramel, Berry, Reed, Callan, Obras, Farivar, Ortiz-Self, Simmons, Street, Pollet, Fey, Berg, Lekanoff, Salahuddin, Reeves, Donaghy, and Hill"
+  ],
+  "briefDescription": "Allowing collective bargaining over contributions for certain supplemental retirement benefits.",
+  "shortBillId": "HB 1069.PL",
+  "longBillId": "HOUSE BILL 1069",
+  "legislature": "69th Legislature",
+  "session": "2025 Regular Session",
+  "asAmended": "SENATE",
+  "prefiledDate": "Prefiled 12/13/24.",
+  "referredTo": "Referred to Committee on Labor & Workplace Standards.",
+  "readFirstTime": "2025-01-13"
+ },
+ "sections": [
+  {
+   "id": "sec-1",
+   "num": "1",
+   "label": "Sec. 1.",
+   "isNewSection": false,
+   "kind": "amendatory",
+   "sourceKind": "amend",
+   "identity": "rcw:41.80.020",
+   "blocks": [
+    {
+     "id": "sec-1.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Except as otherwise provided in this chapter, the matters subject to bargaining include wages, hours, and other terms and conditions of employment, and the negotiation of any question arising under a collective bargaining agreement."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The employer is not required to bargain over matters pertaining to:"
+      }
+     ],
+     "children": [
+      {
+       "id": "sec-1.2.a",
+       "label": "(a)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Health care benefits or other employee insurance benefits, except as required in subsection (3) of this section "
+        },
+        {
+         "t": "ins",
+         "text": "and RCW 41.80.040(2)"
+        },
+        {
+         "t": "text",
+         "text": ";"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-1.2.b",
+       "label": "(b)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Any retirement system or retirement benefit"
+        },
+        {
+         "t": "ins",
+         "text": ", except as required in RCW 41.80.040(2)"
+        },
+        {
+         "t": "text",
+         "text": "; or"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-1.2.c",
+       "label": "(c)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Rules of the director of financial management, the director of enterprise services, or the Washington personnel resources board adopted under RCW 41.06.157."
+        }
+       ],
+       "children": []
+      }
+     ]
+    },
+    {
+     "id": "sec-1.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Matters subject to bargaining include the number of names to be certified for vacancies, promotional preferences, and the dollar amount expended on behalf of each employee for health care benefits. However, except as provided otherwise in this subsection for institutions of higher education, negotiations regarding the number of names to be certified for vacancies, promotional preferences, and the dollar amount expended on behalf of each employee for health care benefits shall be conducted between the employer and one coalition of all the exclusive bargaining representatives subject to this chapter. The exclusive bargaining representatives for employees that are subject to chapter 47.64 RCW shall bargain the dollar amount expended on behalf of each employee for health care benefits with the employer as part of the coalition under this subsection. Any such provision agreed to by the employer and the coalition shall be included in all master collective bargaining agreements negotiated by the parties. For institutions of higher education, promotional preferences and the number of names to be certified for vacancies shall be bargained under the provisions of RCW 41.80.010(4). "
+      },
+      {
+       "t": "ins",
+       "text": "For purposes of this subsection (3), \"health care benefits\" does not include contributions for supplemental retirement benefits under RCW 41.80.040."
+      },
+      {
+       "t": "text",
+       "text": " For agreements covering the 2013-2015 fiscal biennium, any agreement between the employer and the coalition regarding the dollar amount expended on behalf of each employee for health care benefits is a separate agreement and shall not be included in the master collective bargaining agreements negotiated by the parties."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The employer and the exclusive bargaining representative shall not agree to any proposal that would prevent the implementation of approved affirmative action plans or that would be inconsistent with the comparable worth agreement that provided the basis for the salary changes implemented beginning with the 1983-1985 biennium to achieve comparable worth."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.5",
+     "label": "(5)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The employer and the exclusive bargaining representative shall not bargain over matters pertaining to management rights established in RCW 41.80.040."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.6",
+     "label": "(6)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Except as otherwise provided in this chapter, if a conflict exists between an executive order, administrative rule, or agency policy relating to wages, hours, and terms and conditions of employment and a collective bargaining agreement negotiated under this chapter, the collective bargaining agreement shall prevail. A provision of a collective bargaining agreement that conflicts with the terms of a statute is invalid and unenforceable."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.7",
+     "label": "(7)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "This section does not prohibit bargaining that affects contracts authorized by RCW 41.06.142."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.8",
+     "label": "(8)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "RCW 41.58.070 applies to uniformed personnel."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:ca1d2627dc00cd96b84a94e33b681a1289c6eb29a66e83a4eab8d3903e8645d0",
+   "heading": "Scope of bargaining.",
+   "target": {
+    "action": "amend",
+    "cite": "41.80.020",
+    "chapter": "41.80",
+    "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=41.80.020",
+    "caption": "Scope of bargaining.",
+    "history": "2021 c 13 s 6"
+   },
+   "introText": [
+    {
+     "t": "cite",
+     "text": "RCW 41.80.020",
+     "cite": {
+      "kind": "rcw",
+      "text": "RCW 41.80.020",
+      "cite": "41.80.020",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=41.80.020"
+     }
+    },
+    {
+     "t": "text",
+     "text": " and 2021 c 13 s 6 are each amended to read as follows:"
+    }
+   ],
+   "notes": [
+    "2021 c 13 s 6; 2015 3rd sp.s. c 1 s 318; 2013 2nd sp.s. c 4 s 972. Prior: 2011 1st sp.s. c 50 s 939; 2011 1st sp.s. c 43 s 445; 2010 c 283 s 16; 2002 c 354 s 303.",
+    "Effective dates—2013 2nd sp.s. c 4: See note following RCW 2.68.020.",
+    "Effective dates—2011 1st sp.s. c 50: See note following RCW 15.76.115.",
+    "Effective date—Purpose—2011 1st sp.s. c 43: See notes following RCW 43.19.003.",
+    "Findings—Intent—Effective date—2010 c 283: See notes following RCW 47.60.355."
+   ],
+   "changeSummary": {
+    "insWords": 30,
+    "delWords": 0
+   }
+  },
+  {
+   "id": "sec-2",
+   "num": "2",
+   "label": "Sec. 2.",
+   "isNewSection": false,
+   "kind": "amendatory",
+   "sourceKind": "amend",
+   "identity": "rcw:41.80.040",
+   "blocks": [
+    {
+     "id": "sec-2.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The employer shall not bargain over rights of management which, in addition to all powers, duties, and rights established by constitutional provision or statute, shall include but not be limited to the following:"
+      }
+     ],
+     "children": [],
+     "labelMark": "ins"
+    },
+    {
+     "id": "sec-2.1_2",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "ins",
+       "text": "(a)"
+      },
+      {
+       "t": "text",
+       "text": " The functions and programs of the employer, the use of technology, and the structure of the organization;"
+      }
+     ],
+     "children": [],
+     "labelMark": "del"
+    },
+    {
+     "id": "sec-2.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "ins",
+       "text": "(b)"
+      },
+      {
+       "t": "text",
+       "text": " The employer's budget, which includes for purposes of any negotiations conducted during the 2019-2021 fiscal biennium any specification of the funds or accounts that must be appropriated by the legislature to fulfill the terms of an agreement, and the size of the agency workforce, including determining the financial basis for layoffs;"
+      }
+     ],
+     "children": [],
+     "labelMark": "del"
+    },
+    {
+     "id": "sec-2.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "ins",
+       "text": "(c)"
+      },
+      {
+       "t": "text",
+       "text": " The right to direct and supervise employees;"
+      }
+     ],
+     "children": [],
+     "labelMark": "del"
+    },
+    {
+     "id": "sec-2.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "ins",
+       "text": "(d)"
+      },
+      {
+       "t": "text",
+       "text": " The right to take whatever actions are deemed necessary to carry out the mission of the state and its agencies during emergencies; and"
+      }
+     ],
+     "children": [
+      {
+       "id": "sec-2.4.p1",
+       "level": 2,
+       "kind": "unnumbered",
+       "runs": [
+        {
+         "t": "del",
+         "text": "(((5) Retirement))"
+        },
+        {
+         "t": "text",
+         "text": " "
+        },
+        {
+         "t": "ins",
+         "text": "(e) Except for bargaining over supplemental retirement benefits for department of corrections employees as required under subsection (2) of this section, retirement"
+        },
+        {
+         "t": "text",
+         "text": " plans and retirement benefits."
+        }
+       ],
+       "children": []
+      }
+     ],
+     "labelMark": "del"
+    },
+    {
+     "id": "sec-2.2_2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [],
+     "children": [
+      {
+       "id": "sec-2.2_2.a",
+       "label": "(a)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "ins",
+         "text": "For department of corrections employees, subsection (1)(e) of this section does not prevent the employer from bargaining over contributions for supplemental retirement benefits, including medical plans, administered by, or on behalf of, an employee organization that represents department of corrections employees."
+        }
+       ],
+       "children": [],
+       "labelMark": "ins"
+      },
+      {
+       "id": "sec-2.2_2.b",
+       "label": "(b)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "ins",
+         "text": "Notwithstanding any other provision of this chapter, contributions for supplemental retirement benefits for department of corrections employees covered under (a) of this subsection are a mandatory subject of bargaining, but are excluded from interest arbitration as an impasse procedure under RCW 41.80.200."
+        }
+       ],
+       "children": [],
+       "labelMark": "ins"
+      }
+     ],
+     "labelMark": "ins"
+    }
+   ],
+   "textHash": "sha256:0b0f4c5a46f7faf16f0ffe73d1e6563d1f6959a36923be9d763ffedf4e1b87d5",
+   "heading": "Management rights—Not subject to bargaining.",
+   "target": {
+    "action": "amend",
+    "cite": "41.80.040",
+    "chapter": "41.80",
+    "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=41.80.040",
+    "caption": "Management rights—Not subject to bargaining.",
+    "history": "2020 c 357 s 913"
+   },
+   "introText": [
+    {
+     "t": "cite",
+     "text": "RCW 41.80.040",
+     "cite": {
+      "kind": "rcw",
+      "text": "RCW 41.80.040",
+      "cite": "41.80.040",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=41.80.040"
+     }
+    },
+    {
+     "t": "text",
+     "text": " and 2020 c 357 s 913 are each amended to read as follows:"
+    }
+   ],
+   "notes": [
+    "2020 c 357 s 913; 2002 c 354 s 305.",
+    "Effective date—2020 c 357: See note following RCW 43.79.545."
+   ],
+   "changeSummary": {
+    "insWords": 109,
+    "delWords": 2
+   }
+  }
+ ],
+ "rcwAffected": [
+  {
+   "cite": "41.80.020",
+   "action": "amend",
+   "sectionIds": [
+    "sec-1"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=41.80.020",
+   "chapter": "41.80",
+   "caption": "Scope of bargaining."
+  },
+  {
+   "cite": "41.80.040",
+   "action": "amend",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=41.80.040",
+   "chapter": "41.80",
+   "caption": "Management rights—Not subject to bargaining."
+  }
+ ],
+ "provenance": {
+  "fetchedAt": "2026-09-01T00:00:00.000Z",
+  "parser": "wa-bill-xml",
+  "parserVersion": "1.0.0",
+  "warnings": [],
+  "hasLineNumbers": false
+ },
+ "certificate": {
+  "passed": [
+   {
+    "chamber": "H",
+    "date": "March 9, 2026",
+    "yeas": 78,
+    "nays": 17
+   },
+   {
+    "chamber": "S",
+    "date": "March 4, 2026",
+    "yeas": 31,
+    "nays": 18
+   }
+  ]
+ }
+}

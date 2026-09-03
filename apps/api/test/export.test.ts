@@ -1,0 +1,211 @@
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { inflateRawSync } from 'node:zlib';
+import type { Logger } from 'pino';
+import { findAll, type PMNode } from '@wa-leg/note-schema';
+import { createTestApp, truncate, users, type TestContext } from './helpers.js';
+import { DirectoryFetcher, ingestLegiscanBills, readDataset } from '../src/modules/bills/index.js';
+import { seedTemplates } from '../src/modules/templates/index.js';
+import { seedReference } from '../src/modules/reference/index.js';
+import { seedUsers } from '../src/db/seed.js';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const LEGISCAN = join(here, 'fixtures', 'legiscan');
+const XML_FIXTURES = join(here, '..', '..', '..', 'packages', 'bill-document', 'fixtures');
+
+let t: TestContext;
+let noteId: string;
+
+/** Read one entry of a zip (stored or deflated) without a zip library. */
+function zipEntry(buf: Buffer, name: string): string {
+  let pos = 0;
+  while (pos + 30 <= buf.length && buf.readUInt32LE(pos) === 0x04034b50) {
+    const method = buf.readUInt16LE(pos + 8);
+    const compressed = buf.readUInt32LE(pos + 18);
+    const nameLen = buf.readUInt16LE(pos + 26);
+    const extraLen = buf.readUInt16LE(pos + 28);
+    const entryName = buf.subarray(pos + 30, pos + 30 + nameLen).toString('utf8');
+    const dataStart = pos + 30 + nameLen + extraLen;
+    const data = buf.subarray(dataStart, dataStart + compressed);
+    if (entryName === name) return (method === 8 ? inflateRawSync(data) : data).toString('utf8');
+    pos = dataStart + compressed;
+  }
+  throw new Error(`zip entry ${name} not found`);
+}
+
+const drain = async () => {
+  await t.app.bus.drain();
+  await t.app.bus.drain();
+};
+
+beforeAll(async () => {
+  t = await createTestApp({ SEARCH_BACKEND: 'postgres' });
+  await truncate(t.handle, ['bills', 'bill_versions', 'amendments', 'hearings', 'prior_fiscal_notes', 'outbox', 'outbox_consumptions', 'search_docs', 'notes', 'note_revisions', 'note_documents', 'note_comments', 'note_comment_messages', 'note_locks', 'note_exports', 'templates', 'reference_sets', 'audit_log', 'workflow_instances', 'workflow_transitions', 'workflow_assignments', 'workflow_deadlines', 'notifications']);
+  await seedUsers(t.app.db);
+  await seedTemplates(t.app.db, t.config.TEMPLATES_DIR);
+  await seedReference(t.app.db, t.config.REFERENCE_DIR);
+  await ingestLegiscanBills({ db: t.app.db, fetcher: new DirectoryFetcher(XML_FIXTURES), log: t.app.log as unknown as Logger }, readDataset(LEGISCAN, { bills: ['HB2402'] }), {});
+  await drain();
+  // A note with figures, a formula, a citation and a comment.
+  const created = await t.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await t.as(users.reviewer), payload: { billKey: 'WA:2025-26:HB2402', versionCode: 'S', templateId: 'sales-use-tax-exemption', drafterId: 'dev-drafter', request: { requestId: '2402-1-1', legContact: { name: 'Jane Legislative', phone: '360-786-7100' } } } });
+  noteId = created.json().noteRevisionId;
+  await drain();
+  const head = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/document`, headers: await t.as(users.drafter) })).json();
+  const doc = head.doc as PMNode;
+  const setCell = (slot: string, text: string) => {
+    const cell = findAll(doc, 'noteCell').find((c) => c.attrs?.slot === slot)!;
+    cell.content = [{ type: 'text', text }];
+  };
+  setCell('receipts.gf.fy1', '-4310000');
+  setCell('receipts.gf.fy2', '-10800000');
+  const proposal = findAll(doc, 'paragraph').find((p) => p.attrs?.slot === 'narrative.proposal')!;
+  proposal.content = [
+    { type: 'text', text: 'The exemption applies per ' },
+    { type: 'billCitation', attrs: { billKey: 'WA:2025-26:HB2402', versionCode: 'S', versionLabel: 'SHB 2402', sectionId: 'sec-2', label: 'Sec. 2', citation: 'Section 2 of SHB 2402', href: '/bills/2025-26/HB2402/S#sec-2' } },
+    { type: 'text', text: ' with revenue R = ' },
+    { type: 'inlineMath', attrs: { latex: '\\frac{a}{b} \\times 10^{3}' } },
+    { type: 'text', text: ' (reviewed)', marks: [{ type: 'comment', attrs: { commentId: 'c_exp', resolved: false } }] },
+  ];
+  await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/comments`, headers: await t.as(users.reviewer), payload: { anchorText: '(reviewed)', body: 'Check the multiplier', id: 'c_exp' } });
+  const saved = await t.app.inject({ method: 'PUT', url: `/api/v1/notes/${noteId}/document`, headers: { ...(await t.as(users.drafter)), 'if-match': '"1"' }, payload: { doc, mode: 'limited' } });
+  if (saved.statusCode !== 200) throw new Error(saved.body);
+  await drain();
+});
+afterAll(async () => {
+  await t.close();
+});
+
+describe('exports', () => {
+  it('HTML renders the tables, currency, citation link and KaTeX math', async () => {
+    const res = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=html`, headers: await t.as(users.drafter) });
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toContain('text/html');
+    expect(res.headers['content-disposition']).toMatch(/attachment; filename="SHB_2402_fiscal_note_v2.html"/);
+    expect(res.body).toContain('<table class="note-table"');
+    expect(res.body).toContain('(15,110,000)');
+    expect(res.body).toContain('class="katex"');
+    expect(res.body).toContain('<math');
+    expect(res.body).toMatch(/href="http:\/\/localhost:5173\/bills\/2025-26\/HB2402\/S#sec-2"/);
+    expect(res.body).toContain('Form FN (Rev 1/00)');
+    expect(res.body).not.toContain('mark class="comment"');
+    const withComments = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=html&comments=true`, headers: await t.as(users.drafter) });
+    expect(withComments.body).toContain('Check the multiplier');
+    expect(withComments.body).toContain('mark class="comment"');
+  });
+
+  it('DOCX is a Word package with the table, bold totals, OMML math and optional comments', async () => {
+    const res = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=docx&comments=true`, headers: await t.as(users.drafter) });
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toContain('wordprocessingml');
+    const buf = res.rawPayload;
+    expect(buf.subarray(0, 2).toString()).toBe('PK');
+    const xml = zipEntry(buf, 'word/document.xml');
+    expect(xml).toContain('<w:tbl>');
+    expect(xml).toContain('(15,110,000)');
+    expect(xml).toContain('<m:oMath>');
+    expect(xml).toContain('<m:f>'); // fraction
+    expect(xml).toContain('<m:sSup>'); // superscript
+    expect(xml).toContain('Sec. 2');
+    expect(xml).toContain('<w:commentRangeStart');
+    const comments = zipEntry(buf, 'word/comments.xml');
+    expect(comments).toContain('Check the multiplier');
+    const footer = zipEntry(buf, 'word/footer1.xml');
+    expect(footer).toContain('Request # 2402-1-1');
+    expect(footer).toContain('FNS062');
+    // Without comments the ranges are absent.
+    const plain = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=docx`, headers: await t.as(users.drafter) });
+    expect(zipEntry(plain.rawPayload, 'word/document.xml')).not.toContain('commentRangeStart');
+  });
+
+  it('PDF renders through Chromium', async () => {
+    const res = await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/export?format=pdf`, headers: await t.as(users.drafter) });
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toBe('application/pdf');
+    expect(res.headers['content-disposition']).toMatch(/^inline/);
+    expect(res.rawPayload.subarray(0, 5).toString()).toBe('%PDF-');
+    expect(res.rawPayload.length).toBeGreaterThan(10_000);
+  }, 60_000);
+
+  it('FNS XML emits slot values and table cells, and refuses while required slots are empty', async () => {
+    const refused = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=xml`, headers: await t.as(users.drafter) });
+    expect(refused.statusCode).toBe(422);
+    expect(refused.json().details.unfilledSlots.length).toBeGreaterThan(0);
+    // Fill every required slot, then export.
+    const head = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/document`, headers: await t.as(users.drafter) })).json();
+    const doc = head.doc as PMNode;
+    const fill = (n: PMNode) => {
+      for (const c of n.content ?? []) {
+        const slot = c.attrs?.slot as string | undefined;
+        const editable = slot && !c.attrs?.readonly && !c.attrs?.computed && c.type !== 'checkbox';
+        const required = c.type === 'slot' ? c.attrs?.required !== false : !c.attrs?.optional;
+        if (editable && required) {
+          const text = (c.content ?? []).map((x) => x.text ?? (x.content ?? []).map((y) => y.text ?? '').join('')).join('').trim();
+          const numeric = ['money', 'fte', 'money-thousands', 'int', 'pct'].includes(String(c.attrs?.slotType ?? ''));
+          if (!text) {
+            if (c.type === 'bulletList' || c.type === 'orderedList') c.content = [{ type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'n/a' }] }] }];
+            else c.content = [{ type: 'text', text: numeric ? '0' : 'n/a' }];
+          }
+        }
+        if (c.type !== 'slot' && !(c.type === 'noteCell' && slot)) fill(c);
+      }
+    };
+    fill(doc);
+    const saved = await t.app.inject({ method: 'PUT', url: `/api/v1/notes/${noteId}/document`, headers: { ...(await t.as(users.drafter)), 'if-match': `"${head.version}"` }, payload: { doc, mode: 'limited' } });
+    expect(saved.statusCode).toBe(200);
+    const res = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=xml`, headers: await t.as(users.drafter) });
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toContain('application/xml');
+    expect(res.body).toContain('<FiscalNote schemaVersion="placeholder"');
+    expect(res.body).toContain('<BillNumber>SHB 2402</BillNumber>');
+    expect(res.body).toContain('<RequestNumber>2402-1-1</RequestNumber>');
+    expect(res.body).toMatch(/<Field path="receipts\.gf\.fy1" type="money" value="-4310000">\(4,310,000\)<\/Field>/);
+    expect(res.body).toMatch(/<Field path="legContact\.name"[^>]*>Jane Legislative<\/Field>/);
+    expect(res.body).toContain('<Fund code="001-1"');
+    expect(res.body).toContain('<Biennium id="2025-27">-15110000</Biennium>');
+    expect(res.body).toContain('<Section part="II.B"');
+  });
+
+  it('exports are recorded, audited, listed, re-downloadable and visible in the admin audit', async () => {
+    const list = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/exports`, headers: await t.as(users.drafter) })).json();
+    expect(list.length).toBeGreaterThanOrEqual(5);
+    const first = list.find((e: any) => e.format === 'html');
+    const job = await t.app.inject({ method: 'GET', url: `/api/v1/export-jobs/${first.exportId}`, headers: await t.as(users.drafter) });
+    expect(job.json()).toMatchObject({ status: 'done', format: 'html' });
+    const again = await t.app.inject({ method: 'GET', url: job.json().url, headers: await t.as(users.drafter) });
+    expect(again.statusCode).toBe(200);
+    expect(again.body).toContain('<table class="note-table"');
+    const audit = (await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit?action=note.export', headers: await t.as(users.admin) })).json();
+    expect(audit.length).toBeGreaterThanOrEqual(5);
+    expect(audit[0].after.format).toBeTruthy();
+    const events = (await t.app.db.execute((await import('drizzle-orm')).sql`SELECT count(*)::int AS n FROM outbox WHERE type = 'note.exported'`)).rows[0] as any;
+    expect(Number(events.n)).toBeGreaterThanOrEqual(5);
+  });
+
+  it('viewers see nothing until approval, then the approved snapshot beside the bill', async () => {
+    expect((await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=html`, headers: await t.as(users.viewer) })).statusCode).toBe(403);
+    // Drafting → review → approval.
+    const send = async (u: (typeof users)[keyof typeof users], event: string) => t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/transitions`, headers: await t.as(u), payload: { event } });
+    expect((await send(users.drafter, 'SUBMIT_FOR_REVIEW')).statusCode).toBe(201);
+    expect((await send(users.reviewer, 'CLAIM_REVIEW')).statusCode).toBe(201);
+    expect((await send(users.reviewer, 'APPROVE')).json().state).toBe('approved');
+    await drain();
+    const summary = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}`, headers: await t.as(users.viewer) })).json();
+    expect(summary.state).toBe('approved');
+    expect(summary.approvedVersion).toBe(summary.headVersion);
+    const versions = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/versions`, headers: await t.as(users.viewer) })).json();
+    expect(versions[0].label).toBe('Approved');
+    // The bill page lists it for anyone; the approved document is readable.
+    const onBill = (await t.app.inject({ method: 'GET', url: '/api/v1/bills/2025-26/HB2402/notes', headers: await t.as(users.viewer) })).json();
+    expect(onBill.map((n: any) => n.noteRevisionId)).toContain(noteId);
+    const approvedDoc = await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/versions/${summary.approvedVersion}`, headers: await t.as(users.viewer) });
+    expect(approvedDoc.statusCode).toBe(200);
+    // Exports for viewers default to the approved version; other versions are refused.
+    const pdfLink = await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/export?format=html`, headers: await t.as(users.viewer) });
+    expect(pdfLink.statusCode).toBe(200);
+    expect(pdfLink.headers['x-document-version']).toBe(String(summary.approvedVersion));
+    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/export?format=html&version=1`, headers: await t.as(users.viewer) })).statusCode).toBe(403);
+    const publish = (await t.app.inject({ method: 'GET', url: `/api/v1/admin/audit?action=note.publish&objectId=${noteId}`, headers: await t.as(users.admin) })).json();
+    expect(publish.length).toBe(1);
+  });
+});

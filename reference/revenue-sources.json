@@ -1,0 +1,12 @@
+{
+  "sources": [
+    { "code": "01-01", "label": "01 - Taxes  01 - Retail Sales Tax" },
+    { "code": "01-05", "label": "01 - Taxes  05 - Bus and Occup Tax" },
+    { "code": "01-50", "label": "01 - Taxes  50 - Property Tax" },
+    { "code": "01-55", "label": "01 - Taxes  55 - Inheritance Tax" },
+    { "code": "01-57", "label": "01 - Taxes  57 - Real Estate Excise" },
+    { "code": "01-02", "label": "01 - Taxes  02 - Use Tax" },
+    { "code": "01-59", "label": "01 - Taxes  59 - Public Utility Tax" },
+    { "code": "02-00", "label": "02 - Licenses, Permits and Fees" }
+  ]
+}

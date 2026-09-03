@@ -1,0 +1,10 @@
+{
+  "accounts": [
+    { "key": "gf", "code": "001-1", "title": "GF-STATE-State", "ngfOutlook": false, "tenYearCode": "001" },
+    { "key": "pag", "code": "553-1", "title": "Performance Audits of Government Account-State", "ngfOutlook": false, "tenYearCode": "553" },
+    { "key": "weia", "code": "24J-1", "title": "Workforce Education Investment Account-State", "ngfOutlook": true, "tenYearCode": "24J" },
+    { "key": "elta", "code": "08A-1", "title": "Education Legacy Trust Account-State", "ngfOutlook": true, "tenYearCode": "08A" },
+    { "key": "pwaa", "code": "058-1", "title": "Public Works Assistance Account-State", "ngfOutlook": false, "tenYearCode": "058" },
+    { "key": "new", "code": "NEW", "title": "New account", "ngfOutlook": false, "tenYearCode": "NEW" }
+  ]
+}

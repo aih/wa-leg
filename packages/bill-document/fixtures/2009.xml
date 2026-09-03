@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Bill type="bill" xmlns="http://leg.wa.gov/2012/document"><BillHeading><RequestNumber>H-1555.1</RequestNumber><ShortBillId>HB 2009</ShortBillId><LongBillId>HOUSE BILL 2009</LongBillId><Legislature>69th Legislature</Legislature><Session>2025 Regular Session</Session><Sponsors>Representatives Salahuddin, Walen, and Parshley</Sponsors><BillHistory><ReadDate>Read first time 02/20/25.</ReadDate><ReferredCommittee>Referred to Committee on Finance.</ReferredCommittee></BillHistory><BriefDescription>Clarifying the calculation of the real estate excise tax for the transfer of a controlling interest in an entity holding real property.</BriefDescription></BillHeading>
+
+<BillBody>
+<BillTitle>AN ACT Relating to clarifying the calculation of the real estate excise tax for the transfer of a controlling interest in an entity holding real property; amending RCW 82.45.030; and providing an effective date.</BillTitle>
+<EnactedClause />
+<BillSection type="amendatory" action="amend">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>1</Value><TextRun>.  </TextRun></BillSectionNumber><SectionCite><TextRun>RCW </TextRun><TitleNumber>82</TitleNumber><TextRun>.</TextRun><ChapterNumber>45</ChapterNumber><TextRun>.</TextRun><SectionNumber>030</SectionNumber></SectionCite> and 2011 c 58 s 15 are each amended to read as follows:<Caption>"Selling price," "total consideration paid or contracted to be paid," defined.</Caption></BillSectionHeader>
+<P>(1) As used in this chapter, the term "selling price" means the true and fair value of the property conveyed. If property has been conveyed in an arm's length transaction between unrelated persons for a valuable consideration, a rebuttable presumption exists that the selling price is equal to the total consideration paid or contracted to be paid to the transferor, or to another for the transferor's benefit.</P>
+<P>(2) If the sale is a transfer of a controlling interest in an entity with an interest in real property located in this state, the selling price shall be the true and fair value of the real property owned by the entity and located in this state<TextRun amendingStyle="add">, multiplied by the percentage of the controlling interest being transferred</TextRun>. If the true and fair value of the real property located in this state cannot reasonably be determined, the selling price shall be determined according to subsection (4) of this section.</P>
+<P>(3) As used in this section, "total consideration paid or contracted to be paid" includes money or anything of value, paid or delivered or contracted to be paid or delivered in return for the sale, and shall include the amount of any lien, mortgage, contract indebtedness, or other incumbrance, either given to secure the purchase price, or any part thereof, or remaining unpaid on such property at the time of sale.</P>
+<P>Total consideration shall not include the amount of any outstanding lien or incumbrance in favor of the United States, the state, or a municipal corporation for taxes, special benefits, or improvements.</P>
+<P>When a transfer or conveyance is made by deed in lieu of foreclosure to satisfy a deed of trust, total consideration shall not include the amount of any relocation assistance provided to the transferor.</P>
+<P>(4) If the total consideration for the sale cannot be ascertained or the true and fair value of the property to be valued at the time of the sale cannot reasonably be determined, the market value assessment for the property maintained on the county property tax rolls at the time of the sale shall be used as the selling price.</P>
+<History>2011 c 58 s 15; 1993 sp.s. c 25 s 503; 1969 ex.s. c 223 s 28A.45.030. Prior: 1951 2nd ex.s. c 19 s 2; 1951 1st ex.s. c 11 s 8. Formerly RCW 28A.45.030, 28.45.030.</History>
+<RCWNoteSection>
+<AnnNote><NoteP><TextRun fontWeight="bold">Findings<TextRun fontFamily="Times New Roman">—</TextRun>Intent<TextRun fontFamily="Times New Roman">—</TextRun>Short title<TextRun fontFamily="Times New Roman">—</TextRun>2011 c 58:</TextRun> See notes following RCW 61.24.005.</NoteP></AnnNote>
+<AnnNote><NoteP><TextRun fontWeight="bold">Severability<TextRun fontFamily="Times New Roman">—</TextRun>Effective dates<TextRun fontFamily="Times New Roman">—</TextRun>Part headings, captions not law<TextRun fontFamily="Times New Roman">—</TextRun>1993 sp.s. c 25:</TextRun> See notes following RCW 82.04.230.</NoteP></AnnNote>
+<AnnNote><NoteP><TextRun fontWeight="bold">Findings<TextRun fontFamily="Times New Roman">—</TextRun>Intent<TextRun fontFamily="Times New Roman">—</TextRun>1993 sp.s. c 25:</TextRun> See note following RCW 82.45.010.</NoteP></AnnNote>
+</RCWNoteSection>
+</BillSection>
+<BillSection type="new" action="effdate">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>2</Value><TextRun>.  </TextRun></BillSectionNumber><P>This act takes effect August 1, 2025.</P></BillSectionHeader>
+</BillSection>
+</BillBody>
+</Bill>

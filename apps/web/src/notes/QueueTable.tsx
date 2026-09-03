@@ -1,0 +1,71 @@
+import { Link } from 'react-router';
+import { BAND_LABELS, STATE_HINTS, STATE_LABELS, dueCountdown, fmtWhen, type AssignmentRow } from './api';
+
+export interface QueueTableProps {
+  rows: AssignmentRow[];
+  vocabulary: 'drafter' | 'reviewer';
+  empty: string;
+  /** Extra cell per row (assigner controls). */
+  extra?: (row: AssignmentRow) => React.ReactNode;
+  showAssignee?: boolean;
+}
+
+/** Work queue: bill, version, title, status (one vocabulary for every role), due (band as text), hearing, counterpart, last activity. */
+export function QueueTable({ rows, vocabulary, empty, extra, showAssignee }: QueueTableProps) {
+  if (rows.length === 0) return <p className="muted">{empty}</p>;
+  const labelOf = (state: string) => STATE_LABELS[state] ?? state;
+  return (
+    <div className="table-scroll" tabIndex={0} role="region" aria-label="Table, scrolls horizontally on narrow screens">
+      <table className="queue">
+        <thead>
+          <tr>
+            <th scope="col">Bill</th>
+            <th scope="col">Status</th>
+            <th scope="col">Due</th>
+            <th scope="col">Hearing</th>
+            <th scope="col">{showAssignee ? 'Drafter' : vocabulary === 'drafter' ? 'Reviewer' : 'Drafter'}</th>
+            <th scope="col">Updated</th>
+            {extra && <th scope="col">Actions</th>}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={`${r.instanceId}-${r.role}-${r.position}`} className={`band-${r.band}`}>
+              <td>
+                <Link to={`/notes/${r.noteRevisionId}`}>{r.versionLabel}</Link>
+                {r.kind === 'estimate' && <span className="muted"> (estimate)</span>}
+                {r.confidential && <span className="chip">Confidential</span>}
+                {r.priority !== 'normal' && <span className="chip">{r.priority}</span>}
+                {r.title && <div className="muted small">{r.title}</div>}
+              </td>
+              <td>
+                <span className={`status status-${r.state.replace('.', '-')}`} title={STATE_HINTS[r.state]}>
+                  {labelOf(r.state)}
+                </span>
+                {r.pool && <div className="muted small">unclaimed</div>}
+                {r.role === 'exec' && <div className="muted small">executive step {r.position + 1}</div>}
+                {r.supersededBy && <div className="muted small">superseded</div>}
+              </td>
+              <td>
+                {r.effectiveDueAt ? (
+                  <>
+                    <span className={`band-label band-${r.band}`}>{BAND_LABELS[r.band]}</span>
+                    <div className="small" title={fmtWhen(r.effectiveDueAt)}>
+                      {dueCountdown(r.effectiveDueAt)}
+                    </div>
+                  </>
+                ) : (
+                  <span className="muted">—</span>
+                )}
+              </td>
+              <td>{r.nextHearingAt ? fmtWhen(r.nextHearingAt) : <span className="muted">none</span>}</td>
+              <td>{r.counterpart?.displayName ?? r.counterpart?.userId ?? <span className="muted">—</span>}</td>
+              <td>{fmtWhen(r.updatedAt)}</td>
+              {extra && <td>{extra(r)}</td>}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}

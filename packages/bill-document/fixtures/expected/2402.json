@@ -1,0 +1,663 @@
+{
+ "schemaVersion": "1.0",
+ "bill": {
+  "biennium": "2025-26",
+  "chamber": "H",
+  "type": "B",
+  "number": 2402,
+  "id": "HB2402",
+  "billPageUrl": "https://app.leg.wa.gov/billsummary?BillNumber=2402&Year=2025&Initiative=false",
+  "shortTitle": "Concerning phthalates in medical equipment used for intravenous purposes."
+ },
+ "version": {
+  "code": "I",
+  "label": "House Bill",
+  "seq": 0,
+  "sourceHash": "sha256:738ee33df91af4df60bc27793c1a399b13274eeb5725e106a5864ed265547f1d"
+ },
+ "header": {
+  "title": "AN ACT Relating to phthalates in medical equipment used for intravenous purposes; and adding a new chapter to Title 70A RCW.",
+  "relatingTo": "phthalates in medical equipment used for intravenous purposes",
+  "titleActions": [
+   {
+    "kind": "adding-chapter",
+    "text": "adding a new chapter to Title 70A RCW",
+    "cites": [
+     {
+      "kind": "rcw-title",
+      "text": "Title 70A RCW",
+      "cite": "70A",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=70A"
+     }
+    ]
+   }
+  ],
+  "sponsors": [
+   "Representatives Stonier, Parshley, Ramel, and Reed"
+  ],
+  "briefDescription": "Concerning phthalates in medical equipment used for intravenous purposes.",
+  "requestNumber": "H-2542.3",
+  "shortBillId": "HB 2402",
+  "longBillId": "HOUSE BILL 2402",
+  "legislature": "69th Legislature",
+  "session": "2026 Regular Session",
+  "referredTo": "Referred to Committee on Environment & Energy.",
+  "readFirstTime": "2026-01-13"
+ },
+ "sections": [
+  {
+   "id": "sec-1",
+   "num": "1",
+   "label": "NEW SECTION. Sec. 1.",
+   "isNewSection": true,
+   "kind": "intent",
+   "sourceKind": "new",
+   "identity": "text:13b9ad68e665fcf5",
+   "blocks": [
+    {
+     "id": "sec-1.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The legislature finds and declares all of the following:"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Di(2-ethylhexyl) phthalate (DEHP) and other ortho-phthalates are toxic chemicals and can have negative impacts on human health as determined by the United States food and drug administration and the United States environmental protection agency;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "DEHP and other ortho-phthalates are used primarily to produce flexibility in plastics, mainly polyvinyl chloride (PVC);"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "DEHP is the most common plasticizer used in medical devices, including intravenous solution containers (IV bags) and intravenous tubing;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Over the course of its shelf life, DEHP leaches out of the plastic into the solution being held in the container;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.5",
+     "label": "(5)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "DEHP is classified as an endocrine-disrupting compound, meaning it can interfere with the hormonal system in humans and animals. It can mimic or block the actions of hormones, leading to adverse effects on reproductive health, development, and metabolism;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.6",
+     "label": "(6)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Studies have suggested a potential link between DEHP exposure and certain types of cancer, including breast, liver, lung, and testicular cancer. The United States environmental protection agency has determined that DEHP is a probable human carcinogen;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.7",
+     "label": "(7)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "DEHP exposure has been associated with adverse effects on reproductive organs and fertility. It can disrupt normal reproductive development, reduce sperm quality, and affect hormone levels in both males and females;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.8",
+     "label": "(8)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "DEHP is metabolized in the liver and can accumulate in the body over time. Prolonged exposure to high levels of DEHP has been shown to cause liver and kidney damage in animal studies;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.9",
+     "label": "(9)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Inhalation or ingestion of DEHP can cause respiratory irritation and allergic reactions in some individuals, particularly those with preexisting respiratory conditions or sensitivities;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.10",
+     "label": "(10)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "DEHP dosed at varying concentrations in cell culture studies has been linked to potential multidrug resistance in breast cancer cells that may inhibit the effectiveness of breast cancer drugs; and"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.11",
+     "label": "(11)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Triple-negative breast cancer cells dosed in culture with DEHP have been potentially linked to multidrug resistance, inhibiting the apoptosis mechanism induced by breast cancer drugs such as tamoxifen and increasing cell proliferation in vitro. One proposed mechanism is that DEHP may serve as a mitogenic factor for estrogen receptor-positive breast cancer cells, potentially making them multidrug resistant."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:425aaf3c1a71e183ab3bf8ce006004f5d5bd445dae4390521cbf2fa585a291bc"
+  },
+  {
+   "id": "sec-2",
+   "num": "2",
+   "label": "NEW SECTION. Sec. 2.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:b75d2edffc25b5f9",
+   "blocks": [
+    {
+     "id": "sec-2.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The definitions in this section apply throughout this chapter unless the context clearly requires otherwise."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"DEHP\" means Di(2-ethylhexyl) phthalate."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"Intentionally added DEHP\" means DEHP that a manufacturer has intentionally added to an intravenous solution container or intravenous tubing product that has a functional or technical effect on the product."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"Intravenous solution containers\" means a container used to house medicine, fluid, or nutrition therapy that is intravenously administered to patients in a hospital, outpatient, or other health care facility."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"Intravenous tubing\" means any tubing used to intravenously administer fluids, medication, or nutrients directly to an adult, child, or infant."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.5",
+     "label": "(5)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"Ortho-phthalates\" means a class of chemicals that are esters of ortho-phthalic acid, including all of the following:"
+      }
+     ],
+     "children": [
+      {
+       "id": "sec-2.5.a",
+       "label": "(a)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Benzyl-butyl phthalate (BBP) 85-68-7;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.5.b",
+       "label": "(b)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Dibutyl phthalate (DBP) 84-74-2;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.5.c",
+       "label": "(c)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Dicyclohexyl phthalate (DCHP) 84-61-7;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.5.d",
+       "label": "(d)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Di-(2-ethylhexyl) phthalate (DEHP) 117-81-7;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.5.e",
+       "label": "(e)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Diethyl phthalate (DEP) 84-66-2;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.5.f",
+       "label": "(f)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Di-isobutyl phthalate (DIBP) 84-69-5;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.5.g",
+       "label": "(g)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Di-isodecyl phthalate (DIDP) 26761-40-0;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.5.h",
+       "label": "(h)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Di-isononyl phthalate (DINP) 28553-12-0;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.5.i",
+       "label": "(i)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Di-n-hexyl phthalate (DnHP) 84-75-3;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.5.j",
+       "label": "(j)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Di-n-octyl phthalate (DNOP) 117-84-0;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.5.k",
+       "label": "(k)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Di-n-pentyl phthalate (DnPP) 131-18-0;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.5.l",
+       "label": "(l)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Diisoheptyl phthalate (DIHP) 71888-89-6."
+        }
+       ],
+       "children": []
+      }
+     ]
+    },
+    {
+     "id": "sec-2.6",
+     "label": "(6)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"Unintentionally added DEHP\" means DEHP in an intravenous solution container or intravenous tubing product that is not used for functional or technical effect on the product."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:d2563deb4affa3650c562fac6d22872e21a7dd5b0066566062dce36987d8bf62"
+  },
+  {
+   "id": "sec-3",
+   "num": "3",
+   "label": "NEW SECTION. Sec. 3.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:c71c519382890aea",
+   "blocks": [
+    {
+     "id": "sec-3.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Except as provided in subsections (4) and (5) of this section, beginning January 1, 2028, it is prohibited for a person to manufacture, sell, or distribute into commerce in Washington intravenous solution containers made with intentionally added DEHP or that contain unintentionally added DEHP in a quantity that equals or exceeds 0.1 percent weight per weight."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-3.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Beginning January 1, 2035, it is prohibited for a person to manufacture, sell, or distribute into commerce in Washington intravenous tubing made with intentionally added DEHP or that contains unintentionally added DEHP in a quantity that equals or exceeds 0.1 percent weight per weight."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-3.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "A person or entity shall not replace DEHP under this chapter for revised or new products with other ortho-phthalates."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-3.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The following items, as described in 21 C.F.R. as it existed as of January 1, 2026, are exempt from the requirements of this section:"
+      }
+     ],
+     "children": [
+      {
+       "id": "sec-3.4.a",
+       "label": "(a)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Human blood collection and storage bags; and"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-3.4.b",
+       "label": "(b)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Apheresis and cell therapy blood kits and bags, including integral tubing."
+        }
+       ],
+       "children": []
+      }
+     ]
+    },
+    {
+     "id": "sec-3.5",
+     "label": "(5)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Nothing in this section limits the authority of the department of ecology with respect to DEHP, other ortho-phthalates, intravenous solution containers, or intravenous tubing under chapter 70A.350 RCW."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:ed438ac4cc975e61bcc9d1081ef47d7b4cab49cc658fc2d8c0b71304ee2d7ed8"
+  },
+  {
+   "id": "sec-4",
+   "num": "4",
+   "label": "NEW SECTION. Sec. 4.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "addchap",
+   "identity": "newchap:70A:1",
+   "blocks": [
+    {
+     "id": "sec-4.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Sections 1 through 3 of this act constitute a new chapter in "
+      },
+      {
+       "t": "cite",
+       "text": "Title 70A RCW",
+       "cite": {
+        "kind": "rcw-title",
+        "text": "Title 70A RCW",
+        "cite": "70A",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=70A"
+       }
+      },
+      {
+       "t": "text",
+       "text": "."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:e8393bf64e246de3c8a2749b90e55fa0ca58f8c621c3d6ab634966b78eaf4461",
+   "target": {
+    "action": "add",
+    "title": "70A",
+    "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=70A"
+   }
+  },
+  {
+   "id": "sec-5",
+   "num": "5",
+   "label": "NEW SECTION. Sec. 5.",
+   "isNewSection": true,
+   "kind": "severability",
+   "sourceKind": "new",
+   "identity": "kind:severability",
+   "blocks": [
+    {
+     "id": "sec-5.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "If any provision of this act or its application to any person or circumstance is held invalid, the remainder of the act or the application of the provision to other persons or circumstances is not affected."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:32658131472352c521194f2c42ef9e6e4141b7a98b48f87b0808384b1b102f65"
+  }
+ ],
+ "rcwAffected": [
+  {
+   "cite": "70A",
+   "action": "add",
+   "sectionIds": [
+    "sec-4"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=70A"
+  }
+ ],
+ "provenance": {
+  "fetchedAt": "2026-09-01T00:00:00.000Z",
+  "parser": "wa-bill-xml",
+  "parserVersion": "1.0.0",
+  "warnings": [],
+  "hasLineNumbers": false
+ }
+}

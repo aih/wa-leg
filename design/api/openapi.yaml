@@ -1,0 +1,912 @@
+openapi: 3.1.0
+info:
+  title: Fiscal Note Workbench API
+  version: 1.0.0
+  description: |
+    REST API for the DOR fiscal note proof of concept. Paths are grouped by module:
+    identity, bills, search, notes, templates, workflow, notifications, reference, admin.
+    Detailed request and response shapes are specified in design/research/*.md; this file
+    is the route catalog and the shared schema skeleton the implementation must generate from
+    or conform to. All paths are served under /api/v1.
+servers:
+  - url: /api/v1
+security:
+  - session: []
+  - bearer: []
+tags:
+  - name: identity
+  - name: bills
+  - name: search
+  - name: notes
+  - name: templates
+  - name: workflow
+  - name: notifications
+  - name: reference
+  - name: admin
+
+paths:
+  # ---------------- identity ----------------
+  /me:
+    get:
+      tags: [identity]
+      summary: Current principal
+      responses:
+        "200": { description: Principal, content: { application/json: { schema: { $ref: "#/components/schemas/Principal" } } } }
+  /auth/login:
+    get:
+      tags: [identity]
+      summary: Start OIDC login (redirect)
+      security: []
+      responses: { "302": { description: Redirect to the identity provider } }
+  /auth/callback:
+    get:
+      tags: [identity]
+      summary: OIDC callback
+      security: []
+      responses: { "302": { description: Redirect to the app } }
+  /auth/logout:
+    post:
+      tags: [identity]
+      summary: End session
+      responses: { "204": { description: Logged out } }
+
+  # ---------------- bills ----------------
+  /bills/resolve:
+    get:
+      tags: [bills]
+      summary: Parse a bill reference and resolve it to a bill and version
+      parameters:
+        - { name: ref, in: query, required: true, schema: { type: string }, example: "ESHB 1234 (2025)" }
+        - { name: biennium, in: query, schema: { type: string }, example: "2025-26" }
+      responses:
+        "200": { description: Resolution, content: { application/json: { schema: { $ref: "#/components/schemas/Resolution" } } } }
+        "400": { description: Unparsed }
+        "404": { description: Parsed but not found }
+  /bills/{biennium}/{id}:
+    get:
+      tags: [bills]
+      summary: Bill summary with version list, hearings, prior fiscal notes, companion
+      parameters:
+        - { $ref: "#/components/parameters/biennium" }
+        - { $ref: "#/components/parameters/billId" }
+      responses:
+        "200": { description: Bill summary, content: { application/json: { schema: { $ref: "#/components/schemas/BillSummary" } } } }
+        "404": { description: Not found }
+  /bills/{biennium}/{id}/versions/{code}:
+    get:
+      tags: [bills]
+      summary: Bill Document for one version (code=current resolves to the newest)
+      parameters:
+        - { $ref: "#/components/parameters/biennium" }
+        - { $ref: "#/components/parameters/billId" }
+        - { $ref: "#/components/parameters/versionCode" }
+      responses:
+        "200":
+          description: Bill Document (schema in research/bill-viewer.md section 3)
+          headers: { Cache-Control: { schema: { type: string }, description: "public, immutable when code is explicit" } }
+          content: { application/json: { schema: { $ref: "#/components/schemas/BillDocument" } } }
+  /bills/{biennium}/{id}/versions/{code}/sections/{sectionId}:
+    get:
+      tags: [bills]
+      summary: One section of a version
+      parameters:
+        - { $ref: "#/components/parameters/biennium" }
+        - { $ref: "#/components/parameters/billId" }
+        - { $ref: "#/components/parameters/versionCode" }
+        - { name: sectionId, in: path, required: true, schema: { type: string }, example: sec-3 }
+      responses:
+        "200": { description: Section, content: { application/json: { schema: { $ref: "#/components/schemas/BillSection" } } } }
+  /bills/{biennium}/{id}/diff:
+    get:
+      tags: [bills]
+      summary: Version-to-version diff (to may be amend:{amendmentId} for a striking amendment)
+      parameters:
+        - { $ref: "#/components/parameters/biennium" }
+        - { $ref: "#/components/parameters/billId" }
+        - { name: from, in: query, required: true, schema: { type: string } }
+        - { name: to, in: query, required: true, schema: { type: string } }
+        - { name: mode, in: query, schema: { type: string, enum: [as-printed, effect], default: as-printed } }
+      responses:
+        "200": { description: VersionDiff, content: { application/json: { schema: { $ref: "#/components/schemas/VersionDiff" } } } }
+  /bills/{biennium}/{id}/amendments:
+    get:
+      tags: [bills]
+      summary: Amendments of a bill
+      parameters:
+        - { $ref: "#/components/parameters/biennium" }
+        - { $ref: "#/components/parameters/billId" }
+      responses:
+        "200": { description: List, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/AmendmentSummary" } } } } }
+  /bills/{biennium}/{id}/amendments/{amendmentId}:
+    get:
+      tags: [bills]
+      summary: Amendment Document
+      parameters:
+        - { $ref: "#/components/parameters/biennium" }
+        - { $ref: "#/components/parameters/billId" }
+        - { name: amendmentId, in: path, required: true, schema: { type: string }, description: "lawfilesext name; spaces may be sent as _" }
+      responses:
+        "200": { description: Amendment Document, content: { application/json: { schema: { $ref: "#/components/schemas/AmendmentDocument" } } } }
+  /bills/{biennium}/{id}/hearings:
+    get:
+      tags: [bills]
+      summary: Hearings and executive sessions
+      parameters:
+        - { $ref: "#/components/parameters/biennium" }
+        - { $ref: "#/components/parameters/billId" }
+      responses:
+        "200": { description: List, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Hearing" } } } } }
+  /bills/{biennium}/{id}/notes:
+    get:
+      tags: [notes]
+      summary: Note revisions on this bill visible to the caller, grouped by version
+      parameters:
+        - { $ref: "#/components/parameters/biennium" }
+        - { $ref: "#/components/parameters/billId" }
+      responses:
+        "200": { description: List, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/NoteRevisionSummary" } } } } }
+
+  # ---------------- search ----------------
+  /search:
+    get:
+      tags: [search]
+      summary: Text search with direct-hit resolution, filters, facets (research/search.md section 6.1)
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: biennium, in: query, schema: { type: string } }
+        - { name: chamber, in: query, schema: { type: string, enum: [H, S] } }
+        - { name: type, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string } }
+        - { name: committee, in: query, schema: { type: string } }
+        - { name: sponsor, in: query, schema: { type: string } }
+        - { name: has_fiscal_note, in: query, schema: { type: boolean } }
+        - { name: fiscal_note_status, in: query, schema: { type: string } }
+        - { name: doc_type, in: query, schema: { type: string } }
+        - { name: rcw, in: query, schema: { type: string } }
+        - { name: version_code, in: query, schema: { type: string } }
+        - { name: date_from, in: query, schema: { type: string, format: date } }
+        - { name: date_to, in: query, schema: { type: string, format: date } }
+        - { name: assigned_to_me, in: query, schema: { type: boolean } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: size, in: query, schema: { type: integer, default: 20, maximum: 100 } }
+        - { name: sort, in: query, schema: { type: string, enum: [relevance, date, bill_number] } }
+      responses:
+        "200": { description: SearchResponse, content: { application/json: { schema: { $ref: "#/components/schemas/SearchResponse" } } } }
+        "503": { description: search_unavailable }
+  /search/suggest:
+    get:
+      tags: [search]
+      summary: Search-as-you-type suggestions
+      parameters:
+        - { name: q, in: query, required: true, schema: { type: string, minLength: 1 } }
+        - { name: biennium, in: query, schema: { type: string } }
+        - { name: size, in: query, schema: { type: integer, default: 8, maximum: 10 } }
+      responses:
+        "200": { description: Suggestions, content: { application/json: { schema: { $ref: "#/components/schemas/SuggestResponse" } } } }
+  /search/reindex:
+    post:
+      tags: [admin]
+      summary: Rebuild or refresh indices (admin)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scope: { type: string, enum: [full, incremental, bill] }
+                bill_keys: { type: array, items: { type: string } }
+                indices: { type: array, items: { type: string } }
+      responses:
+        "202": { description: Job accepted, content: { application/json: { schema: { $ref: "#/components/schemas/JobAccepted" } } } }
+
+  # ---------------- notes ----------------
+  /notes:
+    post:
+      tags: [notes]
+      summary: Create a note and its first revision for a bill version (or amendment)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [billKey, versionCode]
+              properties:
+                billKey: { type: string, example: "WA:2025-26:HB2402" }
+                versionCode: { type: string, example: S }
+                amendmentId: { type: string }
+                kind: { type: string, enum: [note, estimate], default: note }
+                templateId: { type: string }
+                cloneFromRevisionId: { type: string, description: Copy the document from a prior revision (B.COM.28-29) }
+                request:
+                  type: object
+                  properties:
+                    requestId: { type: string, example: "2402-1-1" }
+                    requestedAt: { type: string, format: date-time }
+                    requestedBy: { type: string }
+                    legContact: { type: object, properties: { name: { type: string }, phone: { type: string } } }
+                    tenYearRequested: { type: boolean }
+                confidential: { type: boolean, default: false }
+                drafterId: { type: string }
+                priority: { type: string, enum: [low, normal, high, urgent] }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/NoteRevisionSummary" } } } }
+    get:
+      tags: [notes]
+      summary: List note revisions visible to the caller
+      parameters:
+        - { name: billKey, in: query, schema: { type: string } }
+        - { name: state, in: query, schema: { type: string } }
+        - { name: assignee, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: size, in: query, schema: { type: integer } }
+      responses:
+        "200": { description: List, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/NoteRevisionSummary" } } } } }
+  /notes/{id}:
+    get:
+      tags: [notes]
+      summary: Note revision summary (bill, version, request, workflow state, deadlines, assignees)
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      responses:
+        "200": { description: Summary, content: { application/json: { schema: { $ref: "#/components/schemas/NoteRevisionSummary" } } } }
+    patch:
+      tags: [notes]
+      summary: Update metadata (confidential flag, priority, request fields, identifier override per B.RFA.03)
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      requestBody: { content: { application/json: { schema: { type: object } } } }
+      responses: { "200": { description: Updated } }
+  /notes/{id}/revisions:
+    post:
+      tags: [notes]
+      summary: Create the next revision for a new bill version or amendment, cloning the document
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [versionCode]
+              properties:
+                versionCode: { type: string }
+                amendmentId: { type: string }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/NoteRevisionSummary" } } } }
+  /notes/{id}/document:
+    get:
+      tags: [notes]
+      summary: Head document
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      responses:
+        "200":
+          description: NoteDocument
+          headers: { ETag: { schema: { type: string } } }
+          content: { application/json: { schema: { $ref: "#/components/schemas/NoteDocument" } } }
+    put:
+      tags: [notes]
+      summary: Save head document (autosave). Requires If-Match with the current version.
+      parameters:
+        - { $ref: "#/components/parameters/noteRevisionId" }
+        - { name: If-Match, in: header, required: true, schema: { type: string } }
+        - { name: force, in: query, schema: { type: boolean } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [doc, mode]
+              properties:
+                doc: { type: object, description: ProseMirror JSON }
+                mode: { type: string, enum: [limited, full] }
+                clientId: { type: string }
+      responses:
+        "200": { description: Saved, content: { application/json: { schema: { type: object, properties: { version: { type: integer }, savedAt: { type: string, format: date-time }, estimateData: { $ref: "#/components/schemas/EstimateData" }, validation: { $ref: "#/components/schemas/ValidationResult" } } } } } }
+        "403": { description: Not editable by caller in the current workflow state }
+        "412": { description: Version conflict; body carries the current head }
+  /notes/{id}/versions:
+    get:
+      tags: [notes]
+      summary: Document versions (autosave heads and named snapshots)
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      responses:
+        "200": { description: List, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/DocumentVersionSummary" } } } } }
+    post:
+      tags: [notes]
+      summary: Name a snapshot of the head
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      requestBody: { content: { application/json: { schema: { type: object, properties: { label: { type: string } } } } } }
+      responses: { "201": { description: Created } }
+  /notes/{id}/versions/{v}:
+    get:
+      tags: [notes]
+      summary: A stored document version
+      parameters:
+        - { $ref: "#/components/parameters/noteRevisionId" }
+        - { name: v, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: NoteDocument, content: { application/json: { schema: { $ref: "#/components/schemas/NoteDocument" } } } }
+  /notes/{id}/versions/{v}/restore:
+    post:
+      tags: [notes]
+      summary: Restore a version as the new head
+      parameters:
+        - { $ref: "#/components/parameters/noteRevisionId" }
+        - { name: v, in: path, required: true, schema: { type: integer } }
+      responses: { "201": { description: New head version } }
+  /notes/{id}/diff:
+    get:
+      tags: [notes]
+      summary: Redline between two document versions plus a table-cell diff
+      parameters:
+        - { $ref: "#/components/parameters/noteRevisionId" }
+        - { name: from, in: query, required: true, schema: { type: integer } }
+        - { name: to, in: query, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: Diff, content: { application/json: { schema: { type: object, properties: { html: { type: string }, tables: { type: array, items: { type: object } } } } } } }
+  /notes/{id}/lock:
+    post:
+      tags: [notes]
+      summary: Acquire a soft edit lock
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      responses:
+        "200": { description: Held }
+        "409": { description: Held by another user }
+    delete:
+      tags: [notes]
+      summary: Release the lock
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      responses: { "204": { description: Released } }
+  /notes/{id}/comments:
+    get:
+      tags: [notes]
+      summary: Comment threads
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      responses:
+        "200": { description: Threads, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/CommentThread" } } } } }
+    post:
+      tags: [notes]
+      summary: Open a thread anchored to a range
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      requestBody: { content: { application/json: { schema: { type: object, required: [anchorText, body], properties: { anchorText: { type: string }, body: { type: string } } } } } }
+      responses: { "201": { description: Created } }
+  /notes/{id}/comments/{cid}:
+    patch:
+      tags: [notes]
+      summary: Resolve or reopen a thread
+      parameters:
+        - { $ref: "#/components/parameters/noteRevisionId" }
+        - { name: cid, in: path, required: true, schema: { type: string } }
+      requestBody: { content: { application/json: { schema: { type: object, properties: { status: { type: string, enum: [open, resolved] } } } } } }
+      responses: { "200": { description: Updated } }
+    delete:
+      tags: [notes]
+      summary: Delete a thread (author or reviewer)
+      parameters:
+        - { $ref: "#/components/parameters/noteRevisionId" }
+        - { name: cid, in: path, required: true, schema: { type: string } }
+      responses: { "204": { description: Deleted } }
+  /notes/{id}/comments/{cid}/messages:
+    post:
+      tags: [notes]
+      summary: Reply in a thread
+      parameters:
+        - { $ref: "#/components/parameters/noteRevisionId" }
+        - { name: cid, in: path, required: true, schema: { type: string } }
+      requestBody: { content: { application/json: { schema: { type: object, required: [body], properties: { body: { type: string } } } } } }
+      responses: { "201": { description: Created } }
+  /notes/{id}/export:
+    post:
+      tags: [notes]
+      summary: Export a document version as docx, pdf, xml (FNS placeholder), or html
+      parameters:
+        - { $ref: "#/components/parameters/noteRevisionId" }
+        - { name: format, in: query, required: true, schema: { type: string, enum: [docx, pdf, xml, html] } }
+        - { name: version, in: query, schema: { type: integer, description: "Defaults to the approved snapshot for viewers, the head for editors" } }
+        - { name: comments, in: query, schema: { type: boolean, default: false } }
+      responses:
+        "200": { description: File }
+        "202": { description: Job accepted, content: { application/json: { schema: { $ref: "#/components/schemas/JobAccepted" } } } }
+        "422": { description: Validation failed (totals do not reconcile, required slots empty) }
+  /notes/{id}/validate:
+    get:
+      tags: [notes]
+      summary: Validate the head document (required slots, table reconciliation)
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      responses:
+        "200": { description: ValidationResult, content: { application/json: { schema: { $ref: "#/components/schemas/ValidationResult" } } } }
+  /export-jobs/{jobId}:
+    get:
+      tags: [notes]
+      summary: Export job status
+      parameters: [{ name: jobId, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200": { description: Status, content: { application/json: { schema: { type: object, properties: { status: { type: string }, url: { type: string } } } } } }
+
+  # ---------------- templates ----------------
+  /templates:
+    get:
+      tags: [templates]
+      summary: List templates
+      parameters:
+        - { name: mode, in: query, schema: { type: string, enum: [limited, full] } }
+        - { name: kind, in: query, schema: { type: string, enum: [document, snippet] } }
+        - { name: taxType, in: query, schema: { type: string } }
+        - { name: impactType, in: query, schema: { type: string } }
+        - { name: q, in: query, schema: { type: string } }
+      responses:
+        "200": { description: List, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/TemplateSummary" } } } } }
+  /templates/{id}:
+    get:
+      tags: [templates]
+      summary: Template with HTML body
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200": { description: Template, content: { application/json: { schema: { $ref: "#/components/schemas/Template" } } } }
+    put:
+      tags: [templates]
+      summary: Update a template (template_editor role); creates a new template version
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { content: { application/json: { schema: { $ref: "#/components/schemas/Template" } } } }
+      responses: { "200": { description: Updated } }
+  /templates/{id}/preview:
+    get:
+      tags: [templates]
+      summary: Template rendered with a note's token context
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: noteId, in: query, schema: { type: string } }
+      responses:
+        "200": { description: HTML, content: { text/html: { schema: { type: string } } } }
+
+  # ---------------- workflow ----------------
+  /notes/{id}/workflow:
+    get:
+      tags: [workflow]
+      summary: Workflow state, assignees, available events for the caller, deadlines
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      responses:
+        "200": { description: WorkflowView, content: { application/json: { schema: { $ref: "#/components/schemas/WorkflowView" } } } }
+  /notes/{id}/transitions:
+    get:
+      tags: [workflow]
+      summary: Transition history
+      parameters:
+        - { $ref: "#/components/parameters/noteRevisionId" }
+        - { name: limit, in: query, schema: { type: integer } }
+        - { name: before, in: query, schema: { type: integer } }
+      responses:
+        "200": { description: List, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Transition" } } } } }
+    post:
+      tags: [workflow]
+      summary: Send an event to the machine
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [event]
+              properties:
+                event: { type: string, enum: [START, SUBMIT_FOR_REVIEW, CLAIM_REVIEW, REQUEST_CHANGES, APPROVE, EXEC_CLAIM, EXEC_DONE, EXEC_RETURN, CANCEL] }
+                comment: { type: string }
+                expectedVersion: { type: integer }
+      responses:
+        "201": { description: Transitioned, content: { application/json: { schema: { type: object, properties: { state: { type: string }, version: { type: integer }, seq: { type: integer } } } } } }
+        "409": { description: Not allowed in this state or version mismatch; body lists allowed events }
+  /notes/{id}/assign:
+    post:
+      tags: [workflow]
+      summary: Assign or reassign a role
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role, userId]
+              properties:
+                role: { type: string, enum: [drafter, reviewer, exec] }
+                userId: { type: string }
+                position: { type: integer }
+                dueAt: { type: string, format: date-time }
+      responses: { "200": { description: Assigned } }
+  /notes/{id}/exec-chain:
+    put:
+      tags: [workflow]
+      summary: Set the Executive Review chain
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      requestBody: { content: { application/json: { schema: { type: object, properties: { chain: { type: array, items: { type: object, properties: { userId: { type: string }, division: { type: string }, dueAt: { type: string, format: date-time } } } } } } } } }
+      responses: { "200": { description: Set } }
+  /notes/{id}/workflow/duplicate:
+    post:
+      tags: [workflow]
+      summary: Duplicate the task (new revision instance in todo with the same assignments)
+      parameters: [{ $ref: "#/components/parameters/noteRevisionId" }]
+      responses: { "201": { description: Created } }
+  /assignments:
+    get:
+      tags: [workflow]
+      summary: Work queue rows
+      parameters:
+        - { name: assignee, in: query, schema: { type: string, description: "user id or me" } }
+        - { name: role, in: query, schema: { type: string, enum: [drafter, reviewer, exec] } }
+        - { name: status, in: query, schema: { type: string } }
+        - { name: dueBefore, in: query, schema: { type: string, format: date-time } }
+        - { name: limit, in: query, schema: { type: integer } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: List, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/AssignmentRow" } } } } }
+  /workflow/summary:
+    get:
+      tags: [workflow]
+      summary: Counts by state for dashboards
+      parameters:
+        - { name: state, in: query, schema: { type: string } }
+        - { name: drafter, in: query, schema: { type: string } }
+        - { name: reviewer, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Counts, content: { application/json: { schema: { type: object, additionalProperties: { type: integer } } } } }
+  /workflow/unassigned-hearings:
+    get:
+      tags: [workflow]
+      summary: Bills with a hearing inside the window and no note (reviewer dashboard)
+      parameters:
+        - { name: withinHours, in: query, schema: { type: integer, default: 72 } }
+      responses:
+        "200": { description: List, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Hearing" } } } } }
+
+  # ---------------- notifications ----------------
+  /notifications:
+    get:
+      tags: [notifications]
+      summary: Inbox
+      parameters: [{ name: unread, in: query, schema: { type: boolean } }]
+      responses:
+        "200": { description: List, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Notification" } } } } }
+  /notifications/{id}/read:
+    post:
+      tags: [notifications]
+      summary: Mark read
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "204": { description: Marked } }
+
+  # ---------------- reference and admin ----------------
+  /reference/{set}:
+    get:
+      tags: [reference]
+      summary: Reference data set (fiscal-years, accounts, revenue-sources, job-classes, phrases, wac-458)
+      parameters:
+        - { name: set, in: path, required: true, schema: { type: string } }
+        - { name: session, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Data, content: { application/json: { schema: { type: object } } } }
+  /admin/ingest/runs:
+    get:
+      tags: [admin]
+      summary: Ingest run history
+      responses: { "200": { description: List } }
+    post:
+      tags: [admin]
+      summary: Start an ingest run (legiscan dataset path or refresh)
+      requestBody: { content: { application/json: { schema: { type: object, properties: { source: { type: string, enum: [legiscan, lsc] }, path: { type: string }, billKeys: { type: array, items: { type: string } } } } } } }
+      responses: { "202": { description: Accepted, content: { application/json: { schema: { $ref: "#/components/schemas/JobAccepted" } } } } }
+  /admin/audit:
+    get:
+      tags: [admin]
+      summary: Audit log query
+      parameters:
+        - { name: objectType, in: query, schema: { type: string } }
+        - { name: objectId, in: query, schema: { type: string } }
+        - { name: actor, in: query, schema: { type: string } }
+        - { name: from, in: query, schema: { type: string, format: date-time } }
+        - { name: to, in: query, schema: { type: string, format: date-time } }
+      responses: { "200": { description: Rows } }
+  /health:
+    get:
+      tags: [admin]
+      summary: Liveness and dependency health
+      security: []
+      responses: { "200": { description: OK } }
+
+components:
+  securitySchemes:
+    session: { type: apiKey, in: cookie, name: session }
+    bearer: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    biennium: { name: biennium, in: path, required: true, schema: { type: string, pattern: "^\\d{4}-\\d{2}$" }, example: "2025-26" }
+    billId: { name: id, in: path, required: true, schema: { type: string, pattern: "^[HS](B|JR|JM|CR|R|I)\\d{1,5}$" }, example: HB2402 }
+    versionCode: { name: code, in: path, required: true, schema: { type: string }, description: "I, S, S2, S3, E, E2, S.E, S2.E, S.E2, PL, S.PL, SL, S.SL, or current", example: S }
+    noteRevisionId: { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+  schemas:
+    Principal:
+      type: object
+      required: [userId, displayName, roles]
+      properties:
+        userId: { type: string }
+        displayName: { type: string }
+        email: { type: string }
+        roles: { type: array, items: { type: string, enum: [drafter, reviewer, approver, manager, viewer, template_editor, admin] } }
+        divisions: { type: array, items: { type: string } }
+    BillRef:
+      type: object
+      properties:
+        kind: { type: string, enum: [bill] }
+        biennium: { type: string }
+        bienniumExplicit: { type: boolean }
+        chamber: { type: string, enum: [H, S] }
+        type: { type: string }
+        number: { type: integer }
+        versionCode: { type: string }
+        versionExplicit: { type: boolean }
+        amendment: { type: object }
+        confidence: { type: string, enum: [exact, inferred] }
+        warnings: { type: array, items: { type: string } }
+    Resolution:
+      type: object
+      properties:
+        input: { type: string }
+        parsed: { $ref: "#/components/schemas/BillRef" }
+        resolved:
+          type: object
+          properties:
+            bill_key: { type: string }
+            version_code: { type: string }
+            version_label: { type: string }
+            url: { type: string }
+        ambiguous: { type: boolean }
+        candidates: { type: array, items: { type: object } }
+        remainder: { type: string }
+    BillSummary:
+      type: object
+      properties:
+        billKey: { type: string }
+        biennium: { type: string }
+        id: { type: string }
+        title: { type: string }
+        status: { type: string }
+        statusDate: { type: string, format: date }
+        sponsors: { type: array, items: { type: object } }
+        committee: { type: object }
+        currentVersionCode: { type: string }
+        versions: { type: array, items: { type: object, properties: { code: { type: string }, label: { type: string }, seq: { type: integer }, date: { type: string }, amendmentIds: { type: array, items: { type: string } } } } }
+        hearings: { type: array, items: { $ref: "#/components/schemas/Hearing" } }
+        priorFiscalNotes: { type: array, items: { type: object, properties: { packageId: { type: string }, label: { type: string }, versionLabel: { type: string }, url: { type: string } } } }
+        companion: { type: object }
+        rcwAffected: { type: array, items: { type: object } }
+        history: { type: array, items: { type: object } }
+    BillDocument:
+      type: object
+      description: research/bill-viewer.md section 3 (JSON Schema 2020-12). Required top-level keys listed here.
+      required: [schemaVersion, bill, version, header, sections, provenance]
+      properties:
+        schemaVersion: { type: string }
+        bill: { type: object }
+        version: { type: object }
+        versions: { type: array, items: { type: object } }
+        header: { type: object }
+        sections: { type: array, items: { $ref: "#/components/schemas/BillSection" } }
+        rcwAffected: { type: array, items: { type: object } }
+        provenance: { type: object }
+    BillSection:
+      type: object
+      properties:
+        id: { type: string, example: sec-3 }
+        num: { type: string }
+        identity: { type: string, example: "rcw:82.04.260" }
+        kind: { type: string, enum: [new, addsect, addchap, amend, remd, amenduncod, repeal, effdate, emerg, expdate, other] }
+        target: { type: object, properties: { cite: { type: string }, chapter: { type: string }, title: { type: string }, uncodified: { type: string }, caption: { type: string }, history: { type: string } } }
+        heading: { type: string }
+        blocks: { type: array, items: { type: object } }
+        textHash: { type: string }
+    AmendmentSummary:
+      type: object
+      properties:
+        amendmentId: { type: string }
+        kind: { type: string, enum: [striking, page-line, title, committee] }
+        chamber: { type: string }
+        sponsor: { type: string }
+        baseVersionCode: { type: string }
+        adopted: { type: boolean }
+        floorAction: { type: string }
+        date: { type: string }
+    AmendmentDocument:
+      type: object
+      description: research/bill-viewer.md section 3
+    VersionDiff:
+      type: object
+      description: research/bill-viewer.md section 5 (VersionDiff, SectionDiff, DiffLine)
+      properties:
+        from: { type: string }
+        to: { type: string }
+        mode: { type: string }
+        sections: { type: array, items: { type: object } }
+        summary: { type: object }
+    Hearing:
+      type: object
+      properties:
+        id: { type: string }
+        billKey: { type: string }
+        versionCode: { type: string }
+        committee: { type: string }
+        chamber: { type: string }
+        kind: { type: string, enum: [public_hearing, executive_session, other] }
+        hearingAt: { type: string, format: date-time }
+        location: { type: string }
+        hasNote: { type: boolean }
+    SearchResponse:
+      type: object
+      description: research/search.md section 6.1
+      properties:
+        query: { type: string }
+        parsed: { type: object }
+        direct: { type: object, nullable: true }
+        hits: { type: array, items: { type: object } }
+        facets: { type: object }
+        page: { type: integer }
+        size: { type: integer }
+        total: { type: integer }
+        took_ms: { type: integer }
+        backend: { type: string }
+    SuggestResponse:
+      type: object
+      properties:
+        query: { type: string }
+        reference: { type: object }
+        suggestions: { type: array, items: { type: object } }
+    NoteRevisionSummary:
+      type: object
+      properties:
+        noteRevisionId: { type: string }
+        noteId: { type: string }
+        billKey: { type: string }
+        versionCode: { type: string }
+        versionLabel: { type: string }
+        amendmentId: { type: string }
+        kind: { type: string, enum: [note, estimate] }
+        requestId: { type: string }
+        confidential: { type: boolean }
+        priority: { type: string }
+        state: { type: string }
+        drafterStatus: { type: string }
+        reviewerStatus: { type: string }
+        drafter: { type: object }
+        reviewer: { type: object }
+        deadlines: { type: array, items: { type: object, properties: { kind: { type: string }, dueAt: { type: string, format: date-time } } } }
+        effectiveDueAt: { type: string, format: date-time }
+        headVersion: { type: integer }
+        approvedVersion: { type: integer }
+        previousRevisionId: { type: string }
+        supersededBy: { type: string }
+        updatedAt: { type: string, format: date-time }
+    NoteDocument:
+      type: object
+      properties:
+        noteId: { type: string }
+        version: { type: integer }
+        mode: { type: string, enum: [limited, full] }
+        doc: { type: object, description: ProseMirror JSON }
+        templateId: { type: string }
+        templateVersion: { type: integer }
+        updatedAt: { type: string, format: date-time }
+        updatedBy: { type: string }
+    DocumentVersionSummary:
+      type: object
+      properties:
+        version: { type: integer }
+        label: { type: string }
+        createdBy: { type: string }
+        createdAt: { type: string, format: date-time }
+        summary: { type: string }
+    EstimateData:
+      type: object
+      description: Extracted from estimateTable nodes; six fiscal-year values per row, biennia derived
+      properties:
+        revenue: { type: array, items: { $ref: "#/components/schemas/EstimateRow" } }
+        expenditure: { type: array, items: { $ref: "#/components/schemas/EstimateRow" } }
+        fte: { type: array, items: { $ref: "#/components/schemas/EstimateRow" } }
+        local: { type: array, items: { $ref: "#/components/schemas/EstimateRow" } }
+        tenYear: { type: array, items: { type: object } }
+        flags: { type: object, additionalProperties: { type: boolean } }
+    EstimateRow:
+      type: object
+      properties:
+        key: { type: string }
+        fund: { type: string }
+        fundName: { type: string }
+        source: { type: string }
+        fy: { type: object, additionalProperties: { type: number } }
+        biennia: { type: object, additionalProperties: { type: number } }
+    ValidationResult:
+      type: object
+      properties:
+        ok: { type: boolean }
+        errors: { type: array, items: { type: object, properties: { code: { type: string }, path: { type: string }, message: { type: string } } } }
+        warnings: { type: array, items: { type: object } }
+        unfilledSlots: { type: array, items: { type: string } }
+    CommentThread:
+      type: object
+      properties:
+        id: { type: string }
+        status: { type: string, enum: [open, resolved] }
+        anchorText: { type: string }
+        detached: { type: boolean }
+        position: { type: integer }
+        messages: { type: array, items: { type: object, properties: { id: { type: string }, authorId: { type: string }, authorName: { type: string }, body: { type: string }, createdAt: { type: string, format: date-time } } } }
+    TemplateSummary:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        kind: { type: string, enum: [document, snippet] }
+        mode: { type: string, enum: [limited, full] }
+        version: { type: integer }
+        description: { type: string }
+        tags: { type: array, items: { type: string } }
+        parts: { type: array, items: { type: string } }
+        slots: { type: array, items: { type: object } }
+        tokens: { type: array, items: { type: string } }
+    Template:
+      allOf:
+        - { $ref: "#/components/schemas/TemplateSummary" }
+        - type: object
+          properties:
+            html: { type: string }
+            etag: { type: string }
+    WorkflowView:
+      type: object
+      properties:
+        instanceId: { type: string }
+        state: { type: string }
+        version: { type: integer }
+        drafterStatus: { type: string }
+        reviewerStatus: { type: string }
+        drafterId: { type: string }
+        reviewerId: { type: string }
+        execChain: { type: array, items: { type: object } }
+        execIndex: { type: integer }
+        availableEvents: { type: array, items: { type: object, properties: { type: { type: string }, label: { type: string } } } }
+        deadlines: { type: array, items: { type: object, properties: { kind: { type: string }, dueAt: { type: string, format: date-time }, warnAt: { type: string, format: date-time } } } }
+        supersededBy: { type: string }
+        editable: { type: boolean, description: True when the caller may edit the document in this state }
+    Transition:
+      type: object
+      properties:
+        seq: { type: integer }
+        event: { type: string }
+        fromState: { type: string }
+        toState: { type: string }
+        actorId: { type: string }
+        comment: { type: string }
+        occurredAt: { type: string, format: date-time }
+    AssignmentRow:
+      type: object
+      properties:
+        instanceId: { type: string }
+        noteRevisionId: { type: string }
+        billKey: { type: string }
+        versionLabel: { type: string }
+        title: { type: string }
+        role: { type: string }
+        status: { type: string }
+        state: { type: string }
+        priority: { type: string }
+        dueAt: { type: string, format: date-time }
+        effectiveDueAt: { type: string, format: date-time }
+        nextHearingAt: { type: string, format: date-time }
+        assignedAt: { type: string, format: date-time }
+        counterpart: { type: object, description: The other party (reviewer for a drafter row, drafter for a reviewer row) }
+    Notification:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string }
+        payload: { type: object }
+        createdAt: { type: string, format: date-time }
+        readAt: { type: string, format: date-time }
+    JobAccepted:
+      type: object
+      properties:
+        job_id: { type: string }
+        status_url: { type: string }

@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Amendment type="amendment" xmlns="http://leg.wa.gov/2012/document"><AmendTitle><BillName>6137</BillName><AmendType>AMS</AmendType><SponsorAcronym>CORA</SponsorAcronym><DraftNumber>S4812.1</DraftNumber></AmendTitle><OfferedBy /><AmendBody><AmendSection>
+<SectionHeading><ReferenceNumber>SB 6137</ReferenceNumber><AmendType>S AMD</AmendType><AmendNumber>579</AmendNumber><Sponsors>By Senator Cortes</Sponsors><FloorAction>WITHDRAWN 02/11/2026</FloorAction></SectionHeading>
+<AmendItem xmlns="http://leg.wa.gov/2012/document">
+<P>On page 3, after line 17, insert the following: </P>
+<BillSection type="amendatory" action="amend">
+<BillSectionHeader><BillSectionNumber><TextRun>"Sec. </TextRun><Value fixed="true">5</Value><TextRun>.  </TextRun></BillSectionNumber><SectionCite><TextRun>RCW </TextRun><TitleNumber>9</TitleNumber><TextRun>.</TextRun><ChapterNumber>46</ChapterNumber><TextRun>.</TextRun><SectionNumber>037</SectionNumber></SectionCite> and 2020 c 127 s 5 are each amended to read as follows:<Caption>Sports wagering<TextRun fontFamily="Times New Roman">—</TextRun>Prohibited activities<TextRun fontFamily="Times New Roman">—</TextRun>Penalty.</Caption></BillSectionHeader>
+<P>(1) No person shall offer, promise, give, or attempt to give any thing of value to any person for the purpose of influencing the outcome of a sporting event, athletic event, or competition upon which a wager may be made.</P>
+<P>(2) No person shall place, increase, or decrease a wager after acquiring knowledge, not available to the general public, that anyone has been offered, promised, or given any thing of value for the purpose of influencing the outcome of a sporting event, athletic event, or competition upon which the wager is placed, increased, or decreased.</P>
+<P>(3) No person shall offer, promise, give, or attempt to give any thing of value to obtain confidential or insider information not available to the public with intent to use the information to gain a wagering advantage on a sporting event, athletic event, or competition.</P>
+<P>(4) No person shall accept or agree to accept, any thing of value for the purpose of wrongfully influencing his or her play, action, decision making, or conduct in any sporting event, athletic event, or competition upon which a wager may be made.</P>
+<P>(5) <TextRun amendingStyle="add">No person shall threaten a sports official, coach, or participant involved in a sporting event, athletic event, or competition upon which a wager may be made where the threat is related to that sporting event, athletic event, or competition. For the purposes of this subsection, "threaten" means to communicate, directly or indirectly, the intent to:</TextRun></P>
+<P><TextRun amendingStyle="add">(a) Cause bodily injury immediately or in the future to the person threatened; or</TextRun></P>
+<P><TextRun amendingStyle="add">(b) Cause physical damage immediately or in the future to the property of the person threatened.</TextRun></P>
+<P><TextRun amendingStyle="add">(6) No person who violates subsection (5) of this section may place any sports wagers.</TextRun></P>
+<P><TextRun amendingStyle="add">(7)</TextRun> Any person who violates this section shall be guilty of a class C felony subject to the penalty set forth in RCW 9A.20.021."</P>
+<History>2020 c 127 s 5.</History>
+<RCWNoteSection>
+<AnnNote><NoteP><TextRun fontWeight="bold">Intent<TextRun fontFamily="Times New Roman">—</TextRun>Effective date<TextRun fontFamily="Times New Roman">—</TextRun>2020 c 127:</TextRun> See notes following RCW 9.46.0364.</NoteP></AnnNote>
+</RCWNoteSection>
+</BillSection>
+</AmendItem>
+<AmendItem xmlns="http://leg.wa.gov/2012/document">
+<P>Renumber the remaining sections consecutively and correct any internal references accordingly.</P>
+</AmendItem>
+<AmendItem>
+<P>On page 1, line 2 of the title, after "9.46.0364," strike "and 9.46.0368" and insert "9.46.0368, and 9.46.037"</P>
+</AmendItem>
+<Effect xmlns="http://leg.wa.gov/2012/document">
+<P><TextRun permanentStyle="underline">EFFECT:</TextRun> Makes it a class C felony to threaten a sports official, coach, or participant involved in a sporting event, athletic event, or competition that is being wagered on where the threat relates to the event. Makes it a class C felony for a person who has threatened a sports official, coach, or participant to place any sports wagers.</P>
+</Effect>
+</AmendSection></AmendBody></Amendment>

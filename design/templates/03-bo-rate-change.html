@@ -1,0 +1,400 @@
+<!-- template: bo-rate-change | B&O tax rate or classification change -->
+<!-- Rate or classification change under chapter 82.04 RCW with receipts split between GF-State and the Workforce Education Investment Account; Ten-Year Analysis attached for increases. Modeled on HB 1320 (72144), HB 2081 ESHB .PL (74998), HB 2020 (73978). -->
+<article class="fiscal-note" data-template="bo-rate-change" data-form="FNS062" data-agency-code="140">
+<header data-part="header">
+  <h1>Department of Revenue Fiscal Note</h1>
+  <dl class="header-fields" data-role="header-fields">
+    <dt>Bill Number:</dt><dd data-slot="bill.number" data-source="request" data-readonly="true">{{bill.number}}</dd>
+    <dt>Title:</dt><dd data-slot="bill.title" data-source="request" data-readonly="true">{{bill.title}}</dd>
+    <dt>Agency:</dt><dd data-slot="agency.display" data-source="request" data-readonly="true">{{agency.code}}-{{agency.name}}</dd>
+  </dl>
+</header>
+<section data-part="I">
+  <h2>Part I: Estimates</h2>
+  <p class="checkbox"><input type="checkbox" data-slot="flags.noFiscalImpact"> No Fiscal Impact</p>
+  <h3>Estimated Cash Receipts to:</h3>
+  <table data-role="cash-receipts" data-unit="dollars" data-basis="cash">
+    <thead><tr><th>Account</th><th>{{fy.1}}</th><th>{{fy.2}}</th><th>{{bien.1}}</th><th>{{bien.2}}</th><th>{{bien.3}}</th></tr></thead>
+    <tbody>
+    <tr data-row="account" data-key="gf" data-account="001-1">
+      <th scope="row"><span data-slot="receipts.gf.account" data-type="account" data-lookup="ofm-fund-reference">GF-STATE-State</span><br>
+        <small data-slot="receipts.gf.source" data-type="revenue-source" data-lookup="saam-75.80">01 - Taxes  05 - Bus and Occup Tax</small></th>
+      <td data-col="fy1" data-slot="receipts.gf.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="receipts.gf.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(receipts.gf.fy1,receipts.gf.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(receipts.gf.fy3,receipts.gf.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(receipts.gf.fy5,receipts.gf.fy6)"></td>
+    </tr>
+    <tr data-row="account" data-key="weia" data-account="24J-1">
+      <th scope="row"><span data-slot="receipts.weia.account" data-type="account" data-lookup="ofm-fund-reference">Workforce Education Investment Account-State</span><br>
+        <small data-slot="receipts.weia.source" data-type="revenue-source" data-lookup="saam-75.80">01 - Taxes  05 - Bus and Occup Tax</small></th>
+      <td data-col="fy1" data-slot="receipts.weia.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="receipts.weia.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(receipts.weia.fy1,receipts.weia.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(receipts.weia.fy3,receipts.weia.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(receipts.weia.fy5,receipts.weia.fy6)"></td>
+    </tr>
+    </tbody>
+    <tfoot><tr data-row="total"><th scope="row">Total $</th>
+      <td data-computed="sum(receipts.*.fy1)"></td><td data-computed="sum(receipts.*.fy2)"></td>
+      <td data-computed="sum(receipts.*.bien1)"></td><td data-computed="sum(receipts.*.bien2)"></td><td data-computed="sum(receipts.*.bien3)"></td></tr></tfoot>
+  </table>
+  <h3>Estimated Expenditures from:</h3>
+  <table data-role="expenditures-by-account" data-unit="dollars">
+    <thead><tr><th>Account</th><th>{{fy.1}}</th><th>{{fy.2}}</th><th>{{bien.1}}</th><th>{{bien.2}}</th><th>{{bien.3}}</th></tr></thead>
+    <tbody>
+    <tr data-row="fte"><th scope="row">FTE Staff Years</th>
+      <td data-col="fy1" data-computed="fte.total.fy1" data-type="fte"></td>
+      <td data-col="fy2" data-computed="fte.total.fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fte.total.fy1,fte.total.fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fte.total.fy3,fte.total.fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fte.total.fy5,fte.total.fy6)"></td></tr>
+    <tr data-row="account" data-key="gf" data-account="001-1"><th scope="row"><span data-slot="expenditures.gf.account" data-type="account">GF-STATE-State 001-1</span></th>
+      <td data-col="fy1" data-slot="expenditures.gf.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="expenditures.gf.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(expenditures.gf.fy1,expenditures.gf.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(expenditures.gf.fy3,expenditures.gf.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(expenditures.gf.fy5,expenditures.gf.fy6)"></td>
+    </tr>
+    </tbody>
+    <tfoot><tr data-row="total"><th scope="row">Total $</th>
+      <td data-computed="sum(expenditures.*.fy1)"></td><td data-computed="sum(expenditures.*.fy2)"></td>
+      <td data-computed="sum(expenditures.*.bien1)"></td><td data-computed="sum(expenditures.*.bien2)"></td><td data-computed="sum(expenditures.*.bien3)"></td></tr></tfoot>
+  </table>
+  <h3>Estimated Capital Budget Impact:</h3>
+  <p class="none" data-slot="capital.summary" data-readonly="true">NONE</p>
+  <p class="form-instruction" data-locked="true">The cash receipts and expenditure estimates on this page represent the most likely fiscal impact. Factors impacting the precision of these estimates, and alternate ranges (if appropriate), are explained in Part II.</p>
+  <p class="form-instruction" data-locked="true">Check applicable boxes and follow corresponding instructions:</p>
+  <ul class="checkboxes" data-role="impact-flags">
+    <li><input type="checkbox" data-slot="flags.over50k" data-computed="max(abs(expenditures.*.fy*),abs(receipts.*.fy*))>50000" checked> If fiscal impact is greater than $50,000 per fiscal year in the current biennium or in subsequent biennia, complete entire fiscal note form Parts I-V.</li>
+    <li><input type="checkbox" data-slot="flags.under50k" data-computed="not(flags.over50k)"> If fiscal impact is less than $50,000 per fiscal year in the current biennium or in subsequent biennia, complete this page only (Part I).</li>
+    <li><input type="checkbox" data-slot="flags.capital" data-computed="nonempty(capital)"> Capital budget impact, complete Part IV.</li>
+    <li><input type="checkbox" data-slot="flags.ruleMaking" data-computed="nonempty(narrative.rules)" checked> Requires new rule making, complete Part V.</li>
+  </ul>
+  <table class="signatures" data-role="signature-block">
+    <tr><th>Legislative Contact:</th><td data-slot="legContact.name" data-source="request">{{legContact.name}}</td><td>Phone: <span data-slot="legContact.phone" data-source="request">{{legContact.phone}}</span></td><td>Date: <span data-slot="request.date" data-source="request">{{request.date}}</span></td></tr>
+    <tr><th>Agency Preparation:</th><td data-slot="preparer.name" data-source="workflow">{{preparer.name}}</td><td>Phone: <span data-slot="preparer.phone" data-source="workflow">{{preparer.phone}}</span></td><td>Date: <span data-slot="preparer.date" data-source="workflow">{{preparer.date}}</span></td></tr>
+    <tr><th>Agency Approval:</th><td data-slot="approver.name" data-source="workflow">{{approver.name}}</td><td>Phone: <span data-slot="approver.phone" data-source="workflow">{{approver.phone}}</span></td><td>Date: <span data-slot="approver.date" data-source="workflow">{{approver.date}}</span></td></tr>
+    <tr><th>OFM Review:</th><td data-slot="ofm.name" data-source="ofm">{{ofm.name}}</td><td>Phone: <span data-slot="ofm.phone" data-source="ofm">{{ofm.phone}}</span></td><td>Date: <span data-slot="ofm.date" data-source="ofm">{{ofm.date}}</span></td></tr>
+  </table>
+</section>
+<section data-part="II.A">
+  <h2>Part II: Narrative Explanation</h2>
+  <h3>II. A - Brief Description Of What The Measure Does That Has Fiscal Impact</h3>
+  <p class="form-instruction" data-locked="true">Significant provisions of the bill and any related workload or policy assumptions that have revenue or expenditure impact on the responding agency by section number.</p>
+  <h4>CURRENT LAW:</h4>
+  <div data-slot="narrative.currentLaw" data-type="multiline"><p>For the privilege of doing business in Washington, a business and occupation (B&amp;O) tax is imposed on a business&#8217; gross receipts (without deductions for the cost of doing business). A business&#8217;s activities determine the B&amp;O tax classification and tax rate under which it pays B&amp;O taxes.</p>
+  <p>{{narrative.currentLaw.rates}}</p>
+  <p>Of the tax collected from the 1.75% service and other activities B&amp;O tax rate, the Workforce Education Investment Account (WEIA) receives 14.3%. The General Fund receives the remaining amount.</p></div>
+  <h4>PROPOSAL:</h4>
+  <div data-slot="narrative.proposal" data-type="multiline"><p>{{narrative.proposal}}</p></div>
+  <p data-slot="narrative.taxPreferenceStatement" data-type="text" data-picklist="tax-preference-statements">The new tax preference performance provisions do not apply to this bill (see section {{bill.prefExemptSection}} of the bill).</p>
+  <h4>EFFECTIVE DATE:</h4>
+  <div data-slot="narrative.effectiveDate" data-type="multiline" data-picklist="effective-date-sentences">This bill takes effect on {{bill.effectiveDate}}. (section {{bill.effectiveSection}}).</div>
+</section>
+<section data-part="II.B">
+  <h3>II. B - Cash receipts Impact</h3>
+  <p class="form-instruction" data-locked="true">Cash receipts impact of the legislation on the responding agency with the cash receipts provisions identified by section number and when appropriate, the detail of the revenue sources. Description of the factual basis of the assumptions and the method by which the cash receipts impact is derived. Explanation of how workload assumptions translate into estimates. Distinguished between one time and ongoing functions.</p>
+  <h4>ASSUMPTIONS:</h4>
+<ul data-slot="narrative.receipts.assumptions" data-type="list" data-picklist="receipt-assumptions">
+  <li>The annual growth for most B&amp;O tax classifications mirrors the taxable B&amp;O growth reflected in the Economic and Revenue Forecast {{ref.forecast.vintage}} forecast.</li>
+  <li>The annual growth for aerospace B&amp;O tax classifications mirrors the growth in aerospace products and parts production reflected in the S&amp;P Global Market Intelligence {{ref.forecast.vintage}} forecast.</li>
+  <li>This proposal does not impact any B&amp;O surcharges or surtaxes, including those on specified financial institutions, advanced computing businesses, timber products, and games of contest.</li>
+  <li>Currently, tribes with compacts receive a share of state sales and use taxes and certain business and occupation taxes (RCW 43.06.523). Under this legislation, the amount of revenue shared with tribes may increase.</li>
+  <li>This proposal takes effect {{bill.effectiveDate}}, and impacts {{impact.months.state}} months of collections in fiscal year {{fy.1.year}}.</li>
+</ul>
+  <h4>DATA SOURCES:</h4>
+<ul data-slot="narrative.receipts.dataSources" data-type="list" data-picklist="data-sources">
+  <li>Department of Revenue, Excise tax data</li>
+  <li>Economic and Revenue Forecast Council, {{ref.forecast.vintage}} forecast</li>
+  <li>S&amp;P Global Market Intelligence, {{ref.forecast.vintage}} forecast for Aerospace Products and Parts</li>
+</ul>
+  <h4>REVENUE ESTIMATES:</h4>
+  <div data-slot="narrative.receipts.estimate" data-type="multiline">This bill increases state revenues by an estimated <span data-computed="millions(impact.state.fy1)">{{impact.state.fy1.millions}}</span> in the <span data-slot="impact.months.state" data-type="int">{{impact.months.state}}</span> months of impacted collections in fiscal year {{fy.1.year}}, and by <span data-computed="millions(impact.state.fy2)">{{impact.state.fy2.millions}}</span> in fiscal year {{fy.2.year}}, the first full year of impacted collections.</div>
+  <h4>TOTAL REVENUE IMPACT:</h4>
+  <div data-role="total-revenue-impact">
+    <table data-role="impact-series" data-scope="impact.state" data-unit="thousands" data-basis="cash">
+      <caption>State Government (cash basis, $000):</caption>
+      <tbody>
+      <tr><th scope="row">{{fy.1}}</th><td data-computed="sum(receipts.*.fy1)/1000" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.2}}</th><td data-computed="sum(receipts.*.fy2)/1000" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.3}}</th><td data-computed="sum(receipts.*.fy3)/1000" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.4}}</th><td data-computed="sum(receipts.*.fy4)/1000" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.5}}</th><td data-computed="sum(receipts.*.fy5)/1000" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.6}}</th><td data-computed="sum(receipts.*.fy6)/1000" data-type="money-thousands"></td></tr>
+      </tbody>
+    </table>
+    <p><strong>Local Government, if applicable (cash basis, $000):</strong> <span data-slot="impact.local.text">None.</span></p>
+  </div>
+</section>
+<section data-part="II.C">
+  <h3>II. C - Expenditures</h3>
+  <p class="form-instruction" data-locked="true">Agency expenditures necessary to implement this legislation (or savings resulting from this legislation), with the provisions of the legislation that result in the expenditures (or savings) identified by section number. Description of the factual basis of the assumptions and the method by which the expenditure impact is derived. Explanation of how workload assumptions translate into cost estimates. Distinguished between one time and ongoing functions.</p>
+  <h4>ASSUMPTIONS:</h4>
+  <div data-slot="narrative.expenditures.assumptions" data-type="multiline">This bill affects <span data-slot="expenditures.affected" data-type="int">{{expenditures.affected}}</span> taxpayers.</div>
+  <h4>FIRST YEAR COSTS:</h4>
+  <p>The department will incur total costs of <span data-computed="expenditures.total.fy1" data-type="money">{{expenditures.total.fy1}}</span> in fiscal year <span data-computed="fy.1.year">{{fy.1.year}}</span>. These costs include:</p>
+  <p class="indent">Labor Costs &#8211; Time and effort equate to <span data-computed="fte.total.fy1" data-type="fte" data-precision="2">{{fte.total.fy1}}</span> FTEs.</p>
+<ul data-slot="narrative.expenditures.year1.activities" data-type="list" data-picklist="expenditure-activities">
+  <li>Amend one administrative rule and excise tax advisory.</li>
+  <li>Set up, program, and test computer system changes.</li>
+  <li>Create a special notice and update relevant information on the department&#8217;s website.</li>
+  <li>Gathering requirements, attending implementation meetings, and documenting and testing system changes.</li>
+  <li>Process tax return work items, assist taxpayers with reporting questions, and respond to inquiries via email, web message, and paper correspondence.</li>
+  <li>Examine accounts and make corrections as necessary.</li>
+  <li>Respond to data requests and questions, compile statistics, and manage data.</li>
+  <li>Answer additional phone calls and counter inquiries from businesses, individuals, and accountants regarding tax questions and tax return preparation.</li>
+</ul>
+  <p class="indent">Object Costs - <span data-computed="sum(objects.C.fy1,objects.E.fy1,objects.G.fy1,objects.J.fy1)" data-type="money">{{objects.nonlabor.fy1}}</span>.</p>
+<ul data-slot="narrative.expenditures.year1.objects" data-type="list" data-picklist="expenditure-objects">
+  <li>Computer system changes, including contract programming.</li>
+  <li>Printing and postage</li>
+</ul>
+  <h4>SECOND YEAR COSTS:</h4>
+  <p>The department will incur total costs of <span data-computed="expenditures.total.fy2" data-type="money">{{expenditures.total.fy2}}</span> in fiscal year <span data-computed="fy.2.year">{{fy.2.year}}</span>. These costs include:</p>
+  <p class="indent">Labor Costs &#8211; Time and effort equate to <span data-computed="fte.total.fy2" data-type="fte" data-precision="1">{{fte.total.fy2}}</span> FTEs.</p>
+<ul data-slot="narrative.expenditures.year2.activities" data-type="list" data-picklist="expenditure-activities">
+  <li>Hear additional administrative reviews that provide taxpayers with an informal, non-adversarial dispute resolution process for the review of a disputed action by the department, such as an assessment of taxes, notice of taxes due, denial of a refund request, or tax ruling.</li>
+  <li>Investigate, assess, and collect additional taxes.</li>
+  <li>Update paper tax forms and publications.</li>
+  <li>Continued computer system testing, monitoring, and maintenance.</li>
+  <li>Process tax return work items, assist taxpayers with reporting questions, and respond to inquiries via email, web message, and paper correspondence.</li>
+  <li>Examine accounts and make corrections as necessary.</li>
+  <li>Respond to data requests and questions, compile statistics, and manage data.</li>
+</ul>
+  <p class="indent">Object Costs - <span data-computed="sum(objects.C.fy2,objects.E.fy2,objects.G.fy2,objects.J.fy2)" data-type="money">{{objects.nonlabor.fy2}}</span>.</p>
+<ul data-slot="narrative.expenditures.year2.objects" data-type="list" data-picklist="expenditure-objects">
+  <li>Printing and postage</li>
+  <li>Purchase one additional agent seat license for the Telephone Information Center.</li>
+</ul>
+  <div data-repeat="narrative.expenditures.extraYears" data-optional="true" data-hint="Add THIRD YEAR COSTS / FOURTH YEAR COSTS when the profile changes year to year."></div>
+  <h4>ONGOING COSTS:</h4>
+  <p data-slot="narrative.expenditures.ongoing" data-type="text" data-picklist="ongoing-cost-sentences">Ongoing costs for the {{bien.2}} biennium equal <span data-computed="expenditures.total.bien2" data-type="money">{{expenditures.total.bien2}}</span> and include similar activities described in the second-year costs. Time and effort equate to <span data-computed="fte.total.fy3" data-type="fte">{{fte.total.fy3}}</span> FTE per year.</p>
+</section>
+<section data-part="III">
+  <h2>Part III: Expenditure Detail</h2>
+  <h3>III. A - Expenditures by Object Or Purpose</h3>
+  <table data-role="expenditures-by-object" data-unit="dollars" data-validate="totals-equal(expenditures-by-account)">
+    <thead><tr><th></th><th>{{fy.1}}</th><th>{{fy.2}}</th><th>{{bien.1}}</th><th>{{bien.2}}</th><th>{{bien.3}}</th></tr></thead>
+    <tbody>
+    <tr data-row="fte"><th scope="row">FTE Staff Years</th>
+      <td data-col="fy1" data-computed="fte.total.fy1" data-type="fte"></td>
+      <td data-col="fy2" data-computed="fte.total.fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fte.total.fy1,fte.total.fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fte.total.fy3,fte.total.fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fte.total.fy5,fte.total.fy6)"></td></tr>
+    <tr data-row="object" data-object="A"><th scope="row">A-Salaries and Wages</th>
+      <td data-col="fy1" data-slot="objects.A.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="objects.A.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(objects.A.fy1,objects.A.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(objects.A.fy3,objects.A.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(objects.A.fy5,objects.A.fy6)"></td>
+    </tr>
+    <tr data-row="object" data-object="B"><th scope="row">B-Employee Benefits</th>
+      <td data-col="fy1" data-slot="objects.B.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="objects.B.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(objects.B.fy1,objects.B.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(objects.B.fy3,objects.B.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(objects.B.fy5,objects.B.fy6)"></td>
+    </tr>
+    <tr data-row="object" data-object="C"><th scope="row">C-Professional Service Contracts</th>
+      <td data-col="fy1" data-slot="objects.C.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="objects.C.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(objects.C.fy1,objects.C.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(objects.C.fy3,objects.C.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(objects.C.fy5,objects.C.fy6)"></td>
+    </tr>
+    <tr data-row="object" data-object="E"><th scope="row">E-Goods and Other Services</th>
+      <td data-col="fy1" data-slot="objects.E.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="objects.E.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(objects.E.fy1,objects.E.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(objects.E.fy3,objects.E.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(objects.E.fy5,objects.E.fy6)"></td>
+    </tr>
+    <tr data-row="object" data-object="G"><th scope="row">G-Travel</th>
+      <td data-col="fy1" data-slot="objects.G.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="objects.G.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(objects.G.fy1,objects.G.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(objects.G.fy3,objects.G.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(objects.G.fy5,objects.G.fy6)"></td>
+    </tr>
+    <tr data-row="object" data-object="J"><th scope="row">J-Capital Outlays</th>
+      <td data-col="fy1" data-slot="objects.J.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="objects.J.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(objects.J.fy1,objects.J.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(objects.J.fy3,objects.J.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(objects.J.fy5,objects.J.fy6)"></td>
+    </tr>
+    </tbody>
+    <tfoot><tr data-row="total"><th scope="row">Total $</th>
+      <td data-computed="sum(objects.*.fy1)"></td><td data-computed="sum(objects.*.fy2)"></td>
+      <td data-computed="sum(objects.*.bien1)"></td><td data-computed="sum(objects.*.bien2)"></td><td data-computed="sum(objects.*.bien3)"></td></tr></tfoot>
+  </table>
+  <h3>III. B - Detail:</h3>
+  <p class="form-instruction" data-locked="true">FTEs listed by classification and corresponding annual compensation. Totals agree with total FTEs in Part I and Part IIIA.</p>
+  <table data-role="fte-by-class" data-unit="fte" data-validate="totals-equal(expenditures-by-account.fte)">
+    <thead><tr><th>Job Classification</th><th>Salary</th><th>{{fy.1}}</th><th>{{fy.2}}</th><th>{{bien.1}}</th><th>{{bien.2}}</th><th>{{bien.3}}</th></tr></thead>
+    <tbody data-repeat="fteClass">
+    <tr data-row="class" data-index="0">
+      <th scope="row"><span data-slot="fteClass[0].title" data-type="job-class" data-lookup="dor-job-classes">EXCISE TAX EX 2</span></th>
+      <td data-slot="fteClass[0].salary" data-type="money">{{ref.salary.EXCISE_TAX_EX_2}}</td>
+      <td data-col="fy1" data-slot="fteClass[0].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[0].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[0].fy1,fteClass[0].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[0].fy3,fteClass[0].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[0].fy5,fteClass[0].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="1">
+      <th scope="row"><span data-slot="fteClass[1].title" data-type="job-class" data-lookup="dor-job-classes">EXCISE TAX EX 3</span></th>
+      <td data-slot="fteClass[1].salary" data-type="money">{{ref.salary.EXCISE_TAX_EX_3}}</td>
+      <td data-col="fy1" data-slot="fteClass[1].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[1].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[1].fy1,fteClass[1].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[1].fy3,fteClass[1].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[1].fy5,fteClass[1].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="2">
+      <th scope="row"><span data-slot="fteClass[2].title" data-type="job-class" data-lookup="dor-job-classes">IT B A-JOURNEY</span></th>
+      <td data-slot="fteClass[2].salary" data-type="money">{{ref.salary.IT_BA_JOURNEY}}</td>
+      <td data-col="fy1" data-slot="fteClass[2].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[2].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[2].fy1,fteClass[2].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[2].fy3,fteClass[2].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[2].fy5,fteClass[2].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="3">
+      <th scope="row"><span data-slot="fteClass[3].title" data-type="job-class" data-lookup="dor-job-classes">IT SYS ADM-JOURNEY</span></th>
+      <td data-slot="fteClass[3].salary" data-type="money">{{ref.salary.IT_SYS_ADM_JOURNEY}}</td>
+      <td data-col="fy1" data-slot="fteClass[3].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[3].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[3].fy1,fteClass[3].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[3].fy3,fteClass[3].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[3].fy5,fteClass[3].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="4">
+      <th scope="row"><span data-slot="fteClass[4].title" data-type="job-class" data-lookup="dor-job-classes">TAX INFO SPEC 1</span></th>
+      <td data-slot="fteClass[4].salary" data-type="money">{{ref.salary.TAX_INFO_SPEC_1}}</td>
+      <td data-col="fy1" data-slot="fteClass[4].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[4].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[4].fy1,fteClass[4].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[4].fy3,fteClass[4].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[4].fy5,fteClass[4].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="5">
+      <th scope="row"><span data-slot="fteClass[5].title" data-type="job-class" data-lookup="dor-job-classes">TAX POLICY SP 2</span></th>
+      <td data-slot="fteClass[5].salary" data-type="money">{{ref.salary.TAX_POLICY_SP_2}}</td>
+      <td data-col="fy1" data-slot="fteClass[5].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[5].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[5].fy1,fteClass[5].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[5].fy3,fteClass[5].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[5].fy5,fteClass[5].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="6">
+      <th scope="row"><span data-slot="fteClass[6].title" data-type="job-class" data-lookup="dor-job-classes">TAX POLICY SP 3</span></th>
+      <td data-slot="fteClass[6].salary" data-type="money">{{ref.salary.TAX_POLICY_SP_3}}</td>
+      <td data-col="fy1" data-slot="fteClass[6].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[6].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[6].fy1,fteClass[6].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[6].fy3,fteClass[6].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[6].fy5,fteClass[6].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="7">
+      <th scope="row"><span data-slot="fteClass[7].title" data-type="job-class" data-lookup="dor-job-classes">TAX POLICY SP 4</span></th>
+      <td data-slot="fteClass[7].salary" data-type="money">{{ref.salary.TAX_POLICY_SP_4}}</td>
+      <td data-col="fy1" data-slot="fteClass[7].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[7].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[7].fy1,fteClass[7].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[7].fy3,fteClass[7].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[7].fy5,fteClass[7].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="8">
+      <th scope="row"><span data-slot="fteClass[8].title" data-type="job-class" data-lookup="dor-job-classes">MGMT ANALYST4</span></th>
+      <td data-slot="fteClass[8].salary" data-type="money">{{ref.salary.MGMT_ANALYST_4}}</td>
+      <td data-col="fy1" data-slot="fteClass[8].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[8].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[8].fy1,fteClass[8].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[8].fy3,fteClass[8].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[8].fy5,fteClass[8].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="9">
+      <th scope="row"><span data-slot="fteClass[9].title" data-type="job-class" data-lookup="dor-job-classes">WMS BAND 2</span></th>
+      <td data-slot="fteClass[9].salary" data-type="money">{{ref.salary.WMS_BAND_2}}</td>
+      <td data-col="fy1" data-slot="fteClass[9].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[9].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[9].fy1,fteClass[9].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[9].fy3,fteClass[9].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[9].fy5,fteClass[9].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="10">
+      <th scope="row"><span data-slot="fteClass[10].title" data-type="job-class" data-lookup="dor-job-classes">WMS BAND 3</span></th>
+      <td data-slot="fteClass[10].salary" data-type="money">{{ref.salary.WMS_BAND_3}}</td>
+      <td data-col="fy1" data-slot="fteClass[10].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[10].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[10].fy1,fteClass[10].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[10].fy3,fteClass[10].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[10].fy5,fteClass[10].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="11">
+      <th scope="row"><span data-slot="fteClass[11].title" data-type="job-class" data-lookup="dor-job-classes">EMS BAND 4</span></th>
+      <td data-slot="fteClass[11].salary" data-type="money">{{ref.salary.EMS_BAND_4}}</td>
+      <td data-col="fy1" data-slot="fteClass[11].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[11].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[11].fy1,fteClass[11].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[11].fy3,fteClass[11].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[11].fy5,fteClass[11].fy6)"></td>
+    </tr>
+    </tbody>
+    <tfoot><tr data-row="total"><th scope="row">Total FTEs</th><td></td>
+      <td data-computed="sum(fteClass.*.fy1)"></td><td data-computed="sum(fteClass.*.fy2)"></td>
+      <td data-computed="sum(fteClass.*.bien1)"></td><td data-computed="sum(fteClass.*.bien2)"></td><td data-computed="sum(fteClass.*.bien3)"></td></tr></tfoot>
+  </table>
+  <h3>III. C - Expenditures By Program (optional)</h3>
+  <p class="none" data-slot="program.summary" data-optional="true">NONE</p>
+</section>
+<section data-part="IV">
+  <h2>Part IV: Capital Budget Impact</h2>
+  <h3>IV. A - Capital Budget Expenditures</h3>
+  <p class="none" data-slot="capital.expenditures" data-optional="true">NONE</p>
+  <h3>IV. B - Expenditures by Object Or Purpose</h3>
+  <p class="form-instruction" data-locked="true">Acquisition and construction costs not reflected elsewhere on the fiscal note and description of potential financing methods.</p>
+  <p class="none" data-slot="capital.objects" data-optional="true">NONE</p>
+  <h3>IV. C - Capital Budget Breakout</h3>
+  <p class="none" data-slot="capital.breakout" data-optional="true">NONE</p>
+</section>
+<section data-part="V">
+  <h2>Part V: New Rule Making Required</h2>
+  <p class="form-instruction" data-locked="true">Provisions of the bill that require the agency to adopt new administrative rules or repeal/revise existing rules.</p>
+  <div data-slot="narrative.rules" data-type="multiline" data-optional="true">Should this legislation become law, the department will use the expedited process to amend the following rules:
+<ul data-slot="rules" data-type="list" data-picklist="wac-458">
+  <li>WAC <span data-slot="rules[0].wac">{{rules[0].wac}}</span>, titled: &#8220;<span data-slot="rules[0].title">{{rules[0].title}}</span>.&#8221;</li>
+  <li>WAC <span data-slot="rules[1].wac">{{rules[1].wac}}</span>, titled: &#8220;<span data-slot="rules[1].title">{{rules[1].title}}</span>.&#8221;</li>
+</ul>
+<p>This rulemaking will affect taxpayers who report income under the B&amp;O tax.</p></div>
+</section>
+<section data-part="10YR" data-form="FNS066" data-optional="true" data-condition="request.tenYearRequested">
+  <h2>Ten-Year Analysis</h2>
+  <dl class="header-fields"><dt>Bill Number</dt><dd>{{bill.number}}</dd><dt>Title</dt><dd>{{bill.title}}</dd><dt>Agency</dt><dd>{{agency.code}} {{agency.name}}</dd></dl>
+  <p class="form-instruction" data-locked="true">This ten-year analysis is limited to agency estimated cash receipts associated with the proposed tax or fee increases. The Office of Financial Management ten-year projection can be found at http://www.ofm.wa.gov/tax/default.asp.</p>
+  <h3>Estimates</h3>
+  <ul class="checkboxes" data-role="ten-year-flags">
+    <li><input type="checkbox" data-slot="tenYear.flags.noCashReceipts"> No Cash Receipts</li>
+    <li><input type="checkbox" data-slot="tenYear.flags.indeterminate"> Indeterminate Cash Receipts</li>
+    <li><input type="checkbox" data-slot="tenYear.flags.partiallyIndeterminate"> Partially Indeterminate Cash Receipts</li>
+  </ul>
+  <h3>Estimated Cash Receipts</h3>
+  <table data-role="ten-year-analysis" data-unit="dollars">
+    <thead><tr><th>Name of Tax or Fee</th><th>Acct Code</th><th>Fiscal Year {{fy.1.year}}</th><th>Fiscal Year {{fy.2.year}}</th><th>Fiscal Year {{fy.3.year}}</th><th>Fiscal Year {{fy.4.year}}</th><th>Fiscal Year {{fy.5.year}}</th><th>Fiscal Year {{fy.6.year}}</th><th>Fiscal Year {{fy.7.year}}</th><th>Fiscal Year {{fy.8.year}}</th><th>Fiscal Year {{fy.9.year}}</th><th>Fiscal Year {{fy.10.year}}</th><th>{{fy.1.year}}-{{fy.10.yy}} TOTAL</th></tr></thead>
+    <tbody data-repeat="tenYear">
+    <tr data-row="taxfee" data-index="0"><th scope="row"><span data-slot="tenYear[0].title" data-type="text">Business and occupation tax</span></th><td data-slot="tenYear[0].acct" data-type="account-3char">001</td><td data-col="fy1" data-slot="tenYear[0].fy1" data-type="money" data-computed="receipts.increase.fy1"></td><td data-col="fy2" data-slot="tenYear[0].fy2" data-type="money" data-computed="receipts.increase.fy2"></td><td data-col="fy3" data-slot="tenYear[0].fy3" data-type="money" data-computed="receipts.increase.fy3"></td><td data-col="fy4" data-slot="tenYear[0].fy4" data-type="money" data-computed="receipts.increase.fy4"></td><td data-col="fy5" data-slot="tenYear[0].fy5" data-type="money" data-computed="receipts.increase.fy5"></td><td data-col="fy6" data-slot="tenYear[0].fy6" data-type="money" data-computed="receipts.increase.fy6"></td><td data-col="fy7" data-slot="tenYear[0].fy7" data-type="money"></td><td data-col="fy8" data-slot="tenYear[0].fy8" data-type="money"></td><td data-col="fy9" data-slot="tenYear[0].fy9" data-type="money"></td><td data-col="fy10" data-slot="tenYear[0].fy10" data-type="money"></td><td data-computed="sum(tenYear[0].fy1..fy10)"></td></tr>
+    <tr data-row="taxfee" data-index="1"><th scope="row"><span data-slot="tenYear[1].title" data-type="text">Business and occupation tax</span></th><td data-slot="tenYear[1].acct" data-type="account-3char">24J</td><td data-col="fy1" data-slot="tenYear[1].fy1" data-type="money" data-computed="receipts.increase.fy1"></td><td data-col="fy2" data-slot="tenYear[1].fy2" data-type="money" data-computed="receipts.increase.fy2"></td><td data-col="fy3" data-slot="tenYear[1].fy3" data-type="money" data-computed="receipts.increase.fy3"></td><td data-col="fy4" data-slot="tenYear[1].fy4" data-type="money" data-computed="receipts.increase.fy4"></td><td data-col="fy5" data-slot="tenYear[1].fy5" data-type="money" data-computed="receipts.increase.fy5"></td><td data-col="fy6" data-slot="tenYear[1].fy6" data-type="money" data-computed="receipts.increase.fy6"></td><td data-col="fy7" data-slot="tenYear[1].fy7" data-type="money"></td><td data-col="fy8" data-slot="tenYear[1].fy8" data-type="money"></td><td data-col="fy9" data-slot="tenYear[1].fy9" data-type="money"></td><td data-col="fy10" data-slot="tenYear[1].fy10" data-type="money"></td><td data-computed="sum(tenYear[1].fy1..fy10)"></td></tr>
+    </tbody>
+    <tfoot>
+      <tr data-row="total"><th scope="row">Total</th><td></td><td data-computed="sum(tenYear.*.fy1)"></td><td data-computed="sum(tenYear.*.fy2)"></td><td data-computed="sum(tenYear.*.fy3)"></td><td data-computed="sum(tenYear.*.fy4)"></td><td data-computed="sum(tenYear.*.fy5)"></td><td data-computed="sum(tenYear.*.fy6)"></td><td data-computed="sum(tenYear.*.fy7)"></td><td data-computed="sum(tenYear.*.fy8)"></td><td data-computed="sum(tenYear.*.fy9)"></td><td data-computed="sum(tenYear.*.fy10)"></td><td data-computed="sum(tenYear.*.total)"></td></tr>
+      <tr data-row="biennial"><th scope="row">Biennial Totals</th><td></td><td colspan="2" data-computed="sum(tenYear.total.fy1,tenYear.total.fy2)"></td><td colspan="2" data-computed="sum(tenYear.total.fy3,tenYear.total.fy4)"></td><td colspan="2" data-computed="sum(tenYear.total.fy5,tenYear.total.fy6)"></td><td colspan="2" data-computed="sum(tenYear.total.fy7,tenYear.total.fy8)"></td><td colspan="2" data-computed="sum(tenYear.total.fy9,tenYear.total.fy10)"></td><td data-computed="sum(tenYear.*.total)"></td></tr>
+    </tfoot>
+  </table>
+  <h3>Narrative Explanation (Required for Indeterminate Cash Receipts)</h3>
+  <div data-slot="tenYear.narrative" data-type="multiline" data-computed="concat(narrative.note,narrative.currentLaw,narrative.proposal,narrative.effectiveDate,narrative.receipts.assumptions,narrative.receipts.dataSources,narrative.receipts.estimate,impact)" data-hint="DOR repeats the Part II.A and II.B narrative here.">{{narrative.iiA}} {{narrative.iiB}}</div>
+  <p class="signature">Agency Preparation: <span data-slot="preparer.name">{{preparer.name}}</span> Phone: <span data-slot="preparer.phone">{{preparer.phone}}</span> Date: <span data-slot="preparer.datetime">{{preparer.datetime}}</span></p>
+</section>
+</article>

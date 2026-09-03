@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wa-leg.example/schemas/amendment-document.json",
+  "title": "AmendmentDocument",
+  "type": "object",
+  "required": ["schemaVersion", "id", "bill", "baseVersion", "kind", "provenance"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "id": { "type": "string" },
+    "bill": { "type": "object", "required": ["biennium", "id"], "properties": { "biennium": { "type": "string" }, "id": { "type": "string" } } },
+    "baseVersion": { "type": "string" },
+    "kind": { "enum": ["striking", "page-line", "title"] },
+    "scope": { "enum": ["floor", "committee", "conference"] },
+    "chamber": { "enum": ["H", "S"] },
+    "sponsor": { "type": "string" },
+    "committee": { "type": "string" },
+    "drafterCode": { "type": "string" },
+    "floorNumber": { "type": "string" },
+    "status": { "enum": ["pending", "adopted", "failed", "withdrawn", "ruled-out-of-order", "unknown"] },
+    "actionDate": { "type": "string" },
+    "effect": { "type": "string" },
+    "sourceUrls": { "type": "object", "properties": { "htm": { "type": "string" }, "pdf": { "type": "string" }, "xml": { "type": "string" } } },
+    "sourceHash": { "type": "string" },
+    "body": {
+      "type": "object",
+      "properties": {
+        "header": { "type": "object", "properties": { "title": { "type": "string" }, "titleActions": { "type": "array" } } },
+        "sections": { "type": "array", "items": { "$ref": "bill-document.json#/$defs/section" } }
+      }
+    },
+    "instructions": { "type": "array", "items": { "$ref": "#/$defs/instruction" } },
+    "provenance": { "$ref": "bill-document.json#/properties/provenance" }
+  },
+  "$defs": {
+    "instruction": {
+      "type": "object",
+      "required": ["id", "seq", "op", "location", "text"],
+      "properties": {
+        "id": { "type": "string" },
+        "seq": { "type": "integer" },
+        "text": { "type": "string" },
+        "op": { "enum": ["strike-insert", "strike", "insert", "strike-section", "insert-section", "strike-all-insert", "renumber", "title-strike-insert", "title-insert", "correct-internal-references", "other"] },
+        "location": {
+          "type": "object",
+          "properties": {
+            "page": { "type": "integer" },
+            "line": { "type": "integer" },
+            "lineEnd": { "type": "integer" },
+            "anchor": { "enum": ["after", "before", "beginning", "end"] },
+            "anchorText": { "type": "string" },
+            "sectionNum": { "type": "string" },
+            "title": { "type": "boolean" }
+          }
+        },
+        "strikeText": { "type": "string" },
+        "insertText": { "type": "string" },
+        "insertBlocks": { "type": "array", "items": { "$ref": "bill-document.json#/$defs/block" } },
+        "insertSections": { "type": "array", "items": { "$ref": "bill-document.json#/$defs/section" } },
+        "resolved": {
+          "type": "object",
+          "properties": {
+            "sectionId": { "type": "string" },
+            "blockId": { "type": "string" },
+            "runIndex": { "type": "integer" },
+            "charStart": { "type": "integer" },
+            "charEnd": { "type": "integer" },
+            "confidence": { "enum": ["exact", "line-only", "text-only", "unresolved"] },
+            "note": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,527 @@
+{
+ "schemaVersion": "1.0",
+ "id": "5814-S AMS BRAU S3269.1",
+ "bill": {
+  "biennium": "2025-26",
+  "id": "SB5814"
+ },
+ "baseVersion": "S",
+ "kind": "page-line",
+ "scope": "floor",
+ "status": "failed",
+ "provenance": {
+  "fetchedAt": "2026-09-01T00:00:00.000Z",
+  "parser": "wa-amendment-xml",
+  "parserVersion": "1.0.0",
+  "warnings": []
+ },
+ "chamber": "S",
+ "sponsor": "Senator Braun",
+ "drafterCode": "S3269.1",
+ "floorNumber": "454",
+ "actionDate": "2025-04-19",
+ "sourceHash": "sha256:857ffe35605947edc1fc21dc3cf198d59e77a8e04db4c341dd72b15be9fb996a",
+ "instructions": [
+  {
+   "id": "i1",
+   "seq": 1,
+   "text": "On page 22, beginning on line 39, after \"tobacco\" strike all material through \"nicotine,\" on line 40",
+   "op": "strike",
+   "location": {
+    "page": 22,
+    "line": 39,
+    "lineEnd": 40,
+    "anchorText": "tobacco",
+    "anchor": "after"
+   },
+   "strikeText": "nicotine,",
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  },
+  {
+   "id": "i2",
+   "seq": 2,
+   "text": "On page 23, line 3, after \"(14)\" insert \"(a) \"Nicotine analogue\" means a substance:",
+   "op": "insert",
+   "location": {
+    "page": 23,
+    "line": 3,
+    "anchorText": "(14)",
+    "anchor": "after"
+   },
+   "insertText": "(a) \n(i) The chemical structure of which is substantially similar to the chemical structure of nicotine; or\n(ii) Which has, purports to have, or is represented to have, an effect on the central nervous system that is similar to or greater than the effect of nicotine on the central nervous system.\n(b) Factors relevant to determining whether a substance is a nicotine analogue include, but are not limited to, the marketing, advertising, and labeling of the substance, and whether the substance has been manufactured, formulated, sold, distributed, or marketed with the intent to avoid the provisions of this subsection (14) and other applicable provisions of law.\n(15) \"Oral nicotine product\" means any noncombustible product containing nicotine, whether derived from tobacco or created synthetically, or a nicotine analogue, that is in the form of a solid, gel, gum, or paste that is intended for human consumption or placement in the oral cavity for absorption into the human body by any means other than inhalation. \"Oral nicotine products\" are not moist snuff products nor is any oral nicotine product included in the definition of any smokeless tobacco product, vapor product, cigarette, or any product regulated as a drug or device by the United States food and drug administration under chapter V of the food, drug, and cosmetic act.\n(16)\"",
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  },
+  {
+   "id": "i3",
+   "seq": 3,
+   "text": "Renumber the remaining subsections consecutively and correct any internal references accordingly.",
+   "op": "renumber",
+   "location": {},
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  },
+  {
+   "id": "i4",
+   "seq": 4,
+   "text": "On page 25, line 1, after \"smoking,\" insert \"oral nicotine products, nicotine analogues,\"",
+   "op": "insert",
+   "location": {
+    "page": 25,
+    "line": 1,
+    "anchorText": "smoking,",
+    "anchor": "after"
+   },
+   "insertText": "oral nicotine products, nicotine analogues,",
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  },
+  {
+   "id": "i5",
+   "seq": 5,
+   "text": "On page 25, beginning on line 2, after \"tobacco\" strike all material through \"synthetically\" on line 3",
+   "op": "strike",
+   "location": {
+    "page": 25,
+    "line": 2,
+    "lineEnd": 3,
+    "anchorText": "tobacco",
+    "anchor": "after"
+   },
+   "strikeText": "synthetically",
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  },
+  {
+   "id": "i6",
+   "seq": 6,
+   "text": "On page 25, line 6, after \"82.24.010\" insert \"or vapor products as defined in RCW 82.25.005\"",
+   "op": "insert",
+   "location": {
+    "page": 25,
+    "line": 6,
+    "anchorText": "82.24.010",
+    "anchor": "after"
+   },
+   "insertText": "or vapor products as defined in RCW 82.25.005",
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  },
+  {
+   "id": "i7",
+   "seq": 7,
+   "text": "On page 25, after line 12, insert the following:",
+   "op": "insert-section",
+   "location": {
+    "page": 25,
+    "line": 12,
+    "anchor": "after"
+   },
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   },
+   "insertSections": [
+    {
+     "id": "sec-302",
+     "num": "302",
+     "label": "Sec. 302.",
+     "isNewSection": false,
+     "kind": "amendatory",
+     "sourceKind": "amend",
+     "identity": "",
+     "blocks": [
+      {
+       "id": "sec-302.1",
+       "label": "(1)",
+       "level": 1,
+       "kind": "subsection",
+       "runs": [
+        {
+         "t": "text",
+         "text": "There is levied and collected a tax upon the sale, handling, or distribution of all tobacco products in this state at the following rate:"
+        }
+       ],
+       "children": [
+        {
+         "id": "sec-302.1.a",
+         "label": "(a)",
+         "level": 2,
+         "kind": "paragraph",
+         "runs": [
+          {
+           "t": "text",
+           "text": "For cigars except little cigars, "
+          },
+          {
+           "t": "del",
+           "text": "((ninety-five))"
+          },
+          {
+           "t": "text",
+           "text": " "
+          },
+          {
+           "t": "ins",
+           "text": "95"
+          },
+          {
+           "t": "text",
+           "text": " percent of the taxable sales price of cigars, not to exceed "
+          },
+          {
+           "t": "del",
+           "text": "((sixty-five cents))"
+          },
+          {
+           "t": "text",
+           "text": " "
+          },
+          {
+           "t": "ins",
+           "text": "$0.65"
+          },
+          {
+           "t": "text",
+           "text": " per cigar;"
+          }
+         ],
+         "children": []
+        },
+        {
+         "id": "sec-302.1.b",
+         "label": "(b)",
+         "level": 2,
+         "kind": "paragraph",
+         "runs": [
+          {
+           "t": "text",
+           "text": "For all tobacco products except those covered under separate provisions of this subsection, "
+          },
+          {
+           "t": "del",
+           "text": "((ninety-five))"
+          },
+          {
+           "t": "text",
+           "text": " "
+          },
+          {
+           "t": "ins",
+           "text": "95"
+          },
+          {
+           "t": "text",
+           "text": " percent of the taxable sales price. The tax imposed on a product under this subsection must be reduced by "
+          },
+          {
+           "t": "del",
+           "text": "((fifty))"
+          },
+          {
+           "t": "text",
+           "text": " "
+          },
+          {
+           "t": "ins",
+           "text": "50"
+          },
+          {
+           "t": "text",
+           "text": " percent if that same product is issued a modified risk tobacco product order by the secretary of the United States department of health and human services pursuant to Title 21 U.S.C. Sec. 387k(g)(1), or by "
+          },
+          {
+           "t": "del",
+           "text": "((twenty-five))"
+          },
+          {
+           "t": "text",
+           "text": " "
+          },
+          {
+           "t": "ins",
+           "text": "25"
+          },
+          {
+           "t": "text",
+           "text": " percent if that same product is issued a modified risk tobacco product order by the secretary of the United States department of health and human services pursuant to Title 21 U.S.C. Sec. 387k(g)(2). The tax reduction applies during the period the modified risk tobacco product order is in effect;"
+          }
+         ],
+         "children": []
+        },
+        {
+         "id": "sec-302.1.c",
+         "label": "(c)",
+         "level": 2,
+         "kind": "paragraph",
+         "runs": [
+          {
+           "t": "text",
+           "text": "For moist snuff, as established in this subsection (1)(c) and computed on the net weight listed by the manufacturer:"
+          }
+         ],
+         "children": [
+          {
+           "id": "sec-302.1.c.i",
+           "label": "(i)",
+           "level": 3,
+           "kind": "subparagraph",
+           "runs": [
+            {
+             "t": "text",
+             "text": "On each single unit consumer-sized can or package whose net weight is "
+            },
+            {
+             "t": "del",
+             "text": "((one and two-tenths))"
+            },
+            {
+             "t": "text",
+             "text": " "
+            },
+            {
+             "t": "ins",
+             "text": "1.2"
+            },
+            {
+             "t": "text",
+             "text": " ounces or less, a rate per single unit that is equal to the greater of "
+            },
+            {
+             "t": "ins",
+             "text": "$"
+            },
+            {
+             "t": "text",
+             "text": "2.526 "
+            },
+            {
+             "t": "del",
+             "text": "((dollars))"
+            },
+            {
+             "t": "text",
+             "text": " or "
+            },
+            {
+             "t": "del",
+             "text": "((eighty-three and one-half))"
+            },
+            {
+             "t": "text",
+             "text": " "
+            },
+            {
+             "t": "ins",
+             "text": "83.5"
+            },
+            {
+             "t": "text",
+             "text": " percent of the cigarette tax under chapter 82.24 RCW multiplied by "
+            },
+            {
+             "t": "del",
+             "text": "((twenty))"
+            },
+            {
+             "t": "text",
+             "text": " "
+            },
+            {
+             "t": "ins",
+             "text": "20"
+            },
+            {
+             "t": "text",
+             "text": "; or"
+            }
+           ],
+           "children": []
+          },
+          {
+           "id": "sec-302.1.c.ii",
+           "label": "(ii)",
+           "level": 3,
+           "kind": "subparagraph",
+           "runs": [
+            {
+             "t": "text",
+             "text": "On each single unit consumer-sized can or package whose net weight is more than "
+            },
+            {
+             "t": "del",
+             "text": "((one and two-tenths))"
+            },
+            {
+             "t": "text",
+             "text": " "
+            },
+            {
+             "t": "ins",
+             "text": "1.2"
+            },
+            {
+             "t": "text",
+             "text": " ounces, a proportionate tax at the rate established in (c)(i) of this subsection (1) on each ounce or fractional part of an ounce; "
+            },
+            {
+             "t": "del",
+             "text": "((and))"
+            }
+           ],
+           "children": []
+          }
+         ]
+        },
+        {
+         "id": "sec-302.1.d",
+         "label": "(d)",
+         "level": 2,
+         "kind": "paragraph",
+         "runs": [
+          {
+           "t": "text",
+           "text": "For little cigars, an amount per cigar equal to the cigarette tax under chapter 82.24 RCW"
+          },
+          {
+           "t": "ins",
+           "text": "; and"
+          }
+         ],
+         "children": []
+        },
+        {
+         "id": "sec-302.1.e",
+         "label": "(e)",
+         "level": 2,
+         "kind": "paragraph",
+         "runs": [
+          {
+           "t": "ins",
+           "text": "For oral nicotine products, $0.0225 per discrete consumable unit. The tax imposed on a package that contains less than 20 discrete consumable units is equal to the tax imposed on a package of 20 discrete consumable units"
+          },
+          {
+           "t": "text",
+           "text": "."
+          }
+         ],
+         "children": [],
+         "labelMark": "ins"
+        }
+       ]
+      },
+      {
+       "id": "sec-302.2",
+       "label": "(2)",
+       "level": 1,
+       "kind": "subsection",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Taxes under this section must be imposed at the time the distributor (a) brings, or causes to be brought, into this state from without the state tobacco products for sale, (b) makes, manufactures, fabricates, or stores tobacco products in this state for sale in this state, (c) ships or transports tobacco products to retailers in this state, to be sold by those retailers, or (d) handles for sale any tobacco products that are within this state but upon which tax has not been imposed."
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-302.3",
+       "label": "(3)",
+       "level": 1,
+       "kind": "subsection",
+       "runs": [
+        {
+         "t": "text",
+         "text": "The moneys collected under this section must be deposited into the state general fund."
+        }
+       ],
+       "children": []
+      }
+     ],
+     "textHash": "sha256:af2d4365da535faba3920624ddaf8cdb5d14d6cfbcba1221e9ff816e93020161",
+     "heading": "Tax imposed—Deposited into the general fund.",
+     "target": {
+      "action": "amend",
+      "cite": "82.26.020",
+      "chapter": "82.26",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.26.020",
+      "caption": "Tax imposed—Deposited into the general fund.",
+      "history": "2019 c 445 s 404"
+     },
+     "introText": [
+      {
+       "t": "text",
+       "text": ""
+      },
+      {
+       "t": "cite",
+       "text": "RCW 82.26.020",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.26.020",
+        "cite": "82.26.020",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.26.020"
+       }
+      },
+      {
+       "t": "text",
+       "text": " and 2019 c 445 s 404 are each amended to read as follows:"
+      }
+     ],
+     "notes": [
+      "2019 c 445 s 404; 2010 1st sp.s. c 22 s 5; 2009 c 479 s 70; 2005 c 180 s 3; 2002 c 325 s 2; 1993 c 492 s 309; 1983 2nd ex.s. c 3 s 16; 1982 1st ex.s. c 35 s 9; 1975 1st ex.s. c 278 s 71; 1971 ex.s. c 299 s 77; 1965 ex.s. c 173 s 25; 1961 c 15 s 82.26.020. Prior: 1959 ex.s. c 5 s 12.",
+      "Conflict with federal requirements—Effective date—2019 c 445: See RCW 82.25.900 and 82.25.901.",
+      "Automatic expiration date and tax preference performance statement exemption—2019 c 445: See note following RCW 82.08.0318.",
+      "Application—2010 1st sp.s. c 22 s 5: \"Section 5(1) (a), (b), and (d) of this act applies only with respect to tax liability incurred under chapter 82.26 RCW on or after May 1, 2010, for the sale, handling, or distribution of cigars, little cigars, and other tobacco products.\" [2010 1st sp.s. c 22 s 10.]",
+      "Application—2010 1st sp.s. c 22 s 5: \"Section 5(1)(c), chapter 22, Laws of 2010 1st sp. sess. applies only with respect to tax liability incurred under chapter 82.26 RCW on or after October 1, 2010, for the sale, handling, or distribution of moist snuff.\" [2010 1st sp.s. c 22 s 11.]",
+      "Intent—Effective date—2010 1st sp.s. c 22: See notes following RCW 82.24.020.",
+      "Effective date—2009 c 479: See note following RCW 2.56.030.",
+      "Effective date—2005 c 180: See note following RCW 82.26.105.",
+      "Effective date—2002 c 325: See note following RCW 82.26.010.",
+      "Finding—Intent—1993 c 492: See notes following RCW 43.20.050.",
+      "Short title—Savings—Reservation of legislative power—Effective dates—1993 c 492: See RCW 43.72.910 through 43.72.915.",
+      "Construction—Severability—Effective dates—1983 2nd ex.s. c 3: See notes following RCW 82.04.255.",
+      "Severability—Effective dates—1982 1st ex.s. c 35: See notes following RCW 82.08.020.",
+      "Construction—Severability—1975 1st ex.s. c 278: See notes following RCW 11.08.160.",
+      "Effective dates—Severability—1971 ex.s. c 299: See notes following RCW 82.04.050."
+     ],
+     "fixedNumber": true,
+     "changeSummary": {
+      "insWords": 49,
+      "delWords": 18
+     }
+    }
+   ]
+  },
+  {
+   "id": "i8",
+   "seq": 8,
+   "text": "On page 29, line 23, after \"504.\" strike \"Section 301 of this act takes\" and insert \"Sections 301 and 302 of this act take\"",
+   "op": "strike-insert",
+   "location": {
+    "page": 29,
+    "line": 23,
+    "anchorText": "504.",
+    "anchor": "after"
+   },
+   "strikeText": "Section 301 of this act takes",
+   "insertText": "Sections 301 and 302 of this act take",
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  }
+ ]
+}

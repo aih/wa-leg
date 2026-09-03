@@ -1,0 +1,320 @@
+{
+ "schemaVersion": "1.0",
+ "bill": {
+  "biennium": "2025-26",
+  "chamber": "S",
+  "type": "B",
+  "number": 5516,
+  "id": "SB5516",
+  "billPageUrl": "https://app.leg.wa.gov/billsummary?BillNumber=5516&Year=2025&Initiative=false",
+  "shortTitle": "Modifying the property tax exemption for community centers."
+ },
+ "version": {
+  "code": "S",
+  "label": "Substitute Senate Bill",
+  "seq": 10,
+  "sourceHash": "sha256:02989b45c1ace1678a1d138a783dcb2b68f93e0e6f13afdef3e0546dcccfff49"
+ },
+ "header": {
+  "title": "AN ACT Relating to modifying the property tax exemption for community centers; amending RCW 84.36.010; and creating new sections.",
+  "relatingTo": "modifying the property tax exemption for community centers",
+  "titleActions": [
+   {
+    "kind": "amending",
+    "text": "amending RCW 84.36.010",
+    "cites": [
+     {
+      "kind": "rcw",
+      "text": "RCW 84.36.010",
+      "cite": "84.36.010",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=84.36.010"
+     }
+    ]
+   },
+   {
+    "kind": "creating-new-sections",
+    "text": "creating new sections"
+   }
+  ],
+  "sponsors": [
+   "Senate Ways & Means (originally sponsored by Senators Conway and Nobles)"
+  ],
+  "briefDescription": "Modifying the property tax exemption for community centers.",
+  "requestNumber": "S-1449.1",
+  "shortBillId": "SSB 5516",
+  "longBillId": "SUBSTITUTE SENATE BILL 5516",
+  "legislature": "69th Legislature",
+  "session": "2025 Regular Session",
+  "readFirstTime": "2025-02-18"
+ },
+ "sections": [
+  {
+   "id": "sec-1",
+   "num": "1",
+   "label": "Sec. 1.",
+   "isNewSection": false,
+   "kind": "amendatory",
+   "sourceKind": "amend",
+   "identity": "rcw:84.36.010",
+   "blocks": [
+    {
+     "id": "sec-1.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "All property belonging exclusively to the United States, the state, or any county or municipal corporation; all property belonging exclusively to any federally recognized Indian tribe, if (a) the tribe is located in the state, and (b) the property is used exclusively for essential government services; all state route number 16 corridor transportation systems and facilities constructed under chapter 47.46 RCW; all property under a financing contract pursuant to chapter 39.94 RCW or recorded agreement granting immediate possession and use to the public bodies listed in this section or under an order of immediate possession and use pursuant to RCW 8.04.090; and, "
+      },
+      {
+       "t": "ins",
+       "text": "except as provided in subsection (2)(a)(ii) of this section,"
+      },
+      {
+       "t": "text",
+       "text": " for a period of "
+      },
+      {
+       "t": "del",
+       "text": "((forty))"
+      },
+      {
+       "t": "text",
+       "text": " "
+      },
+      {
+       "t": "ins",
+       "text": "40"
+      },
+      {
+       "t": "text",
+       "text": " years from acquisition, all property of a community center; is exempt from taxation. All property belonging exclusively to a foreign national government is exempt from taxation if that property is used exclusively as an office or residence for a consul or other official representative of the foreign national government, and if the consul or other official representative is a citizen of that foreign nation."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "For the purposes of this section the following definitions apply unless the context clearly requires otherwise."
+      }
+     ],
+     "children": [
+      {
+       "id": "sec-1.2.a",
+       "label": "(a)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "ins",
+         "text": "(i)"
+        },
+        {
+         "t": "text",
+         "text": " \"Community center\" means property, including "
+        },
+        {
+         "t": "del",
+         "text": "((a building or))"
+        },
+        {
+         "t": "text",
+         "text": " buildings, determined to be surplus to the needs of a district by a local school board, and purchased or acquired by a nonprofit organization for the purposes of converting "
+        },
+        {
+         "t": "del",
+         "text": "((them))"
+        },
+        {
+         "t": "text",
+         "text": " "
+        },
+        {
+         "t": "ins",
+         "text": "the property"
+        },
+        {
+         "t": "text",
+         "text": " into community facilities for the delivery of nonresidential coordinated services for community members."
+        }
+       ],
+       "children": [
+        {
+         "id": "sec-1.2.a.ii",
+         "label": "(ii)",
+         "level": 3,
+         "kind": "subparagraph",
+         "runs": [
+          {
+           "t": "ins",
+           "text": "For taxes levied for collection in 2026 through 2035, \"community center\" includes property, including buildings, determined to be surplus to the needs of a university exempt from property taxes under RCW 84.36.050 and purchased or acquired by a nonprofit organization for the purposes of converting the property into community facilities for the delivery of nonresidential coordinated services for community members. Property meeting the definition of \"community center\" in this subsection (2)(a)(ii) is exempt from taxation for tax years 2026 through 2035."
+          }
+         ],
+         "children": [],
+         "labelMark": "ins"
+        },
+        {
+         "id": "sec-1.2.a.iii",
+         "label": "(iii)",
+         "level": 3,
+         "kind": "subparagraph",
+         "runs": [
+          {
+           "t": "text",
+           "text": "The community center may make space available to businesses, individuals, or other parties through the loan or rental of space in or on the property."
+          }
+         ],
+         "children": [],
+         "labelMark": "ins"
+        }
+       ]
+      },
+      {
+       "id": "sec-1.2.b",
+       "label": "(b)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "\"Essential government services\" means services such as tribal administration, public facilities, fire, police, public health, education, sewer, water, environmental and land use, transportation, utility services, and economic development."
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-1.2.c",
+       "label": "(c)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "\"Economic development\" means commercial activities, including those that facilitate the creation or retention of businesses or jobs, or that improve the standard of living or economic health of tribal communities."
+        }
+       ],
+       "children": []
+      }
+     ]
+    }
+   ],
+   "textHash": "sha256:d75ffaa513561d031f2b19cd933e127b4cce2cead728a4e315e678bda9619795",
+   "heading": "Public, certain public-private and tribal property exempt.",
+   "target": {
+    "action": "amend",
+    "cite": "84.36.010",
+    "chapter": "84.36",
+    "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=84.36.010",
+    "caption": "Public, certain public-private and tribal property exempt.",
+    "history": "2020 c 272 s 1"
+   },
+   "introText": [
+    {
+     "t": "cite",
+     "text": "RCW 84.36.010",
+     "cite": {
+      "kind": "rcw",
+      "text": "RCW 84.36.010",
+      "cite": "84.36.010",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=84.36.010"
+     }
+    },
+    {
+     "t": "text",
+     "text": " and 2020 c 272 s 1 are each amended to read as follows:"
+    }
+   ],
+   "notes": [
+    "2020 c 272 s 1; 2014 c 207 s 5; 2010 c 281 s 1; 2004 c 236 s 1; 1998 c 179 s 8; 1990 c 47 s 2; 1971 ex.s. c 260 s 1; 1969 c 34 s 1. Prior: 1967 ex.s. c 149 s 31; 1967 ex.s. c 145 s 35; 1961 c 15 s 84.36.010; prior: 1955 c 196 s 3; prior: 1939 c 206 s 8, part; 1933 ex.s. c 19 s 1, part; 1933 c 115 s 1, part; 1929 c 126 s 1, part; 1925 ex.s. c 130 s 7, part; 1915 c 131 s 1, part; 1903 c 178 s 1, part; 1901 c 176 s 1, part; 1899 c 141 s 2, part; 1897 c 71 ss 1, 5, part; 1895 c 176 s 2, part; 1893 c 124 ss 1, 5, part; 1891 c 140 ss 1, 5, part; 1890 p 532 ss 1, 5, part; 1886 p 47 s 1, part; Code 1881 s 2829, part; 1871 p 37 s 4, part; 1869 p 176 s 4, part; 1867 p 61 s 2, part; 1854 p 331 s 2, part; RRS s 11111, part. Formerly RCW 84.40.010.",
+    "Automatic expiration date and tax preference performance statement exemption—2020 c 272: \"The provisions of RCW 82.32.805 and 82.32.808 do not apply to this act.\" [2020 c 272 s 6.]",
+    "Tax preference performance statement—2014 c 207 s 5: \"This section is the tax preference performance statement for the tax preference contained in section 5 of this act. This performance statement is only intended to be used for subsequent evaluation of the tax preference. It is not intended to create a private right of action by any party or be used to determine eligibility for preferential tax treatment.",
+    "(1) The legislature categorizes this tax preference as one intended to create jobs and improve the economic health of tribal communities as indicated in RCW 82.32.808(2) (c) and (f).",
+    "(2) It is the legislature's specific public policy objective to create jobs and improve the economic health of tribal communities. It is the legislature's intent to exempt property used by federally recognized Indian tribes for economic development purposes, in order to achieve these policy objectives.",
+    "(3) The joint legislative audit and review committee must perform an economic impact report to the legislature as required in *section 10 of this act to provide the information necessary to measure the effectiveness of this act.\" [2014 c 207 s 1.]",
+    "*Reviser's note: The reference to section 10 of this act appears to be erroneous. Reference to section 11 of this act (RCW 43.136.090) was apparently intended.",
+    "Application—2014 c 207: \"This act applies to taxes levied for collection in 2015 and thereafter.\" [2014 c 207 s 13.]",
+    "Application—2010 c 281: \"This act applies to taxes levied for collection in 2011 and thereafter.\" [2010 c 281 s 4.]",
+    "Application—1998 c 179 s 8: \"Section 8 of this act is effective for taxes levied for collection in 1999 and thereafter.\" [1998 c 179 s 9.]",
+    "Finding—1998 c 179: See note following RCW 35.21.718."
+   ],
+   "changeSummary": {
+    "insWords": 94,
+    "delWords": 5
+   }
+  },
+  {
+   "id": "sec-2",
+   "num": "2",
+   "label": "NEW SECTION. Sec. 2.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:9eb9be36c012f8d1",
+   "blocks": [
+    {
+     "id": "sec-2.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "This act applies to property taxes levied for collection in 2026 through 2035."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:9eb9be36c012f8d18b0578206e57ce5a799ff7174f3a97f5cc2ca8d32a77ed27"
+  },
+  {
+   "id": "sec-3",
+   "num": "3",
+   "label": "NEW SECTION. Sec. 3.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:7fbb3eee9e5966eb",
+   "blocks": [
+    {
+     "id": "sec-3.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "RCW 82.32.808 does not apply to this act."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:7fbb3eee9e5966eb119a625541d1fecb13bbaac5e4c1684ecc3589dd05d16ba2"
+  }
+ ],
+ "rcwAffected": [
+  {
+   "cite": "84.36.010",
+   "action": "amend",
+   "sectionIds": [
+    "sec-1"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=84.36.010",
+   "chapter": "84.36",
+   "caption": "Public, certain public-private and tribal property exempt."
+  }
+ ],
+ "provenance": {
+  "fetchedAt": "2026-09-01T00:00:00.000Z",
+  "parser": "wa-bill-xml",
+  "parserVersion": "1.0.0",
+  "warnings": [],
+  "hasLineNumbers": false
+ }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@wa-leg/dev-oidc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./users.json": "./users.json"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@fastify/formbody": "9.0.0",
+    "fastify": "5.12.1",
+    "jose": "6.2.10",
+    "tsx": "4.23.13"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}

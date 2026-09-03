@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Bill type="bill" xmlns="http://leg.wa.gov/2012/document"><BillHeading><RequestNumber>H-3353.1</RequestNumber><ShortBillId>SHB 2402</ShortBillId><LongBillId>SUBSTITUTE HOUSE BILL 2402</LongBillId><Legislature>69th Legislature</Legislature><Session>2026 Regular Session</Session><Sponsors>House Health Care &amp; Wellness (originally sponsored by Representatives Stonier, Parshley, Ramel, and Reed)</Sponsors><BillHistory><ReadDate>READ FIRST TIME 02/04/26.</ReadDate></BillHistory><BriefDescription>Concerning phthalates in medical equipment used for intravenous purposes.</BriefDescription></BillHeading>
+
+<BillBody>
+<BillTitle>AN ACT Relating to phthalates in medical equipment used for intravenous purposes; and adding a new chapter to Title 70A RCW.</BillTitle>
+<EnactedClause />
+<BillSection type="new">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>1</Value><TextRun>.  </TextRun></BillSectionNumber><P>The legislature finds and declares all of the following:</P></BillSectionHeader>
+<P>(1) Di(2-ethylhexyl) phthalate (DEHP) and other ortho-phthalates are toxic chemicals and can have negative impacts on human health as determined by the United States food and drug administration and the United States environmental protection agency;</P>
+<P>(2) DEHP and other ortho-phthalates are used primarily to produce flexibility in plastics, mainly polyvinyl chloride (PVC);</P>
+<P>(3) DEHP is the most common plasticizer used in medical devices, including intravenous solution containers (IV bags) and intravenous tubing;</P>
+<P>(4) Over the course of its shelf life, DEHP leaches out of the plastic into the solution being held in the container;</P>
+<P>(5) DEHP is classified as an endocrine-disrupting compound, meaning it can interfere with the hormonal system in humans and animals. It can mimic or block the actions of hormones, leading to adverse effects on reproductive health, development, and metabolism;</P>
+<P>(6) Studies have suggested a potential link between DEHP exposure and certain types of cancer, including breast, liver, lung, and testicular cancer. The United States environmental protection agency has determined that DEHP is a probable human carcinogen;</P>
+<P>(7) DEHP exposure has been associated with adverse effects on reproductive organs and fertility. It can disrupt normal reproductive development, reduce sperm quality, and affect hormone levels in both males and females;</P>
+<P>(8) DEHP is metabolized in the liver and can accumulate in the body over time. Prolonged exposure to high levels of DEHP has been shown to cause liver and kidney damage in animal studies;</P>
+<P>(9) Inhalation or ingestion of DEHP can cause respiratory irritation and allergic reactions in some individuals, particularly those with preexisting respiratory conditions or sensitivities;</P>
+<P>(10) DEHP dosed at varying concentrations in cell culture studies has been linked to potential multidrug resistance in breast cancer cells that may inhibit the effectiveness of breast cancer drugs; and</P>
+<P>(11) Triple-negative breast cancer cells dosed in culture with DEHP have been potentially linked to multidrug resistance, inhibiting the apoptosis mechanism induced by breast cancer drugs such as tamoxifen and increasing cell proliferation in vitro. One proposed mechanism is that DEHP may serve as a mitogenic factor for estrogen receptor-positive breast cancer cells, potentially making them multidrug resistant.</P>
+</BillSection>
+<BillSection type="new">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>2</Value><TextRun>.  </TextRun></BillSectionNumber><P>The definitions in this section apply throughout this chapter unless the context clearly requires otherwise.</P></BillSectionHeader>
+<P>(1) "DEHP" means Di(2-ethylhexyl) phthalate.</P>
+<P>(2) "Intentionally added DEHP" means DEHP that a manufacturer has intentionally added to an intravenous solution container or intravenous tubing product that has a functional or technical effect on the product.</P>
+<P>(3) "Intravenous solution containers" means a container used to house medicine, fluid, or nutrition therapy that is intravenously administered to patients in a hospital, outpatient, or other health care facility.</P>
+<P>(4) "Intravenous tubing" means any tubing used to intravenously administer fluids, medication, or nutrients directly to an adult, child, or infant.</P>
+<P>(5) "Ortho-phthalates" means a class of chemicals that are esters of ortho-phthalic acid, including all of the following:</P>
+<P>(a) Benzyl-butyl phthalate (BBP) 85-68-7;</P>
+<P>(b) Dibutyl phthalate (DBP) 84-74-2;</P>
+<P>(c) Dicyclohexyl phthalate (DCHP) 84-61-7;</P>
+<P>(d) Di-(2-ethylhexyl) phthalate (DEHP) 117-81-7;</P>
+<P>(e) Diethyl phthalate (DEP) 84-66-2;</P>
+<P>(f) Di-isobutyl phthalate (DIBP) 84-69-5;</P>
+<P>(g) Di-isodecyl phthalate (DIDP) 26761-40-0;</P>
+<P>(h) Di-isononyl phthalate (DINP) 28553-12-0;</P>
+<P>(i) Di-n-hexyl phthalate (DnHP) 84-75-3;</P>
+<P>(j) Di-n-octyl phthalate (DNOP) 117-84-0;</P>
+<P>(k) Di-n-pentyl phthalate (DnPP) 131-18-0;</P>
+<P>(l) Diisoheptyl phthalate (DIHP) 71888-89-6.</P>
+<P>(6) "Unintentionally added DEHP" means DEHP in an intravenous solution container or intravenous tubing product that is not used for functional or technical effect on the product.</P>
+</BillSection>
+<BillSection type="new">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>3</Value><TextRun>.  </TextRun></BillSectionNumber><P>(1) Except as provided in subsections (4) through (6) of this section, beginning January 1, 2030, it is prohibited for a person to manufacture, sell, or distribute into commerce in Washington intravenous solution containers made with intentionally added DEHP or that contain unintentionally added DEHP in a quantity that equals or exceeds 0.1 percent weight per weight.</P></BillSectionHeader>
+<P>(2) Beginning January 1, 2035, it is prohibited for a person to manufacture, sell, or distribute into commerce in Washington intravenous tubing made with intentionally added DEHP or that contains unintentionally added DEHP in a quantity that equals or exceeds 0.1 percent weight per weight.</P>
+<P>(3) A person or entity shall not replace DEHP under this chapter for revised or new products with other ortho-phthalates.</P>
+<P>(4) The following items, as described in 21 C.F.R. as it existed as of January 1, 2026, are exempt from the requirements of this section:</P>
+<P>(a) Human blood collection and storage bags; and</P>
+<P>(b) Apheresis and cell therapy blood kits and bags, including integral tubing.</P>
+<P>(5) A person or entity, due to pending United States food and drug administration approval for the DEHP-free intravenous solution container or due to the manufacturer not having adequate equipment to manufacture the DEHP-free intravenous solution container, shall meet the requirement in subsection (1) of this section by January 1, 2032, if both of the following conditions are met:</P>
+<P>(a) The person or entity notified its Washington customers, no later than January 1, 2027, that it has commenced development of the DEHP-free intravenous solution container to meet the requirements of this section; and</P>
+<P>(b) The person or entity provides notice to its customers and posts to its official internet website, no later than January 1, 2028, that it will not meet the deadline imposed pursuant to subsection (1) of this section.</P>
+<P>(6) If the United States food and drug administration or Washington department of health determines that there is an industry shortage of federal food and drug administration approved intravenous solution containers and tubing, such federal food and drug administration approved intravenous solution containers and tubing containing DEHP may be manufactured, distributed, and sold within Washington until the federal food and drug administration or Washington department of health determines the supply chain interruption is terminated.</P>
+<P>(7) Nothing in this section limits the authority of the department of ecology with respect to DEHP, other ortho-phthalates, intravenous solution containers, or intravenous tubing under chapter 70A.350 RCW.</P>
+</BillSection>
+<BillSection type="new" action="addchap">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>4</Value><TextRun>.  </TextRun></BillSectionNumber><P>Sections 1 through 3 of this act constitute a new chapter in <TitleCite><TextRun>Title </TextRun><TitleNumber>70A</TitleNumber><TextRun> RCW</TextRun></TitleCite>.</P></BillSectionHeader>
+</BillSection>
+<BillSection type="new">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>5</Value><TextRun>.  </TextRun></BillSectionNumber><P>If any provision of this act or its application to any person or circumstance is held invalid, the remainder of the act or the application of the provision to other persons or circumstances is not affected.</P></BillSectionHeader>
+</BillSection>
+</BillBody>
+</Bill>

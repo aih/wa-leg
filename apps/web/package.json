@@ -1,0 +1,41 @@
+{
+  "name": "@wa-leg/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5173 --strictPort",
+    "build": "vite build",
+    "preview": "vite preview --port 5173 --strictPort",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --passWithNoTests",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@wa-leg/bill-document": "workspace:*",
+    "@wa-leg/billref": "workspace:*",
+    "@wa-leg/note-schema": "workspace:*",
+    "@tiptap/core": "3.31.0",
+    "@tiptap/extensions": "3.31.0",
+    "@tiptap/pm": "3.31.0",
+    "@tiptap/react": "3.31.0",
+    "katex": "0.18.5",
+    "mathlive": "0.110.0",
+    "@wa-leg/workflow-machine": "workspace:*",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-router": "7.18.3"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.62.1",
+    "@types/katex": "0.16.8",
+    "@types/node": "22.20.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "@vitejs/plugin-react": "5.2.0",
+    "typescript": "5.9.3",
+    "vite": "7.3.6",
+    "vitest": "3.2.7"
+  }
+}

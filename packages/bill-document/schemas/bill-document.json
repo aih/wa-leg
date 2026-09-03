@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wa-leg.example/schemas/bill-document.json",
+  "title": "BillDocument",
+  "type": "object",
+  "required": ["schemaVersion", "bill", "version", "header", "sections", "provenance"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "bill": {
+      "type": "object",
+      "required": ["biennium", "chamber", "type", "number", "id"],
+      "properties": {
+        "biennium": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" },
+        "chamber": { "enum": ["H", "S"] },
+        "type": { "enum": ["B", "JR", "JM", "CR", "R", "I"] },
+        "number": { "type": "integer", "minimum": 1 },
+        "id": { "type": "string", "pattern": "^[HS](B|JR|JM|CR|R|I)\\d{1,5}$" },
+        "shortTitle": { "type": "string" },
+        "billPageUrl": { "type": "string" }
+      }
+    },
+    "version": {
+      "type": "object",
+      "required": ["code", "label", "seq"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^(I|S\\d?|E\\d?|S\\d?\\.E\\d?|PL|SL|S\\d?\\.PL|S\\d?\\.SL)$" },
+        "label": { "type": "string" },
+        "seq": { "type": "integer", "minimum": 0 },
+        "date": { "type": "string" },
+        "sourceUrls": { "type": "object", "properties": { "htm": { "type": "string" }, "pdf": { "type": "string" }, "xml": { "type": "string" } } },
+        "sourceHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "isCurrent": { "type": "boolean" }
+      }
+    },
+    "versions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "label", "seq"],
+        "properties": {
+          "code": { "type": "string" },
+          "label": { "type": "string" },
+          "seq": { "type": "integer" },
+          "date": { "type": "string" },
+          "amendmentIds": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "header": {
+      "type": "object",
+      "required": ["title"],
+      "properties": {
+        "title": { "type": "string" },
+        "relatingTo": { "type": "string" },
+        "sponsors": { "type": "array", "items": { "type": "string" } },
+        "byRequestOf": { "type": "string" },
+        "briefDescription": { "type": "string" },
+        "readFirstTime": { "type": "string" },
+        "referredTo": { "type": "string" },
+        "titleActions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": {
+              "kind": { "enum": ["amending", "reenacting-and-amending", "adding-section", "adding-chapter", "repealing", "decodifying", "recodifying", "creating-new-sections", "effective-date", "emergency", "expiration", "appropriation", "other"] },
+              "cites": { "type": "array", "items": { "$ref": "#/$defs/cite" } },
+              "text": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "sections": { "type": "array", "items": { "$ref": "#/$defs/section" } },
+    "rcwAffected": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cite", "action", "sectionIds"],
+        "properties": {
+          "cite": { "type": "string" },
+          "chapter": { "type": "string" },
+          "action": { "enum": ["amend", "reenact-amend", "add", "repeal", "decodify", "recodify", "reference"] },
+          "sectionIds": { "type": "array", "items": { "type": "string" } },
+          "href": { "type": "string" },
+          "caption": { "type": "string" }
+        }
+      }
+    },
+    "certificate": { "type": "object" },
+    "provenance": {
+      "type": "object",
+      "required": ["fetchedAt", "parser", "parserVersion"],
+      "properties": {
+        "fetchedAt": { "type": "string" },
+        "parser": { "type": "string" },
+        "parserVersion": { "type": "string" },
+        "warnings": { "type": "array", "items": { "type": "string" } },
+        "hasLineNumbers": { "type": "boolean" }
+      }
+    }
+  },
+  "$defs": {
+    "cite": {
+      "type": "object",
+      "required": ["kind", "text"],
+      "properties": {
+        "kind": { "enum": ["rcw", "rcw-chapter", "rcw-title", "session-law", "bill-section", "wac", "usc", "cfr", "other"] },
+        "text": { "type": "string" },
+        "cite": { "type": "string" },
+        "href": { "type": "string" },
+        "targetId": { "type": "string" }
+      }
+    },
+    "run": {
+      "type": "object",
+      "required": ["t", "text"],
+      "properties": {
+        "t": { "enum": ["text", "ins", "del", "cite"] },
+        "text": { "type": "string" },
+        "cite": { "$ref": "#/$defs/cite" },
+        "mark": { "enum": ["ins", "del"] },
+        "line": { "type": "integer" },
+        "page": { "type": "integer" }
+      }
+    },
+    "block": {
+      "type": "object",
+      "required": ["id", "level", "runs"],
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "labelMark": { "enum": ["ins", "del"] },
+        "level": { "type": "integer", "minimum": 1 },
+        "kind": { "enum": ["subsection", "paragraph", "subparagraph", "item", "subitem", "unnumbered", "table", "chapeau"] },
+        "runs": { "type": "array", "items": { "$ref": "#/$defs/run" } },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/block" } },
+        "lines": { "$ref": "#/$defs/lineSpan" }
+      }
+    },
+    "lineSpan": {
+      "type": "object",
+      "required": ["pageStart", "lineStart", "pageEnd", "lineEnd"],
+      "properties": {
+        "pageStart": { "type": "integer" },
+        "lineStart": { "type": "integer" },
+        "pageEnd": { "type": "integer" },
+        "lineEnd": { "type": "integer" }
+      }
+    },
+    "section": {
+      "type": "object",
+      "required": ["id", "num", "label", "kind", "identity", "blocks", "textHash"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^sec-[a-z0-9]+$" },
+        "num": { "type": "string" },
+        "label": { "type": "string" },
+        "isNewSection": { "type": "boolean" },
+        "kind": { "enum": ["amendatory", "new", "repealer", "effective-date", "emergency", "severability", "expiration", "intent", "appropriation", "contingent", "other"] },
+        "sourceKind": { "enum": ["new", "addsect", "addchap", "amend", "remd", "amenduncod", "repeal", "effdate", "emerg", "expdate", "other"] },
+        "identity": { "type": "string" },
+        "heading": { "type": "string" },
+        "target": {
+          "type": "object",
+          "required": ["action"],
+          "properties": {
+            "action": { "enum": ["amend", "reenact-amend", "add", "repeal", "decodify", "recodify"] },
+            "cite": { "type": "string" },
+            "chapter": { "type": "string" },
+            "title": { "type": "string" },
+            "uncodified": { "type": "string" },
+            "caption": { "type": "string" },
+            "history": { "type": "string" },
+            "href": { "type": "string" },
+            "repealed": { "type": "array", "items": { "type": "object", "properties": { "cite": { "type": "string" }, "caption": { "type": "string" }, "history": { "type": "string" }, "href": { "type": "string" } } } }
+          }
+        },
+        "introText": { "type": "array", "items": { "$ref": "#/$defs/run" } },
+        "blocks": { "type": "array", "items": { "$ref": "#/$defs/block" } },
+        "notes": { "type": "array", "items": { "type": "string" } },
+        "lines": { "$ref": "#/$defs/lineSpan" },
+        "textHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "changeSummary": { "type": "object", "properties": { "insWords": { "type": "integer" }, "delWords": { "type": "integer" } } }
+      }
+    }
+  }
+}

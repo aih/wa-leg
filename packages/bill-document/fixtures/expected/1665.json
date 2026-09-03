@@ -1,0 +1,929 @@
+{
+ "schemaVersion": "1.0",
+ "bill": {
+  "biennium": "2025-26",
+  "chamber": "H",
+  "type": "B",
+  "number": 1665,
+  "id": "HB1665",
+  "billPageUrl": "https://app.leg.wa.gov/billsummary?BillNumber=1665&Year=2025&Initiative=false",
+  "shortTitle": "Repealing the capital gains income tax."
+ },
+ "version": {
+  "code": "I",
+  "label": "House Bill",
+  "seq": 0,
+  "sourceHash": "sha256:35868810a85fe392fb03b007abeecc02532b7c092a88edc9f4cc82d1c68d00c1"
+ },
+ "header": {
+  "title": "AN ACT Relating to repealing the capital gains income tax; creating a new section; repealing RCW 82.87.010, 82.87.020, 82.87.030, 82.87.040, 82.87.050, 82.87.060, 82.87.070, 82.87.080, 82.87.090, 82.87.100, 82.87.110, 82.87.120, 82.87.130, 82.87.140, 82.87.150, and 82.04.4497; repealing 2021 c 196 ss 18 and 20 (uncodified); and providing an effective date.",
+  "relatingTo": "repealing the capital gains income tax",
+  "titleActions": [
+   {
+    "kind": "creating-new-sections",
+    "text": "creating a new section"
+   },
+   {
+    "kind": "repealing",
+    "text": "repealing RCW 82.87.010, 82.87.020, 82.87.030, 82.87.040, 82.87.050, 82.87.060, 82.87.070, 82.87.080, 82.87.090, 82.87.100, 82.87.110, 82.87.120, 82.87.130, 82.87.140, 82.87.150, and 82.04.4497",
+    "cites": [
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.010",
+      "cite": "82.87.010",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.010"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.020",
+      "cite": "82.87.020",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.020"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.030",
+      "cite": "82.87.030",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.030"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.040",
+      "cite": "82.87.040",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.040"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.050",
+      "cite": "82.87.050",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.050"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.060",
+      "cite": "82.87.060",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.060"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.070",
+      "cite": "82.87.070",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.070"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.080",
+      "cite": "82.87.080",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.080"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.090",
+      "cite": "82.87.090",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.090"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.100",
+      "cite": "82.87.100",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.100"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.110",
+      "cite": "82.87.110",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.110"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.120",
+      "cite": "82.87.120",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.120"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.130",
+      "cite": "82.87.130",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.130"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.140",
+      "cite": "82.87.140",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.140"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.87.150",
+      "cite": "82.87.150",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.150"
+     },
+     {
+      "kind": "rcw",
+      "text": "RCW 82.04.4497",
+      "cite": "82.04.4497",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.04.4497"
+     }
+    ]
+   },
+   {
+    "kind": "repealing",
+    "text": "repealing 2021 c 196 ss 18 and 20 (uncodified)"
+   },
+   {
+    "kind": "effective-date",
+    "text": "providing an effective date"
+   }
+  ],
+  "sponsors": [
+   "Representative Dufault"
+  ],
+  "briefDescription": "Repealing the capital gains income tax.",
+  "requestNumber": "H-0708.3",
+  "shortBillId": "HB 1665",
+  "longBillId": "HOUSE BILL 1665",
+  "legislature": "69th Legislature",
+  "session": "2025 Regular Session",
+  "referredTo": "Referred to Committee on Finance.",
+  "readFirstTime": "2025-01-28"
+ },
+ "sections": [
+  {
+   "id": "sec-1",
+   "num": "1",
+   "label": "NEW SECTION. Sec. 1.",
+   "isNewSection": true,
+   "kind": "intent",
+   "sourceKind": "new",
+   "identity": "text:55175adc0d3657b5",
+   "blocks": [
+    {
+     "id": "sec-1.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The legislature finds that the capital gains income tax incentivizes the out-of-state migration of individuals and families and is responsible for reducing Washington state's economic competitiveness relative to other states. To maintain Washington as a desirable place where individuals and families choose to reside, invest, and thrive, the legislature recognizes the need to repeal policies that discourage growth, innovation, and prosperity."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.p2",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "This tax has disproportionately affected economic activity and disadvantaged individuals and families who lack the means to avoid its impact. These dynamics exacerbate imbalances in the tax system and place additional burdens on those unable to navigate or mitigate the tax's effects. By repealing this tax, the legislature aims to create a fairer, more competitive economic environment that encourages the retention and attraction of diverse talent and investment."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.p3",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Moreover, addressing this tax aligns with the state's commitment to fostering opportunity and ensuring that Washington remains an attractive destination for individuals, families, and businesses seeking to contribute to and benefit from its robust economy and quality of life."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:dc8e5819e9642af88a7f3f4b55fef3963f65f935adaa9ecae9fe1e563b18069c"
+  },
+  {
+   "id": "sec-2",
+   "num": "2",
+   "label": "NEW SECTION. Sec. 2.",
+   "isNewSection": true,
+   "kind": "repealer",
+   "sourceKind": "repeal",
+   "identity": "repeal:82.87.010+15:78f5f979",
+   "blocks": [
+    {
+     "id": "sec-2.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The following acts or parts of acts are each repealed:"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.010",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.010",
+        "cite": "82.87.010",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.010"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Findings—Intent—2021 c 196) and 2021 c 196 s 1;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.020",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.020",
+        "cite": "82.87.020",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.020"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Definitions) and 2021 c 196 s 4;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.030",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.030",
+        "cite": "82.87.030",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.030"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Distribution of revenues) and 2021 c 196 s 2;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.040",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.040",
+        "cite": "82.87.040",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.040"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Tax imposed—Long-term capital assets) and 2021 c 196 s 5;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.5",
+     "label": "(5)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.050",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.050",
+        "cite": "82.87.050",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.050"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Exemptions) and 2021 c 196 s 6;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.6",
+     "label": "(6)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.060",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.060",
+        "cite": "82.87.060",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.060"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Deductions) and 2021 c 196 s 7;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.7",
+     "label": "(7)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.070",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.070",
+        "cite": "82.87.070",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.070"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Qualified family-owned small business deduction) and 2021 c 196 s 8;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.8",
+     "label": "(8)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.080",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.080",
+        "cite": "82.87.080",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.080"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Charitable donation deduction) and 2021 c 196 s 9;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.9",
+     "label": "(9)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.090",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.090",
+        "cite": "82.87.090",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.090"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Other taxes) and 2021 c 196 s 10;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.10",
+     "label": "(10)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.100",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.100",
+        "cite": "82.87.100",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.100"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Allocation of long-term capital gains and losses—Credit) and 2021 c 196 s 11;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.11",
+     "label": "(11)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.110",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.110",
+        "cite": "82.87.110",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.110"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Filing of returns—Additional documentation—Penalty) and 2021 c 196 s 12;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.12",
+     "label": "(12)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.120",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.120",
+        "cite": "82.87.120",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.120"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Joint filers—Separate filers—Tax liability) and 2021 c 196 s 13;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.13",
+     "label": "(13)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.130",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.130",
+        "cite": "82.87.130",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.130"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Administration of taxes) and 2021 c 196 s 14;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.14",
+     "label": "(14)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.140",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.140",
+        "cite": "82.87.140",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.140"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Tax criminal penalties) and 2021 c 196 s 15;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.15",
+     "label": "(15)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.87.150",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.87.150",
+        "cite": "82.87.150",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.150"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Annual adjustments) and 2021 c 196 s 17;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.16",
+     "label": "(16)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "RCW 82.04.4497",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 82.04.4497",
+        "cite": "82.04.4497",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.04.4497"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (Credit—Sale or exchange of long-term capital assets) and 2021 c 196 s 16;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.17",
+     "label": "(17)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "2021 c 196 s 18",
+       "cite": {
+        "kind": "session-law",
+        "text": "2021 c 196 s 18",
+        "cite": "2021 c 196 s 18"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (uncodified); and"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.18",
+     "label": "(18)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "cite",
+       "text": "2021 c 196 s 20",
+       "cite": {
+        "kind": "session-law",
+        "text": "2021 c 196 s 20",
+        "cite": "2021 c 196 s 20"
+       }
+      },
+      {
+       "t": "text",
+       "text": " (uncodified)."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:52b51e9755afdc8a1731088840c89701ba3e155b4535abeb9e65e8b1bac9baf6",
+   "target": {
+    "action": "repeal",
+    "repealed": [
+     {
+      "cite": "82.87.010",
+      "caption": "Findings—Intent—2021 c 196",
+      "history": "2021 c 196 s 1",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.010"
+     },
+     {
+      "cite": "82.87.020",
+      "caption": "Definitions",
+      "history": "2021 c 196 s 4",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.020"
+     },
+     {
+      "cite": "82.87.030",
+      "caption": "Distribution of revenues",
+      "history": "2021 c 196 s 2",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.030"
+     },
+     {
+      "cite": "82.87.040",
+      "caption": "Tax imposed—Long-term capital assets",
+      "history": "2021 c 196 s 5",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.040"
+     },
+     {
+      "cite": "82.87.050",
+      "caption": "Exemptions",
+      "history": "2021 c 196 s 6",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.050"
+     },
+     {
+      "cite": "82.87.060",
+      "caption": "Deductions",
+      "history": "2021 c 196 s 7",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.060"
+     },
+     {
+      "cite": "82.87.070",
+      "caption": "Qualified family-owned small business deduction",
+      "history": "2021 c 196 s 8",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.070"
+     },
+     {
+      "cite": "82.87.080",
+      "caption": "Charitable donation deduction",
+      "history": "2021 c 196 s 9",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.080"
+     },
+     {
+      "cite": "82.87.090",
+      "caption": "Other taxes",
+      "history": "2021 c 196 s 10",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.090"
+     },
+     {
+      "cite": "82.87.100",
+      "caption": "Allocation of long-term capital gains and losses—Credit",
+      "history": "2021 c 196 s 11",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.100"
+     },
+     {
+      "cite": "82.87.110",
+      "caption": "Filing of returns—Additional documentation—Penalty",
+      "history": "2021 c 196 s 12",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.110"
+     },
+     {
+      "cite": "82.87.120",
+      "caption": "Joint filers—Separate filers—Tax liability",
+      "history": "2021 c 196 s 13",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.120"
+     },
+     {
+      "cite": "82.87.130",
+      "caption": "Administration of taxes",
+      "history": "2021 c 196 s 14",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.130"
+     },
+     {
+      "cite": "82.87.140",
+      "caption": "Tax criminal penalties",
+      "history": "2021 c 196 s 15",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.140"
+     },
+     {
+      "cite": "82.87.150",
+      "caption": "Annual adjustments",
+      "history": "2021 c 196 s 17",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.150"
+     },
+     {
+      "cite": "82.04.4497",
+      "caption": "Credit—Sale or exchange of long-term capital assets",
+      "history": "2021 c 196 s 16",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.04.4497"
+     }
+    ]
+   }
+  },
+  {
+   "id": "sec-3",
+   "num": "3",
+   "label": "NEW SECTION. Sec. 3.",
+   "isNewSection": true,
+   "kind": "effective-date",
+   "sourceKind": "effdate",
+   "identity": "kind:effective-date",
+   "blocks": [
+    {
+     "id": "sec-3.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "This act takes effect October 1, 2025."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:f68240e768a60fd62a55aa94b4f9dc9b480c7e5f5167c52b429ffd70632d3eb1"
+  }
+ ],
+ "rcwAffected": [
+  {
+   "cite": "82.04.4497",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.04.4497",
+   "chapter": "82.04",
+   "caption": "Credit—Sale or exchange of long-term capital assets"
+  },
+  {
+   "cite": "82.87.010",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.010",
+   "chapter": "82.87",
+   "caption": "Findings—Intent—2021 c 196"
+  },
+  {
+   "cite": "82.87.020",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.020",
+   "chapter": "82.87",
+   "caption": "Definitions"
+  },
+  {
+   "cite": "82.87.030",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.030",
+   "chapter": "82.87",
+   "caption": "Distribution of revenues"
+  },
+  {
+   "cite": "82.87.040",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.040",
+   "chapter": "82.87",
+   "caption": "Tax imposed—Long-term capital assets"
+  },
+  {
+   "cite": "82.87.050",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.050",
+   "chapter": "82.87",
+   "caption": "Exemptions"
+  },
+  {
+   "cite": "82.87.060",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.060",
+   "chapter": "82.87",
+   "caption": "Deductions"
+  },
+  {
+   "cite": "82.87.070",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.070",
+   "chapter": "82.87",
+   "caption": "Qualified family-owned small business deduction"
+  },
+  {
+   "cite": "82.87.080",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.080",
+   "chapter": "82.87",
+   "caption": "Charitable donation deduction"
+  },
+  {
+   "cite": "82.87.090",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.090",
+   "chapter": "82.87",
+   "caption": "Other taxes"
+  },
+  {
+   "cite": "82.87.100",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.100",
+   "chapter": "82.87",
+   "caption": "Allocation of long-term capital gains and losses—Credit"
+  },
+  {
+   "cite": "82.87.110",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.110",
+   "chapter": "82.87",
+   "caption": "Filing of returns—Additional documentation—Penalty"
+  },
+  {
+   "cite": "82.87.120",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.120",
+   "chapter": "82.87",
+   "caption": "Joint filers—Separate filers—Tax liability"
+  },
+  {
+   "cite": "82.87.130",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.130",
+   "chapter": "82.87",
+   "caption": "Administration of taxes"
+  },
+  {
+   "cite": "82.87.140",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.140",
+   "chapter": "82.87",
+   "caption": "Tax criminal penalties"
+  },
+  {
+   "cite": "82.87.150",
+   "action": "repeal",
+   "sectionIds": [
+    "sec-2"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.87.150",
+   "chapter": "82.87",
+   "caption": "Annual adjustments"
+  }
+ ],
+ "provenance": {
+  "fetchedAt": "2026-09-01T00:00:00.000Z",
+  "parser": "wa-bill-xml",
+  "parserVersion": "1.0.0",
+  "warnings": [],
+  "hasLineNumbers": false
+ }
+}

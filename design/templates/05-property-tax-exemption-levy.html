@@ -1,0 +1,361 @@
+<!-- template: property-tax-exemption-levy | Property tax exemption or levy change -->
+<!-- Property tax bill under Title 84 RCW. Distinguishes revenue loss from tax shift, reports state and local impact on a fiscal year basis and a calendar year detail block, and uses the $3.60 state levy limit assumption. Modeled on HB 1004 (71461) and HB 1334 (72718). -->
+<article class="fiscal-note" data-template="property-tax-exemption-levy" data-form="FNS062" data-agency-code="140">
+<header data-part="header">
+  <h1>Department of Revenue Fiscal Note</h1>
+  <dl class="header-fields" data-role="header-fields">
+    <dt>Bill Number:</dt><dd data-slot="bill.number" data-source="request" data-readonly="true">{{bill.number}}</dd>
+    <dt>Title:</dt><dd data-slot="bill.title" data-source="request" data-readonly="true">{{bill.title}}</dd>
+    <dt>Agency:</dt><dd data-slot="agency.display" data-source="request" data-readonly="true">{{agency.code}}-{{agency.name}}</dd>
+  </dl>
+</header>
+<section data-part="I">
+  <h2>Part I: Estimates</h2>
+  <p class="checkbox"><input type="checkbox" data-slot="flags.noFiscalImpact"> No Fiscal Impact</p>
+  <h3>Estimated Cash Receipts to:</h3>
+  <table data-role="cash-receipts" data-unit="dollars" data-basis="cash">
+    <thead><tr><th>Account</th><th>{{fy.1}}</th><th>{{fy.2}}</th><th>{{bien.1}}</th><th>{{bien.2}}</th><th>{{bien.3}}</th></tr></thead>
+    <tbody>
+    <tr data-row="account" data-key="gf" data-account="001-1">
+      <th scope="row"><span data-slot="receipts.gf.account" data-type="account" data-lookup="ofm-fund-reference">GF-STATE-State</span><br>
+        <small data-slot="receipts.gf.source" data-type="revenue-source" data-lookup="saam-75.80">01 - Taxes  50 - Property Tax</small></th>
+      <td data-col="fy1" data-slot="receipts.gf.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="receipts.gf.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(receipts.gf.fy1,receipts.gf.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(receipts.gf.fy3,receipts.gf.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(receipts.gf.fy5,receipts.gf.fy6)"></td>
+    </tr>
+    </tbody>
+    <tfoot><tr data-row="total"><th scope="row">Total $</th>
+      <td data-computed="sum(receipts.*.fy1)"></td><td data-computed="sum(receipts.*.fy2)"></td>
+      <td data-computed="sum(receipts.*.bien1)"></td><td data-computed="sum(receipts.*.bien2)"></td><td data-computed="sum(receipts.*.bien3)"></td></tr></tfoot>
+  </table>
+  <h3>Estimated Expenditures from:</h3>
+  <table data-role="expenditures-by-account" data-unit="dollars">
+    <thead><tr><th>Account</th><th>{{fy.1}}</th><th>{{fy.2}}</th><th>{{bien.1}}</th><th>{{bien.2}}</th><th>{{bien.3}}</th></tr></thead>
+    <tbody>
+    <tr data-row="fte"><th scope="row">FTE Staff Years</th>
+      <td data-col="fy1" data-computed="fte.total.fy1" data-type="fte"></td>
+      <td data-col="fy2" data-computed="fte.total.fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fte.total.fy1,fte.total.fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fte.total.fy3,fte.total.fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fte.total.fy5,fte.total.fy6)"></td></tr>
+    <tr data-row="account" data-key="gf" data-account="001-1"><th scope="row"><span data-slot="expenditures.gf.account" data-type="account">GF-STATE-State 001-1</span></th>
+      <td data-col="fy1" data-slot="expenditures.gf.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="expenditures.gf.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(expenditures.gf.fy1,expenditures.gf.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(expenditures.gf.fy3,expenditures.gf.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(expenditures.gf.fy5,expenditures.gf.fy6)"></td>
+    </tr>
+    </tbody>
+    <tfoot><tr data-row="total"><th scope="row">Total $</th>
+      <td data-computed="sum(expenditures.*.fy1)"></td><td data-computed="sum(expenditures.*.fy2)"></td>
+      <td data-computed="sum(expenditures.*.bien1)"></td><td data-computed="sum(expenditures.*.bien2)"></td><td data-computed="sum(expenditures.*.bien3)"></td></tr></tfoot>
+  </table>
+  <h3>Estimated Capital Budget Impact:</h3>
+  <p class="none" data-slot="capital.summary" data-readonly="true">NONE</p>
+  <p class="form-instruction" data-locked="true">The cash receipts and expenditure estimates on this page represent the most likely fiscal impact. Factors impacting the precision of these estimates, and alternate ranges (if appropriate), are explained in Part II.</p>
+  <p class="form-instruction" data-locked="true">Check applicable boxes and follow corresponding instructions:</p>
+  <ul class="checkboxes" data-role="impact-flags">
+    <li><input type="checkbox" data-slot="flags.over50k" data-computed="max(abs(expenditures.*.fy*),abs(receipts.*.fy*))>50000" checked> If fiscal impact is greater than $50,000 per fiscal year in the current biennium or in subsequent biennia, complete entire fiscal note form Parts I-V.</li>
+    <li><input type="checkbox" data-slot="flags.under50k" data-computed="not(flags.over50k)"> If fiscal impact is less than $50,000 per fiscal year in the current biennium or in subsequent biennia, complete this page only (Part I).</li>
+    <li><input type="checkbox" data-slot="flags.capital" data-computed="nonempty(capital)"> Capital budget impact, complete Part IV.</li>
+    <li><input type="checkbox" data-slot="flags.ruleMaking" data-computed="nonempty(narrative.rules)" checked> Requires new rule making, complete Part V.</li>
+  </ul>
+  <table class="signatures" data-role="signature-block">
+    <tr><th>Legislative Contact:</th><td data-slot="legContact.name" data-source="request">{{legContact.name}}</td><td>Phone: <span data-slot="legContact.phone" data-source="request">{{legContact.phone}}</span></td><td>Date: <span data-slot="request.date" data-source="request">{{request.date}}</span></td></tr>
+    <tr><th>Agency Preparation:</th><td data-slot="preparer.name" data-source="workflow">{{preparer.name}}</td><td>Phone: <span data-slot="preparer.phone" data-source="workflow">{{preparer.phone}}</span></td><td>Date: <span data-slot="preparer.date" data-source="workflow">{{preparer.date}}</span></td></tr>
+    <tr><th>Agency Approval:</th><td data-slot="approver.name" data-source="workflow">{{approver.name}}</td><td>Phone: <span data-slot="approver.phone" data-source="workflow">{{approver.phone}}</span></td><td>Date: <span data-slot="approver.date" data-source="workflow">{{approver.date}}</span></td></tr>
+    <tr><th>OFM Review:</th><td data-slot="ofm.name" data-source="ofm">{{ofm.name}}</td><td>Phone: <span data-slot="ofm.phone" data-source="ofm">{{ofm.phone}}</span></td><td>Date: <span data-slot="ofm.date" data-source="ofm">{{ofm.date}}</span></td></tr>
+  </table>
+</section>
+<section data-part="II.A">
+  <h2>Part II: Narrative Explanation</h2>
+  <h3>II. A - Brief Description Of What The Measure Does That Has Fiscal Impact</h3>
+  <p class="form-instruction" data-locked="true">Significant provisions of the bill and any related workload or policy assumptions that have revenue or expenditure impact on the responding agency by section number.</p>
+  <h4>CURRENT LAW:</h4>
+  <div data-slot="narrative.currentLaw" data-type="multiline"><p>{{narrative.currentLaw}}</p></div>
+  <h4>PROPOSAL:</h4>
+  <div data-slot="narrative.proposal" data-type="multiline"><p>{{narrative.proposal}}</p></div>
+  <h4>EFFECTIVE DATE:</h4>
+  <div data-slot="narrative.effectiveDate" data-type="multiline" data-picklist="effective-date-sentences">This bill takes effect beginning with property taxes due for calendar year {{fy.1.year}}.</div>
+</section>
+<section data-part="II.B">
+  <h3>II. B - Cash receipts Impact</h3>
+  <p class="form-instruction" data-locked="true">Cash receipts impact of the legislation on the responding agency with the cash receipts provisions identified by section number and when appropriate, the detail of the revenue sources. Description of the factual basis of the assumptions and the method by which the cash receipts impact is derived. Explanation of how workload assumptions translate into estimates. Distinguished between one time and ongoing functions.</p>
+  <h4>ASSUMPTIONS:</h4>
+<ul data-slot="narrative.receipts.assumptions" data-type="list" data-picklist="receipt-assumptions">
+  <li>Qualifying property owners receive the exemption in calendar year {{fy.1.year}}, for property taxes due for calendar year {{fy.2.year}}.</li>
+  <li>The Economic and Revenue Forecast Council predicts the state property tax levy remains below the $3.60 limit throughout the {{bien.2}} biennium. A new exemption results in a shift and no loss to the state levy.</li>
+  <li>Based on five years of state property tax collections, {{ref.aprilShare}}% of property tax collections occur in April and {{ref.octoberShare}}% occur in October. When converting from calendar year to fiscal year, this estimate assumes revenue gains and losses follow this trend.</li>
+</ul>
+  <h4>DATA SOURCES:</h4>
+<ul data-slot="narrative.receipts.dataSources" data-type="list" data-picklist="data-sources">
+  <li>Economic and Revenue Forecast Council, {{ref.forecast.vintage}} forecast</li>
+  <li>County assessor data</li>
+  <li>Department of Revenue, State Property Tax Model</li>
+</ul>
+  <h4>REVENUE ESTIMATES:</h4>
+  <div data-slot="narrative.receipts.estimate" data-type="multiline"><p data-picklist="property-tax-revenue-sentences">This legislation results in no revenue impact to the state property tax levy.</p></div>
+  <h4>PROPERTY TAX SHIFTS:</h4>
+  <p data-slot="narrative.receipts.shift" data-type="multiline" data-picklist="property-tax-shift-sentences">This legislation results in a state levy shift to other taxpayers of an estimated <span data-computed="millions(shift.state.fy2)">{{shift.state.fy2.millions}}</span> for fiscal year {{fy.2.year}} and <span data-computed="millions(shift.state.fy3)">{{shift.state.fy3.millions}}</span> in fiscal year {{fy.3.year}}, the first full fiscal year.</p>
+  <h4>TOTAL REVENUE IMPACT:</h4>
+  <div data-role="total-revenue-impact">
+    <table data-role="impact-series" data-scope="impact.state" data-unit="thousands" data-basis="cash">
+      <caption>State Government (cash basis, $000):</caption>
+      <tbody>
+      <tr><th scope="row">{{fy.1}}</th><td data-computed="sum(receipts.*.fy1)/1000" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.2}}</th><td data-computed="sum(receipts.*.fy2)/1000" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.3}}</th><td data-computed="sum(receipts.*.fy3)/1000" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.4}}</th><td data-computed="sum(receipts.*.fy4)/1000" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.5}}</th><td data-computed="sum(receipts.*.fy5)/1000" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.6}}</th><td data-computed="sum(receipts.*.fy6)/1000" data-type="money-thousands"></td></tr>
+      </tbody>
+    </table>
+    <table data-role="impact-series" data-scope="impact.local" data-unit="thousands" data-basis="cash">
+      <caption>Local Government, if applicable (cash basis, $000):</caption>
+      <tbody>
+      <tr><th scope="row">{{fy.1}}</th><td data-slot="impact.local.fy1" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.2}}</th><td data-slot="impact.local.fy2" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.3}}</th><td data-slot="impact.local.fy3" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.4}}</th><td data-slot="impact.local.fy4" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.5}}</th><td data-slot="impact.local.fy5" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{fy.6}}</th><td data-slot="impact.local.fy6" data-type="money-thousands"></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>DETAIL OF REVENUE IMPACT FOR PROPERTY TAX BILLS, Calendar Year Basis</h4>
+  <div data-role="property-tax-cy-detail" data-unit="thousands">
+    <table data-role="impact-series" data-scope="cyImpact.state" data-unit="thousands" data-basis="cash">
+      <caption>State Government, Impact on Revenues ($000):</caption>
+      <tbody>
+      <tr><th scope="row">{{cy.1}}</th><td data-slot="cyImpact.state.cy1" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.2}}</th><td data-slot="cyImpact.state.cy2" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.3}}</th><td data-slot="cyImpact.state.cy3" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.4}}</th><td data-slot="cyImpact.state.cy4" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.5}}</th><td data-slot="cyImpact.state.cy5" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.6}}</th><td data-slot="cyImpact.state.cy6" data-type="money-thousands"></td></tr>
+      </tbody>
+    </table>
+    <table data-role="impact-series" data-scope="cyShift.state" data-unit="thousands" data-basis="cash">
+      <caption>State Government, ($000), Shift of Tax Burden</caption>
+      <tbody>
+      <tr><th scope="row">{{cy.1}}</th><td data-slot="cyShift.state.cy1" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.2}}</th><td data-slot="cyShift.state.cy2" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.3}}</th><td data-slot="cyShift.state.cy3" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.4}}</th><td data-slot="cyShift.state.cy4" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.5}}</th><td data-slot="cyShift.state.cy5" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.6}}</th><td data-slot="cyShift.state.cy6" data-type="money-thousands"></td></tr>
+      </tbody>
+    </table>
+    <table data-role="impact-series" data-scope="cyImpact.local" data-unit="thousands" data-basis="cash">
+      <caption>Local Government, Impact on Revenues ($000)</caption>
+      <tbody>
+      <tr><th scope="row">{{cy.1}}</th><td data-slot="cyImpact.local.cy1" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.2}}</th><td data-slot="cyImpact.local.cy2" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.3}}</th><td data-slot="cyImpact.local.cy3" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.4}}</th><td data-slot="cyImpact.local.cy4" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.5}}</th><td data-slot="cyImpact.local.cy5" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.6}}</th><td data-slot="cyImpact.local.cy6" data-type="money-thousands"></td></tr>
+      </tbody>
+    </table>
+    <table data-role="impact-series" data-scope="cyShift.local" data-unit="thousands" data-basis="cash">
+      <caption>Local Government, ($000), Shift of Tax Burden</caption>
+      <tbody>
+      <tr><th scope="row">{{cy.1}}</th><td data-slot="cyShift.local.cy1" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.2}}</th><td data-slot="cyShift.local.cy2" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.3}}</th><td data-slot="cyShift.local.cy3" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.4}}</th><td data-slot="cyShift.local.cy4" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.5}}</th><td data-slot="cyShift.local.cy5" data-type="money-thousands"></td></tr>
+      <tr><th scope="row">{{cy.6}}</th><td data-slot="cyShift.local.cy6" data-type="money-thousands"></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section data-part="II.C">
+  <h3>II. C - Expenditures</h3>
+  <p class="form-instruction" data-locked="true">Agency expenditures necessary to implement this legislation (or savings resulting from this legislation), with the provisions of the legislation that result in the expenditures (or savings) identified by section number. Description of the factual basis of the assumptions and the method by which the expenditure impact is derived. Explanation of how workload assumptions translate into cost estimates. Distinguished between one time and ongoing functions.</p>
+  <h4>ASSUMPTIONS:</h4>
+  <div data-slot="narrative.expenditures.assumptions" data-type="multiline">This affects {{expenditures.affected}}.</div>
+  <h4>FIRST YEAR COSTS:</h4>
+  <p>The department will incur total costs of <span data-computed="expenditures.total.fy1" data-type="money">{{expenditures.total.fy1}}</span> in fiscal year <span data-computed="fy.1.year">{{fy.1.year}}</span>. These costs include:</p>
+  <p class="indent">Labor Costs &#8211; Time and effort equate to <span data-computed="fte.total.fy1" data-type="fte" data-precision="2">{{fte.total.fy1}}</span> FTEs.</p>
+<ul data-slot="narrative.expenditures.year1.activities" data-type="list" data-picklist="expenditure-activities">
+  <li>Set up, program, and test computer system changes to {{expenditures.systemChange}}.</li>
+  <li>Calculate assessed values for state-assessed utility companies to reflect the change.</li>
+  <li>Create special notices and update forms, publications, and training materials.</li>
+  <li>Revise property tax manuals, update forms and training materials, and work with county assessor&#8217;s offices to implement this legislation.</li>
+  <li>Amend {{rules.count}} administrative rules.</li>
+</ul>
+  <p class="indent">Object Costs - <span data-computed="sum(objects.C.fy1,objects.E.fy1,objects.G.fy1,objects.J.fy1)" data-type="money">{{objects.nonlabor.fy1}}</span>.</p>
+<ul data-slot="narrative.expenditures.year1.objects" data-type="list" data-picklist="expenditure-objects">
+  <li>Printing and postage</li>
+</ul>
+  <h4>SECOND YEAR COSTS:</h4>
+  <p>The department will incur total costs of <span data-computed="expenditures.total.fy2" data-type="money">{{expenditures.total.fy2}}</span> in fiscal year <span data-computed="fy.2.year">{{fy.2.year}}</span>. These costs include:</p>
+  <p class="indent">Labor Costs &#8211; Time and effort equate to <span data-computed="fte.total.fy2" data-type="fte" data-precision="1">{{fte.total.fy2}}</span> FTEs.</p>
+<ul data-slot="narrative.expenditures.year2.activities" data-type="list" data-picklist="expenditure-activities">
+  <li>Continue to test computer system changes.</li>
+  <li>Calculate limit factors for all taxing districts.</li>
+</ul>
+  <p class="indent">Object Costs - <span data-computed="sum(objects.C.fy2,objects.E.fy2,objects.G.fy2,objects.J.fy2)" data-type="money">{{objects.nonlabor.fy2}}</span>.</p>
+<ul data-slot="narrative.expenditures.year2.objects" data-type="list" data-picklist="expenditure-objects">
+  <li>Printing and postage</li>
+</ul>
+  <div data-repeat="narrative.expenditures.extraYears" data-optional="true" data-hint="Add THIRD YEAR COSTS / FOURTH YEAR COSTS when the profile changes year to year."></div>
+  <h4>ONGOING COSTS:</h4>
+  <p data-slot="narrative.expenditures.ongoing" data-type="text" data-picklist="ongoing-cost-sentences">There are no ongoing costs for the {{bien.2}} biennium.</p>
+</section>
+<section data-part="III">
+  <h2>Part III: Expenditure Detail</h2>
+  <h3>III. A - Expenditures by Object Or Purpose</h3>
+  <table data-role="expenditures-by-object" data-unit="dollars" data-validate="totals-equal(expenditures-by-account)">
+    <thead><tr><th></th><th>{{fy.1}}</th><th>{{fy.2}}</th><th>{{bien.1}}</th><th>{{bien.2}}</th><th>{{bien.3}}</th></tr></thead>
+    <tbody>
+    <tr data-row="fte"><th scope="row">FTE Staff Years</th>
+      <td data-col="fy1" data-computed="fte.total.fy1" data-type="fte"></td>
+      <td data-col="fy2" data-computed="fte.total.fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fte.total.fy1,fte.total.fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fte.total.fy3,fte.total.fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fte.total.fy5,fte.total.fy6)"></td></tr>
+    <tr data-row="object" data-object="A"><th scope="row">A-Salaries and Wages</th>
+      <td data-col="fy1" data-slot="objects.A.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="objects.A.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(objects.A.fy1,objects.A.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(objects.A.fy3,objects.A.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(objects.A.fy5,objects.A.fy6)"></td>
+    </tr>
+    <tr data-row="object" data-object="B"><th scope="row">B-Employee Benefits</th>
+      <td data-col="fy1" data-slot="objects.B.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="objects.B.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(objects.B.fy1,objects.B.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(objects.B.fy3,objects.B.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(objects.B.fy5,objects.B.fy6)"></td>
+    </tr>
+    <tr data-row="object" data-object="C"><th scope="row">C-Professional Service Contracts</th>
+      <td data-col="fy1" data-slot="objects.C.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="objects.C.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(objects.C.fy1,objects.C.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(objects.C.fy3,objects.C.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(objects.C.fy5,objects.C.fy6)"></td>
+    </tr>
+    <tr data-row="object" data-object="E"><th scope="row">E-Goods and Other Services</th>
+      <td data-col="fy1" data-slot="objects.E.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="objects.E.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(objects.E.fy1,objects.E.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(objects.E.fy3,objects.E.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(objects.E.fy5,objects.E.fy6)"></td>
+    </tr>
+    <tr data-row="object" data-object="G"><th scope="row">G-Travel</th>
+      <td data-col="fy1" data-slot="objects.G.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="objects.G.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(objects.G.fy1,objects.G.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(objects.G.fy3,objects.G.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(objects.G.fy5,objects.G.fy6)"></td>
+    </tr>
+    <tr data-row="object" data-object="J"><th scope="row">J-Capital Outlays</th>
+      <td data-col="fy1" data-slot="objects.J.fy1" data-type="money"></td>
+      <td data-col="fy2" data-slot="objects.J.fy2" data-type="money"></td>
+      <td data-col="bien1" data-computed="sum(objects.J.fy1,objects.J.fy2)"></td>
+      <td data-col="bien2" data-computed="sum(objects.J.fy3,objects.J.fy4)"></td>
+      <td data-col="bien3" data-computed="sum(objects.J.fy5,objects.J.fy6)"></td>
+    </tr>
+    </tbody>
+    <tfoot><tr data-row="total"><th scope="row">Total $</th>
+      <td data-computed="sum(objects.*.fy1)"></td><td data-computed="sum(objects.*.fy2)"></td>
+      <td data-computed="sum(objects.*.bien1)"></td><td data-computed="sum(objects.*.bien2)"></td><td data-computed="sum(objects.*.bien3)"></td></tr></tfoot>
+  </table>
+  <h3>III. B - Detail:</h3>
+  <p class="form-instruction" data-locked="true">FTEs listed by classification and corresponding annual compensation. Totals agree with total FTEs in Part I and Part IIIA.</p>
+  <table data-role="fte-by-class" data-unit="fte" data-validate="totals-equal(expenditures-by-account.fte)">
+    <thead><tr><th>Job Classification</th><th>Salary</th><th>{{fy.1}}</th><th>{{fy.2}}</th><th>{{bien.1}}</th><th>{{bien.2}}</th><th>{{bien.3}}</th></tr></thead>
+    <tbody data-repeat="fteClass">
+    <tr data-row="class" data-index="0">
+      <th scope="row"><span data-slot="fteClass[0].title" data-type="job-class" data-lookup="dor-job-classes">PROPERTY AND ACQUISITION SP 5</span></th>
+      <td data-slot="fteClass[0].salary" data-type="money">{{ref.salary.PROPERTY_ACQ_SP_5}}</td>
+      <td data-col="fy1" data-slot="fteClass[0].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[0].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[0].fy1,fteClass[0].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[0].fy3,fteClass[0].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[0].fy5,fteClass[0].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="1">
+      <th scope="row"><span data-slot="fteClass[1].title" data-type="job-class" data-lookup="dor-job-classes">IT SYS ADM-JOURNEY</span></th>
+      <td data-slot="fteClass[1].salary" data-type="money">{{ref.salary.IT_SYS_ADM_JOURNEY}}</td>
+      <td data-col="fy1" data-slot="fteClass[1].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[1].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[1].fy1,fteClass[1].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[1].fy3,fteClass[1].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[1].fy5,fteClass[1].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="2">
+      <th scope="row"><span data-slot="fteClass[2].title" data-type="job-class" data-lookup="dor-job-classes">TAX POLICY SP 3</span></th>
+      <td data-slot="fteClass[2].salary" data-type="money">{{ref.salary.TAX_POLICY_SP_3}}</td>
+      <td data-col="fy1" data-slot="fteClass[2].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[2].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[2].fy1,fteClass[2].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[2].fy3,fteClass[2].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[2].fy5,fteClass[2].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="3">
+      <th scope="row"><span data-slot="fteClass[3].title" data-type="job-class" data-lookup="dor-job-classes">TAX POLICY SP 4</span></th>
+      <td data-slot="fteClass[3].salary" data-type="money">{{ref.salary.TAX_POLICY_SP_4}}</td>
+      <td data-col="fy1" data-slot="fteClass[3].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[3].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[3].fy1,fteClass[3].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[3].fy3,fteClass[3].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[3].fy5,fteClass[3].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="4">
+      <th scope="row"><span data-slot="fteClass[4].title" data-type="job-class" data-lookup="dor-job-classes">MGMT ANALYST4</span></th>
+      <td data-slot="fteClass[4].salary" data-type="money">{{ref.salary.MGMT_ANALYST_4}}</td>
+      <td data-col="fy1" data-slot="fteClass[4].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[4].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[4].fy1,fteClass[4].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[4].fy3,fteClass[4].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[4].fy5,fteClass[4].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="5">
+      <th scope="row"><span data-slot="fteClass[5].title" data-type="job-class" data-lookup="dor-job-classes">WMS BAND 3</span></th>
+      <td data-slot="fteClass[5].salary" data-type="money">{{ref.salary.WMS_BAND_3}}</td>
+      <td data-col="fy1" data-slot="fteClass[5].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[5].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[5].fy1,fteClass[5].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[5].fy3,fteClass[5].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[5].fy5,fteClass[5].fy6)"></td>
+    </tr>
+    <tr data-row="class" data-index="6">
+      <th scope="row"><span data-slot="fteClass[6].title" data-type="job-class" data-lookup="dor-job-classes">EMS BAND 4</span></th>
+      <td data-slot="fteClass[6].salary" data-type="money">{{ref.salary.EMS_BAND_4}}</td>
+      <td data-col="fy1" data-slot="fteClass[6].fy1" data-type="fte"></td>
+      <td data-col="fy2" data-slot="fteClass[6].fy2" data-type="fte"></td>
+      <td data-col="bien1" data-computed="avg(fteClass[6].fy1,fteClass[6].fy2)"></td>
+      <td data-col="bien2" data-computed="avg(fteClass[6].fy3,fteClass[6].fy4)"></td>
+      <td data-col="bien3" data-computed="avg(fteClass[6].fy5,fteClass[6].fy6)"></td>
+    </tr>
+    </tbody>
+    <tfoot><tr data-row="total"><th scope="row">Total FTEs</th><td></td>
+      <td data-computed="sum(fteClass.*.fy1)"></td><td data-computed="sum(fteClass.*.fy2)"></td>
+      <td data-computed="sum(fteClass.*.bien1)"></td><td data-computed="sum(fteClass.*.bien2)"></td><td data-computed="sum(fteClass.*.bien3)"></td></tr></tfoot>
+  </table>
+  <h3>III. C - Expenditures By Program (optional)</h3>
+  <p class="none" data-slot="program.summary" data-optional="true">NONE</p>
+</section>
+<section data-part="IV">
+  <h2>Part IV: Capital Budget Impact</h2>
+  <h3>IV. A - Capital Budget Expenditures</h3>
+  <p class="none" data-slot="capital.expenditures" data-optional="true">NONE</p>
+  <h3>IV. B - Expenditures by Object Or Purpose</h3>
+  <p class="form-instruction" data-locked="true">Acquisition and construction costs not reflected elsewhere on the fiscal note and description of potential financing methods.</p>
+  <p class="none" data-slot="capital.objects" data-optional="true">NONE</p>
+  <h3>IV. C - Capital Budget Breakout</h3>
+  <p class="none" data-slot="capital.breakout" data-optional="true">NONE</p>
+</section>
+<section data-part="V">
+  <h2>Part V: New Rule Making Required</h2>
+  <p class="form-instruction" data-locked="true">Provisions of the bill that require the agency to adopt new administrative rules or repeal/revise existing rules.</p>
+  <div data-slot="narrative.rules" data-type="multiline" data-optional="true">Should this legislation become law, the department will use the standard process to amend WAC <span data-slot="rules[0].wac">{{rules[0].wac}}</span>, titled: &#8220;<span data-slot="rules[0].title">{{rules[0].title}}</span>.&#8221;
+  <p>In addition, the department will use the expedited process to amend WAC <span data-slot="rules[1].wac">{{rules[1].wac}}</span>, titled: &#8220;<span data-slot="rules[1].title">{{rules[1].title}}</span>.&#8221;</p>
+  <p>This rulemaking would affect <span data-slot="rules.affected">{{rules.affected}}</span>.</p></div>
+</section>
+</article>

@@ -1,0 +1,65 @@
+# Development dependencies for the Fiscal Note Workbench.
+# Host ports are offset from the defaults so they do not collide with other local stacks.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: wa_leg
+      POSTGRES_PASSWORD: wa_leg
+      POSTGRES_DB: wa_leg
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wa_leg"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  opensearch:
+    image: opensearchproject/opensearch:3.7.0
+    environment:
+      discovery.type: single-node
+      DISABLE_SECURITY_PLUGIN: "true"
+      DISABLE_INSTALL_DEMO_CONFIG: "true"
+      OPENSEARCH_JAVA_OPTS: "-Xms1g -Xmx1g"
+      bootstrap.memory_lock: "true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9201:9200"
+    volumes:
+      - osdata:/usr/share/opensearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  mail:
+    # SMTP sink with a web inbox (MIT). SMTP on 1025, UI on http://localhost:8026
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025"
+      - "8026:8025"
+
+  dev-oidc:
+    # Development OpenID Connect issuer with one test user per role.
+    build:
+      context: .
+      dockerfile: apps/dev-oidc/Dockerfile
+    environment:
+      ISSUER: http://localhost:4801
+      PORT: "4801"
+      CLIENT_ID: wa-leg-web
+      CLIENT_SECRET: dev-client-secret
+      REDIRECT_URIS: http://localhost:4800/api/v1/auth/callback,http://localhost:5173/api/v1/auth/callback
+    ports:
+      - "4801:4801"
+
+volumes:
+  pgdata:
+  osdata:

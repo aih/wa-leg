@@ -1,0 +1,31 @@
+{
+  "name": "wa-leg",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Fiscal Note Workbench: proof of concept for the Washington Department of Revenue",
+  "license": "MIT",
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "scripts": {
+    "dev": "pnpm -r --parallel --stream run dev",
+    "build": "pnpm -r run build",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r run test",
+    "test:e2e": "pnpm --filter @wa-leg/web run test:e2e",
+    "wa-leg": "pnpm --filter @wa-leg/api run cli",
+    "third-party": "node scripts/third-party.mjs",
+    "load": "node scripts/load.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "eslint": "9.39.5",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.69.0",
+    "globals": "17.12.0",
+    "autocannon": "8.0.0"
+  }
+}
