@@ -22,7 +22,7 @@ beforeAll(async () => {
     readDataset(LEGISCAN),
     { concurrency: 2 },
   );
-  expect(stats.billsSeen).toBe(3);
+  expect(stats.billsSeen).toBe(4);
   expect(stats.errors).toEqual([]);
 });
 afterAll(async () => {
@@ -142,7 +142,7 @@ describe('bills module', () => {
   it('is idempotent: reloading unchanged bills does not duplicate rows or events', async () => {
     const before = Number(((await t.app.db.execute(sql`SELECT count(*) AS n FROM outbox`)).rows[0] as any).n);
     const stats = await ingestLegiscanBills({ db: t.app.db, fetcher: new DirectoryFetcher(XML_FIXTURES), log: t.app.log as unknown as Logger }, readDataset(LEGISCAN), {});
-    expect(stats.billsUnchanged).toBe(3);
+    expect(stats.billsUnchanged).toBe(4);
     expect(stats.billsUpserted).toBe(0);
     const after = Number(((await t.app.db.execute(sql`SELECT count(*) AS n FROM outbox`)).rows[0] as any).n);
     expect(after).toBe(before);
@@ -153,7 +153,7 @@ describe('bills module', () => {
   it('emitted bill.created, bill.version_added, hearing.scheduled and bill.amendment_added events', async () => {
     const rows = (await t.app.db.execute(sql`SELECT type, count(*) AS n FROM outbox GROUP BY type ORDER BY type`)).rows as { type: string; n: string }[];
     const counts = Object.fromEntries(rows.map((r) => [r.type, Number(r.n)]));
-    expect(counts['bill.created']).toBe(3);
+    expect(counts['bill.created']).toBe(4);
     expect(counts['bill.version_added']).toBeGreaterThanOrEqual(4);
     expect(counts['hearing.scheduled']).toBeGreaterThanOrEqual(3);
     expect(counts['bill.amendment_added']).toBeGreaterThanOrEqual(2);

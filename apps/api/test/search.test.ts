@@ -31,10 +31,10 @@ describe('search module (postgres backend)', () => {
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body.backend).toBe('postgres');
-    expect(body.hits.map((h: any) => h.bill_key).sort()).toEqual(['WA:2025-26:HB2402', 'WA:2025-26:SB5814', 'WA:2025-26:SB6137']);
+    expect(body.hits.map((h: any) => h.bill_key).sort()).toEqual(['WA:2025-26:HB1019', 'WA:2025-26:HB2402', 'WA:2025-26:SB5814', 'WA:2025-26:SB6137']);
     const facets = (await t.app.inject({ method: 'GET', url: '/api/v1/search?q=&size=1', headers: await t.as(users.viewer) })).json().facets;
     const types = Object.fromEntries(facets.doc_type.map((f: any) => [f.key, f.count]));
-    expect(types.bill).toBe(3);
+    expect(types.bill).toBe(4);
     expect(types.section).toBeGreaterThan(10);
     expect(types.amendment).toBeGreaterThanOrEqual(2);
     expect(types.fiscal_note).toBeGreaterThanOrEqual(2);
