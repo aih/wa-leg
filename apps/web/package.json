@@ -12,6 +12,8 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@wa-leg/bill-document": "workspace:*",
+    "@wa-leg/billref": "workspace:*",
     "@wa-leg/workflow-machine": "workspace:*",
     "react": "19.2.8",
     "react-dom": "19.2.8",

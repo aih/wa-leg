@@ -51,6 +51,7 @@ button.secondary, .button.secondary { background: var(--surface); color: var(--f
 button.linkish { background: none; border: none; color: var(--accent); padding: 0; text-decoration: underline; }
 button:disabled { opacity: .55; cursor: not-allowed; }
 .main { flex: 1; padding: 1rem 1.25rem 3rem; max-width: 80rem; width: 100%; margin: 0 auto; }
+.main:has(> .bill-page) { max-width: none; padding: 0; }
 .hero { max-width: 44rem; }
 .muted { color: var(--muted); }
 h1 { font-size: 1.6rem; margin: .4rem 0 .8rem; }

@@ -4,7 +4,7 @@
 // Diff_Timeout is 0 throughout so the diff is never traded for speed.
 import DiffMatchPatch from 'diff-match-patch';
 import type { BillDocument, BillSection, Block, Run, BillMark } from './types.js';
-import { normalizeSpace } from './hash.js';
+import { normalizeSpace } from './text.js';
 
 export type Mark = 'equal' | 'insert' | 'delete';
 export type DiffMode = 'as-printed' | 'effect';

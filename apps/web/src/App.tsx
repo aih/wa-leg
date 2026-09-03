@@ -7,6 +7,8 @@ import { ReviewerDashboard } from './routes/ReviewerDashboard';
 import { Inbox } from './routes/Inbox';
 import { NotFound } from './routes/NotFound';
 import { Placeholder } from './routes/Placeholder';
+import { BillPage } from './routes/BillPage';
+import { ComparePage } from './routes/ComparePage';
 
 export function App() {
   return (
@@ -16,9 +18,9 @@ export function App() {
           <Route index element={<Home />} />
           <Route path="dashboard/drafter" element={<DrafterDashboard />} />
           <Route path="dashboard/reviewer" element={<ReviewerDashboard />} />
-          <Route path="bills/:biennium/:id" element={<Placeholder title="Bill" />} />
-          <Route path="bills/:biennium/:id/compare" element={<Placeholder title="Compare versions" />} />
-          <Route path="bills/:biennium/:id/:code" element={<Placeholder title="Bill" />} />
+          <Route path="bills/:biennium/:id" element={<BillPage />} />
+          <Route path="bills/:biennium/:id/compare" element={<ComparePage />} />
+          <Route path="bills/:biennium/:id/:code" element={<BillPage />} />
           <Route path="notes/:revisionId" element={<Placeholder title="Workspace" />} />
           <Route path="notes/:revisionId/versions" element={<Placeholder title="Document versions" />} />
           <Route path="search" element={<Placeholder title="Search results" />} />

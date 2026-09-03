@@ -124,6 +124,12 @@ importers:
 
   apps/web:
     dependencies:
+      '@wa-leg/bill-document':
+        specifier: workspace:*
+        version: link:../../packages/bill-document
+      '@wa-leg/billref':
+        specifier: workspace:*
+        version: link:../../packages/billref
       '@wa-leg/workflow-machine':
         specifier: workspace:*
         version: link:../../packages/workflow-machine
