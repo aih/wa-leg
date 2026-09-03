@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inflateRawSync } from 'node:zlib';
+import { sql } from 'drizzle-orm';
 import type { Logger } from 'pino';
 import { findAll, type PMNode } from '@wa-leg/note-schema';
 import { NOTE_TABLES, createTestApp, truncate, users, type TestContext } from './helpers.js';
@@ -81,7 +82,7 @@ describe('exports', () => {
     const res = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=html`, headers: await t.as(users.drafter) });
     expect(res.statusCode).toBe(200);
     expect(res.headers['content-type']).toContain('text/html');
-    expect(res.headers['content-disposition']).toMatch(/attachment; filename="SHB_2402_fiscal_note_v2.html"/);
+    expect(res.headers['content-disposition']).toMatch(/attachment; filename="HB2402-S-fiscal-note.html"/);
     expect(res.body).toContain('<table class="note-table"');
     expect(res.body).toContain('(15,110,000)');
     expect(res.body).toContain('class="katex"');
@@ -165,33 +166,80 @@ describe('exports', () => {
     const events = (await t.app.db.execute(sql`SELECT count(*)::int AS n FROM outbox WHERE type = 'note.exported'`)).rows[0] as any;
     expect(Number(events.n)).toBeGreaterThanOrEqual(4);
   });
+});
 
-  it('viewers see nothing until publication, then the published version beside the bill', async () => {
-    expect((await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=html`, headers: await t.as(users.viewer) })).statusCode).toBe(403);
-    const send = async (u: (typeof users)[keyof typeof users], event: string) => t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/workflow`, headers: await t.as(u), payload: { event } });
+describe('published version rule', () => {
+  const send = async (u: (typeof users)[keyof typeof users], event: string) => t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/workflow`, headers: await t.as(u), payload: { event } });
+  const exportAs = async (u: (typeof users)[keyof typeof users] | null, format = 'html', extra = '', id = noteId) => t.app.inject({ method: 'GET', url: `/api/v1/notes/${id}/export?format=${format}${extra}`, headers: u ? await t.as(u) : {} });
+
+  it('a viewer gets 404 and an anonymous caller 401 on an unpublished note', async () => {
+    expect((await exportAs(users.viewer)).statusCode).toBe(404);
+    expect((await exportAs(null)).statusCode).toBe(401);
+  });
+
+  it('an approved note exports the approved version for the reviewer, even when the head moved on', async () => {
     expect((await send(users.drafter, 'SUBMIT')).statusCode).toBe(201);
     expect((await send(users.reviewer, 'APPROVE')).json().state).toBe('approved');
     await drain();
-    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}`, headers: await t.as(users.viewer) })).statusCode).toBe(403);
+    const before = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}`, headers: await t.as(users.reviewer) })).json();
+    expect(before.approvedVersion).toBe(before.headVersion);
+    // A stray head version after approval, written directly.
+    await t.app.db.execute(sql`INSERT INTO note_documents (note_revision_id, version, mode, doc_json, doc_html, doc_text, estimate_data, validation, label, updated_by)
+      SELECT note_revision_id, version + 1, mode, doc_json, doc_html, doc_text, estimate_data, validation, 'stray', updated_by FROM note_documents WHERE note_revision_id = ${noteId} AND version = ${before.headVersion}`);
+    await t.app.db.execute(sql`UPDATE note_revisions SET head_version = ${before.headVersion + 1} WHERE note_revision_id = ${noteId}`);
+    const res = await exportAs(users.reviewer);
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['x-document-version']).toBe(String(before.approvedVersion));
+    expect(res.headers['content-disposition']).toMatch(/filename="HB2402-S-fiscal-note.html"/);
+    expect(res.body).not.toContain('Published ');
+    expect((await exportAs(users.viewer)).statusCode).toBe(404);
+  });
+
+  it('a viewer gets the published version of a published note, with the published date in the footer', async () => {
     expect((await send(users.reviewer, 'PUBLISH')).json().state).toBe('published');
     await drain();
     const summary = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}`, headers: await t.as(users.viewer) })).json();
     expect(summary.state).toBe('published');
-    expect(summary.approvedVersion).toBe(summary.headVersion);
     expect(summary.publishedVersion).toBe(summary.approvedVersion);
-    const versions = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/versions`, headers: await t.as(users.viewer) })).json();
-    expect(versions[0].label).toBe('Approved');
-    // The bill page lists it for anyone; the approved document is readable.
-    const onBill = (await t.app.inject({ method: 'GET', url: '/api/v1/bills/2025-26/HB2402/notes', headers: await t.as(users.viewer) })).json();
-    expect(onBill.map((n: any) => n.noteRevisionId)).toContain(noteId);
-    const approvedDoc = await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/versions/${summary.approvedVersion}`, headers: await t.as(users.viewer) });
-    expect(approvedDoc.statusCode).toBe(200);
-    // Exports for viewers default to the approved version; other versions are refused.
-    const pdfLink = await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/export?format=html`, headers: await t.as(users.viewer) });
-    expect(pdfLink.statusCode).toBe(200);
-    expect(pdfLink.headers['x-document-version']).toBe(String(summary.approvedVersion));
-    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/export?format=html&version=1`, headers: await t.as(users.viewer) })).statusCode).toBe(403);
-    const publish = (await t.app.db.execute((await import('drizzle-orm')).sql`SELECT count(*)::int AS n FROM audit_log WHERE action = 'note.publish' AND object_id = ${noteId}`)).rows[0] as any;
-    expect(Number(publish.n)).toBe(1);
+    expect(summary.headVersion).toBe(summary.publishedVersion + 1);
+    const res = await exportAs(users.viewer);
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['x-document-version']).toBe(String(summary.publishedVersion));
+    expect(res.headers['content-disposition']).toBe('inline; filename="HB2402-S-fiscal-note.html"');
+    expect(res.body).toContain('Bill # SHB 2402');
+    expect(res.body).toMatch(/Published [A-Z][a-z]+ \d{1,2}, \d{4}/);
+    // Another version is refused; drafters and reviewers also default to the published version.
+    expect((await exportAs(users.viewer, 'html', '&version=1')).statusCode).toBe(403);
+    expect((await exportAs(users.drafter)).headers['x-document-version']).toBe(String(summary.publishedVersion));
+    expect((await exportAs(users.reviewer, 'docx')).headers['content-disposition']).toBe('attachment; filename="HB2402-S-fiscal-note.docx"');
+    const docx = await exportAs(users.viewer, 'docx');
+    expect(zipEntry(docx.rawPayload, 'word/footer1.xml')).toContain('Published ');
+  });
+
+  it('PDF footer carries the published date', async () => {
+    const res = await exportAs(users.viewer, 'pdf');
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-disposition']).toBe('inline; filename="HB2402-S-fiscal-note.pdf"');
+    expect(res.rawPayload.subarray(0, 5).toString()).toBe('%PDF-');
+  }, 60_000);
+
+  it('anonymous callers get the published version only with PUBLISHED_PUBLIC=true', async () => {
+    expect((await exportAs(null)).statusCode).toBe(401);
+    const open = await createTestApp({ SEARCH_BACKEND: 'postgres', PUBLISHED_PUBLIC: 'true' });
+    try {
+      const res = await open.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/export?format=html` });
+      expect(res.statusCode).toBe(200);
+      expect(res.headers['content-disposition']).toBe('inline; filename="HB2402-S-fiscal-note.html"');
+      expect(res.body).toContain('Bill # SHB 2402');
+      // An unpublished note on the introduced version stays hidden; its drafter gets a file name without a version suffix.
+      const draft = (await open.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await open.as(users.reviewer), payload: { billKey: 'WA:2025-26:HB2402', versionCode: 'I', templateId: 'sales-use-tax-exemption', drafterId: 'dev-drafter' } })).json().noteRevisionId;
+      expect((await open.app.inject({ method: 'GET', url: `/api/v1/notes/${draft}/export?format=html` })).statusCode).toBe(404);
+      expect((await open.app.inject({ method: 'GET', url: `/api/v1/notes/${draft}/export?format=html`, headers: await open.as(users.viewer) })).statusCode).toBe(404);
+      const own = await open.app.inject({ method: 'GET', url: `/api/v1/notes/${draft}/export?format=html`, headers: await open.as(users.drafter) });
+      expect(own.statusCode).toBe(200);
+      expect(own.headers['content-disposition']).toBe('inline; filename="HB2402-fiscal-note.html"');
+    } finally {
+      await open.close();
+    }
   });
 });

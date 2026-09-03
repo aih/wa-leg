@@ -1905,7 +1905,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Export a document version as docx, pdf, xml (FNS placeholder), or html */
+        /** Export a document version as docx, pdf, xml (FNS placeholder), or html. Viewers and anonymous callers (PUBLISHED_PUBLIC) get the published version. */
         post: {
             parameters: {
                 query: {
@@ -2085,6 +2085,71 @@ export interface paths {
                         "application/json": {
                             [key: string]: unknown;
                         }[];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/published": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Published fiscal notes, newest first, with export URLs. Paged by limit and cursor. */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    cursor?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            items: {
+                                revisionId: string;
+                                bill: {
+                                    biennium: string;
+                                    billId: string;
+                                    number: string;
+                                    title: string;
+                                };
+                                versionCode: string;
+                                versionLabel: string;
+                                title: string;
+                                publishedAt: string;
+                                publishedBy: {
+                                    userId: string;
+                                    displayName: string;
+                                };
+                                publishedVersion: number;
+                                exports: {
+                                    pdf: string;
+                                    docx: string;
+                                    html: string;
+                                    xml: string;
+                                };
+                            }[];
+                            nextCursor: string | null;
+                        };
                     };
                 };
             };

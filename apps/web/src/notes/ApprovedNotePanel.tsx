@@ -6,15 +6,19 @@ import { useSession } from '../lib/session';
 import { fmtWhen, notesApi, useResource, type NoteSummary } from './api';
 import 'katex/dist/katex.min.css';
 
-/** The approved fiscal note for the selected bill version, or the latest approved note for an earlier version. */
+type PublishedSummary = NoteSummary & { publishedAt: string; publishedVersion: number };
+
+const EXPORT_FORMATS = ['pdf', 'docx', 'html', 'xml'] as const;
+
+/** The published fiscal note for the selected bill version, or the latest published note for an earlier version. */
 export function ApprovedNotePanel({ bill, currentCode, notes }: { bill: BillSummary; currentCode: string; notes: NoteSummary[] }) {
   const { principal } = useSession();
-  const approved = notes.filter((n) => n.state === 'approved' && n.approvedVersion !== null && n.kind === 'note');
+  const published = notes.filter((n): n is PublishedSummary => n.state === 'published' && (n as PublishedSummary).publishedVersion !== null && (n as PublishedSummary).publishedAt !== null);
   const seq = (code: string) => bill.versions.findIndex((v) => v.code === code);
-  const exact = approved.filter((n) => n.versionCode === currentCode).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0] ?? null;
-  const earlier = exact ? null : approved.filter((n) => seq(n.versionCode) < seq(currentCode)).sort((a, b) => seq(b.versionCode) - seq(a.versionCode) || b.updatedAt.localeCompare(a.updatedAt))[0] ?? null;
+  const exact = published.filter((n) => n.versionCode === currentCode).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))[0] ?? null;
+  const earlier = exact ? null : published.filter((n) => seq(n.versionCode) < seq(currentCode)).sort((a, b) => seq(b.versionCode) - seq(a.versionCode) || b.publishedAt.localeCompare(a.publishedAt))[0] ?? null;
   const chosen = exact ?? earlier;
-  const doc = useResource(chosen ? () => notesApi.document(chosen.noteRevisionId, chosen.approvedVersion!) : null, [chosen?.noteRevisionId, chosen?.approvedVersion]);
+  const doc = useResource(chosen ? () => notesApi.document(chosen.noteRevisionId, chosen.publishedVersion) : null, [chosen?.noteRevisionId, chosen?.publishedVersion]);
   const html = useMemo(() => (doc.data ? docToHtml(doc.data.doc, { mode: doc.data.mode, stripComments: true, renderMath: true, citationsAs: 'link' }) : ''), [doc.data]);
   const ofm = bill.priorFiscalNotes;
 
@@ -23,15 +27,15 @@ export function ApprovedNotePanel({ bill, currentCode, notes }: { bill: BillSumm
       <h2 id="approved-note-h">Fiscal note</h2>
       {!chosen && (
         <p className="muted">
-          No approved fiscal note for {bill.versions.find((v) => v.code === currentCode)?.shortLabel ?? currentCode} yet.
+          No published fiscal note for {bill.versions.find((v) => v.code === currentCode)?.shortLabel ?? currentCode} yet.
           {ofm.length > 0 && ' OFM has published a package for this bill; see the links below.'}
         </p>
       )}
       {chosen && (
         <>
           <p className={earlier ? 'notice' : 'muted small'} role={earlier ? 'status' : undefined}>
-            {earlier ? `No approved note for this version. Showing the approved note for ${chosen.versionLabel} (an earlier version).` : `Approved note for ${chosen.versionLabel}`} · approved version {chosen.approvedVersion} · {fmtWhen(chosen.updatedAt)}
-            {principal && (chosen.drafter?.userId === principal.userId || principal.roles.some((r) => ['reviewer', 'manager', 'admin', 'approver'].includes(r))) && (
+            {earlier ? `No published note for this version. Showing the published note for ${chosen.versionLabel} (an earlier version).` : `Published note for ${chosen.versionLabel}`} · Published {fmtWhen(chosen.publishedAt)}
+            {principal && (chosen.drafter?.userId === principal.userId || principal.roles.some((r) => ['reviewer', 'admin'].includes(r))) && (
               <>
                 {' '}
                 · <Link to={`/notes/${chosen.noteRevisionId}`}>Open in the workspace</Link>
@@ -39,15 +43,11 @@ export function ApprovedNotePanel({ bill, currentCode, notes }: { bill: BillSumm
             )}
           </p>
           <div className="row export-links" role="group" aria-label="Export">
-            <a className="button secondary" href={`/api/v1/notes/${chosen.noteRevisionId}/export?format=pdf`} target="_blank" rel="noreferrer">
-              PDF
-            </a>
-            <a className="button secondary" href={`/api/v1/notes/${chosen.noteRevisionId}/export?format=docx`}>
-              DOCX
-            </a>
-            <a className="button secondary" href={`/api/v1/notes/${chosen.noteRevisionId}/export?format=html`} target="_blank" rel="noreferrer">
-              HTML
-            </a>
+            {EXPORT_FORMATS.map((format) => (
+              <a key={format} className="button secondary" href={`/api/v1/notes/${chosen.noteRevisionId}/export?format=${format}`} {...(format === 'docx' ? {} : { target: '_blank', rel: 'noreferrer' })}>
+                {format.toUpperCase()}
+              </a>
+            ))}
           </div>
           {doc.error && <p role="alert">{doc.error.message}</p>}
           {doc.loading && !doc.data && (

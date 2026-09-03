@@ -24,6 +24,7 @@ import { TemplatesService, templatesRoutes } from './modules/templates/index.js'
 import { ReferenceService, referenceRoutes } from './modules/reference/index.js';
 import { createNotes, notesRoutes } from './modules/notes/index.js';
 import { createWorkflow, workflowRoutes } from './modules/workflow/index.js';
+import { publishedRoutes } from './modules/published/index.js';
 
 export type HealthProbe = () => Promise<{ ok: boolean; detail?: string }>;
 
@@ -144,6 +145,7 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
       await api.register(referenceRoutes);
       await api.register(notesRoutes(notes));
       await api.register(workflowRoutes(workflow));
+      await api.register(publishedRoutes);
       for (const mod of moduleRegistrars) await api.register(mod);
     },
     { prefix: API_PREFIX },

@@ -53,13 +53,13 @@ const ConfigSchema = z.object({
   OPENSEARCH_INDEX_PREFIX: z.string().default('waleg_'),
   EXPORT_DIR: z.string().default('.cache/exports').transform((p) => (isAbsolute(p) ? p : join(REPO_ROOT, p))),
   PDF_ENABLED: bool.default(true),
+  /** Anonymous access to GET /published and the published exports. */
+  PUBLISHED_PUBLIC: bool.default(false),
   LAWFILES_CACHE_DIR: z.string().default('.cache/lawfiles').transform((p) => (isAbsolute(p) ? p : join(REPO_ROOT, p))),
   LEGISCAN_DIR: z.string().default('data/WA/2025-2026_Regular_Session').transform((p) => (isAbsolute(p) ? p : join(REPO_ROOT, p))),
   CURRENT_BIENNIUM: z.string().default('2025-26'),
   TEMPLATES_DIR: z.string().default(join(REPO_ROOT, 'design', 'templates')),
   REFERENCE_DIR: z.string().default(join(REPO_ROOT, 'reference')),
-  /** Anonymous access to GET /published and the published exports. */
-  PUBLISHED_PUBLIC: bool.default(false),
   OUTBOX_POLL_MS: z.coerce.number().int().default(500),
 });
 
