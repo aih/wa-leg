@@ -9,6 +9,7 @@ import { writeAudit } from '../../lib/audit.js';
 export { NotesService, notesRoutes, ExportService };
 export type { ExportFormat } from './export/service.js';
 export { buildTemplateContext, fnsBillNumber } from './context.js';
+import { invalidateBillFacts } from './context.js';
 export { readNoteState } from './state.js';
 
 declare module 'fastify' {
@@ -35,6 +36,9 @@ export function createNotes(app: FastifyInstance): NotesService {
       await tx.execute(sql`UPDATE note_documents SET label = COALESCE(label, 'Approved') WHERE note_revision_id = ${noteRevisionId} AND version = ${row.head_version}`);
       await writeAudit(tx, { actorId: approvedBy ?? 'system', action: 'note.publish', objectType: 'note_revision', objectId: noteRevisionId, after: { approvedVersion: row.head_version }, requestId: `event:${ev.eventId}` });
     });
+  });
+  app.bus.subscribe('notes:bill-facts', ['bill.created', 'bill.version_added', 'bill.amendment_added', 'bill.status_changed', 'hearing.scheduled', 'hearing.rescheduled', 'hearing.cancelled'], async (ev) => {
+    invalidateBillFacts(app, (ev.payload as { billKey?: string }).billKey);
   });
   // A new bill version: offer a new revision to the drafter (automatic creation is configurable).
   app.bus.subscribe('notes:bill-versions', ['bill.version_added'], async (ev) => {

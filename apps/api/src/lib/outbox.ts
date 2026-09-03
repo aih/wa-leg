@@ -64,8 +64,26 @@ export class OutboxRelay {
     void this.drain();
   }
 
-  /** Publish all unpublished rows and run every matching consumer. Resolves when the queue is empty. */
-  async drain(): Promise<void> {
+  /**
+   * Publish all unpublished rows and run every matching consumer. Resolves when the queue is empty, or after
+   * `timeoutMs` when given (the relay keeps working; the caller stops waiting).
+   */
+  async drain(timeoutMs?: number): Promise<void> {
+    const wait = this.drainAll();
+    if (timeoutMs === undefined) return wait;
+    let timer: NodeJS.Timeout | undefined;
+    const timeout = new Promise<void>((resolve) => {
+      timer = setTimeout(resolve, timeoutMs);
+      timer.unref();
+    });
+    try {
+      await Promise.race([wait, timeout]);
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  }
+
+  private async drainAll(): Promise<void> {
     if (this.running) {
       this.pending = true;
       // Wait for the in-flight run, which re-enters once it sees `pending`, so callers observe an empty queue.

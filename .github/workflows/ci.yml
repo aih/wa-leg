@@ -36,6 +36,9 @@ jobs:
       - run: pnpm test
       - run: pnpm wa-leg db migrate
       - run: pnpm wa-leg db seed
+      - name: Load fixture bills for the e2e suite
+        run: pnpm wa-leg ingest legiscan apps/api/test/fixtures/legiscan --bills HB2402,SB6137,SB5814 --xml-dir packages/bill-document/fixtures
+      - run: pnpm wa-leg search load
       - run: pnpm --filter @wa-leg/web exec playwright install --with-deps chromium
       - run: pnpm test:e2e
       - name: Third-party licenses

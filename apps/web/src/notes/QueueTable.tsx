@@ -17,7 +17,7 @@ export function QueueTable({ rows, vocabulary, empty, extra, showAssignee }: Que
   // Labels come from the state in the viewer's vocabulary, whichever role the row was fetched for.
   const labelOf = (state: string) => (vocabulary === 'drafter' ? DRAFTER_LABELS[drafterStatus(state as WorkflowState)] : REVIEWER_LABELS[reviewerStatus(state as WorkflowState)]) ?? state;
   return (
-    <div className="table-scroll">
+    <div className="table-scroll" tabIndex={0} role="region" aria-label="Table, scrolls horizontally on narrow screens">
       <table className="queue">
         <thead>
           <tr>

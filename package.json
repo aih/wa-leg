@@ -17,13 +17,15 @@
     "test": "pnpm -r run test",
     "test:e2e": "pnpm --filter @wa-leg/web run test:e2e",
     "wa-leg": "pnpm --filter @wa-leg/api run cli",
-    "third-party": "node scripts/third-party.mjs"
+    "third-party": "node scripts/third-party.mjs",
+    "load": "node scripts/load.mjs"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
     "eslint": "9.39.5",
     "typescript": "5.9.3",
     "typescript-eslint": "8.69.0",
-    "globals": "17.12.0"
+    "globals": "17.12.0",
+    "autocannon": "8.0.0"
   }
 }

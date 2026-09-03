@@ -236,6 +236,7 @@ export class WorkflowService {
       if (input.hearingAt) await this.insertDeadline(tx, id, 'hearing_minus_4h', hearingDueAt(new Date(input.hearingAt), this.cfg));
       await writeAudit(tx, { actorId, action: 'workflow.instance_create', objectType: 'note_revision', objectId: input.noteRevisionId, after: { instanceId: id, state, drafterId: input.drafterId ?? null, duplicatedFrom: input.duplicatedFrom ?? null }, requestId: requestId ?? null });
     });
+    this.touchQueues();
     this.app.bus.kick();
     return { instanceId: id, state, created: true };
   }
@@ -303,6 +304,7 @@ export class WorkflowService {
       }
       return { instanceId: row.id, state: next.state, version: seq, seq };
     });
+    this.touchQueues();
     this.app.bus.kick();
     return result;
   }
@@ -352,6 +354,7 @@ export class WorkflowService {
         await this.insertDeadline(tx, row.id, 'role_due', new Date(body.dueAt!), a?.id ?? null);
         if (a) await tx.execute(sql`UPDATE workflow_assignments SET due_at = ${body.dueAt}::timestamptz WHERE id = ${a.id}`);
       });
+      this.touchQueues();
     }
     return res;
   }
@@ -422,6 +425,7 @@ export class WorkflowService {
         if (hearingAt) await this.insertDeadline(tx, r.id, 'hearing_minus_4h', hearingDueAt(new Date(hearingAt), this.cfg));
       }
     });
+    this.touchQueues();
     return rows.length;
   }
 
@@ -452,7 +456,10 @@ export class WorkflowService {
       await this.emitDeadline('note.overdue', d, managerIds);
       overdue++;
     }
-    if (warned || overdue) this.app.bus.kick();
+    if (warned || overdue) {
+      this.touchQueues();
+      this.app.bus.kick();
+    }
     return { warned, overdue };
   }
 
@@ -477,20 +484,60 @@ export class WorkflowService {
 
   // ---------- queues ----------
 
+  /**
+   * Queue responses are cached for a few seconds per caller and filter; any workflow write invalidates them.
+   * Misses are single-flight (concurrent callers share one computation) and a fresh-enough stale entry is served
+   * while the refresh runs, so a burst never recomputes the queue more than once.
+   */
+  private queueVersion = 0;
+  private readonly queueCache = new Map<string, { at: number; version: number; rows: AssignmentRow[] | null; pending: Promise<AssignmentRow[]> | null }>();
+  private touchQueues(): void {
+    this.queueVersion++;
+    if (this.queueCache.size > 500) this.queueCache.clear();
+  }
+
   async assignments(principal: Principal, filter: { assignee?: string; role?: 'drafter' | 'reviewer' | 'exec'; status?: string; state?: string; dueBefore?: string; limit?: number; all?: boolean }): Promise<AssignmentRow[]> {
+    const key = `${principal.userId}|${JSON.stringify(filter)}`;
+    const now = Date.now();
+    const hit = this.queueCache.get(key);
+    const current = !!hit && hit.version === this.queueVersion;
+    if (hit && current && hit.rows && now - hit.at < 5_000) return hit.rows;
+    if (hit?.pending) {
+      // A refresh is running: serve the previous rows if they are still current, else wait for it.
+      if (current && hit.rows && now - hit.at < 30_000) return hit.rows;
+      return hit.pending;
+    }
+    const version = this.queueVersion;
+    const pending = this.assignmentsUncached(principal, filter)
+      .then((rows) => {
+        this.queueCache.set(key, { at: Date.now(), version, rows, pending: null });
+        return rows;
+      })
+      .catch((err) => {
+        this.queueCache.delete(key);
+        throw err;
+      });
+    this.queueCache.set(key, { at: hit?.at ?? 0, version, rows: current ? (hit?.rows ?? null) : null, pending });
+    if (current && hit?.rows && now - hit.at < 30_000) return hit.rows;
+    return pending;
+  }
+
+  private async assignmentsUncached(principal: Principal, filter: { assignee?: string; role?: 'drafter' | 'reviewer' | 'exec'; status?: string; state?: string; dueBefore?: string; limit?: number; all?: boolean }): Promise<AssignmentRow[]> {
     const me = principal.userId;
     let assignee = filter.assignee === 'me' || !filter.assignee ? me : filter.assignee;
     if (filter.all) assignee = '';
     if (assignee !== me && !hasRole(principal, 'admin', 'manager', 'reviewer', 'approver')) throw forbidden('Only assigners may list other users’ assignments');
     const limit = Math.min(filter.limit ?? 200, 500);
-    const rows = (await this.db.execute(sql`SELECT a.id AS assignment_id, a.role, a.position, a.assignee_id, a.due_at, a.assigned_at, i.*
-        FROM workflow_assignments a JOIN workflow_instances i ON i.id = a.instance_id
+    const rows = (await this.db.execute(sql`SELECT a.id AS assignment_id, a.role, a.position, a.assignee_id, a.due_at, a.assigned_at, i.*,
+          (SELECT min(d.due_at) FROM workflow_deadlines d WHERE d.instance_id = i.id AND d.cancelled_at IS NULL) AS earliest_due,
+          sup.note_revision_id AS superseded_note
+        FROM workflow_assignments a JOIN workflow_instances i ON i.id = a.instance_id LEFT JOIN workflow_instances sup ON sup.id = i.superseded_by
         WHERE (a.status = 'active' OR (a.status = 'done' AND i.state = 'approved' AND i.updated_at > now() - interval '14 days')) AND (${assignee} = '' OR a.assignee_id = ${assignee}) AND (${filter.role ?? null}::text IS NULL OR a.role = ${filter.role ?? null})
           AND (${filter.state ?? null}::text IS NULL OR i.state = ${filter.state ?? null})
         ORDER BY i.updated_at DESC LIMIT ${limit}`)).rows as any[];
     // Unclaimed reviews are a pool any editor may take; exec steps show only for the current step.
     const pool: any[] = hasRole(principal, 'reviewer', 'approver', 'manager', 'admin') && (!filter.role || filter.role === 'reviewer') && (assignee === me || assignee === '')
-      ? ((await this.db.execute(sql`SELECT NULL AS assignment_id, 'reviewer' AS role, 0 AS position, NULL AS assignee_id, NULL AS due_at, i.updated_at AS assigned_at, i.* FROM workflow_instances i WHERE i.state = 'review.pending' AND i.reviewer_id IS NULL ORDER BY i.updated_at DESC LIMIT ${limit}`)).rows as any[])
+      ? ((await this.db.execute(sql`SELECT NULL AS assignment_id, 'reviewer' AS role, 0 AS position, NULL AS assignee_id, NULL AS due_at, i.updated_at AS assigned_at, i.*, (SELECT min(d.due_at) FROM workflow_deadlines d WHERE d.instance_id = i.id AND d.cancelled_at IS NULL) AS earliest_due, NULL AS superseded_note FROM workflow_instances i WHERE i.state = 'review.pending' AND i.reviewer_id IS NULL ORDER BY i.updated_at DESC LIMIT ${limit}`)).rows as any[])
       : [];
     const out: AssignmentRow[] = [];
     const cache = new Map<string, NoteSummaryLike | null>();
@@ -508,14 +555,13 @@ export class WorkflowService {
       if (r.role === 'exec' && r.position !== r.exec_index && !filter.all) continue;
       const s = await summaryOf(r.note_revision_id);
       if (!s) continue; // not visible to the caller
-      const deadlines = await this.deadlines(r.id);
       const dueAt = iso(r.due_at);
-      const effective = [dueAt, ...deadlines.map((d) => d.dueAt)].filter((x): x is string => !!x).sort()[0] ?? null;
+      const effective = [dueAt, iso(r.earliest_due)].filter((x): x is string => !!x).sort()[0] ?? null;
       const role = r.role as AssignmentRow['role'];
       const status = role === 'drafter' ? drafterStatus(r.state) : reviewerStatus(r.state);
       if (filter.status && status !== filter.status) continue;
       if (filter.dueBefore && (!effective || effective > filter.dueBefore)) continue;
-      const supersededBy = r.superseded_by ? ((await this.db.execute(sql`SELECT note_revision_id FROM workflow_instances WHERE id = ${r.superseded_by}`)).rows[0] as any)?.note_revision_id ?? null : null;
+      const supersededBy = (r.superseded_note as string | null) ?? null;
       out.push({
         instanceId: r.id,
         noteRevisionId: r.note_revision_id,

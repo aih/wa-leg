@@ -43,6 +43,11 @@ export const SearchQuerySchema = z.object({
 
 export function searchRoutes(deps: { pipeline: SearchPipeline; indexer: SearchIndexer; backend: SearchBackend }) {
   return async function routes(app: FastifyInstance): Promise<void> {
+    // Background reindex jobs finish before the app closes (tests close the pool right after the request).
+    const jobs = new Set<Promise<void>>();
+    app.addHook('onClose', async () => {
+      await Promise.allSettled([...jobs]);
+    });
     const r = app.withTypeProvider<ZodTypeProvider>();
 
     r.get(
@@ -123,7 +128,7 @@ export function searchRoutes(deps: { pipeline: SearchPipeline; indexer: SearchIn
         }
         const jobId = randomUUID();
         await writeAudit(app.db, { actorId: p.userId, action: 'search.reindex', objectType: 'search', objectId: jobId, after: req.body, requestId: req.id });
-        void (async () => {
+        const job: Promise<void> = (async () => {
           try {
             if (req.body.scope === 'bill' && req.body.bill_keys?.length) {
               for (const k of req.body.bill_keys) await deps.indexer.indexBill(k);
@@ -136,7 +141,8 @@ export function searchRoutes(deps: { pipeline: SearchPipeline; indexer: SearchIn
           } catch (err) {
             app.log.error({ err, jobId }, 'reindex failed');
           }
-        })();
+        })().finally(() => jobs.delete(job));
+        jobs.add(job);
         return reply.code(202).send({ job_id: jobId, status_url: '/api/v1/health' });
       },
     );

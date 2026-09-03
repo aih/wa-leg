@@ -66,7 +66,7 @@ export class SearchIndexer {
   }
 
   /** Reindex one internal note revision from the notes API. */
-  async indexNote(noteRevisionId: string): Promise<void> {
+  async indexNote(noteRevisionId: string, opts: { reindexBill?: boolean } = {}): Promise<void> {
     if (!this.app.hasDecorator('notesModule')) return;
     let n: InternalNoteLike & { document?: unknown };
     try {
@@ -93,11 +93,13 @@ export class SearchIndexer {
       bill = null;
     }
     await this.backend.index([buildInternalNoteDoc({ ...n, bodyText }, bill)]);
-    // The bill document carries note status and assignees; refresh it too.
-    try {
-      await this.indexBill(n.billKey);
-    } catch (err) {
-      this.app.log.warn({ err, billKey: n.billKey }, 'bill not reindexed after note change');
+    // The bill document carries note status and assignees; refresh it when those changed (not on every autosave).
+    if (opts.reindexBill !== false) {
+      try {
+        await this.indexBill(n.billKey);
+      } catch (err) {
+        this.app.log.warn({ err, billKey: n.billKey }, 'bill not reindexed after note change');
+      }
     }
   }
 
@@ -156,7 +158,7 @@ export class SearchIndexer {
     bus.subscribe('search:bills', ['bill.created', 'bill.version_added', 'bill.amendment_added', 'bill.status_changed', 'hearing.scheduled', 'hearing.rescheduled', 'hearing.cancelled'], reindexBill);
     bus.subscribe('search:notes', ['note.created', 'note.revision_created', 'note.document_saved', 'note.transitioned', 'note.approved', 'note.superseded'], async (ev) => {
       const id = ev.payload.noteRevisionId as string | undefined;
-      if (id) await this.indexNote(id);
+      if (id) await this.indexNote(id, { reindexBill: ev.type !== 'note.document_saved' || !!ev.payload.metadata });
     });
   }
 }

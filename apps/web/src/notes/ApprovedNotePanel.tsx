@@ -55,7 +55,7 @@ export function ApprovedNotePanel({ bill, currentCode, notes }: { bill: BillSumm
               Loading the note…
             </p>
           )}
-          {html && <div className="note-readonly note-html approved-html" dangerouslySetInnerHTML={{ __html: html }} />}
+          {html && <div className="note-readonly note-html approved-html" tabIndex={0} role="region" aria-label="Note text" dangerouslySetInnerHTML={{ __html: html }} />}
         </>
       )}
       {ofm.length > 0 && (

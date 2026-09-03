@@ -90,7 +90,23 @@ export class SearchPipeline {
     return { amendments, companion, fiscal_notes, rcw };
   }
 
+  /** Identical searches by the same caller within ten seconds share one result (single-flight); a burst of repeats never fans out to the backend. */
+  private readonly resultCache = new Map<string, { at: number; value: Promise<SearchResponse> }>();
+
   async search(params: { q?: string; biennium?: string; page?: number; size?: number; sort?: SearchRequest['sort'] } & SearchFilters, principal: Principal, currentBiennium: string): Promise<SearchResponse> {
+    const key = `${principal.userId}|${[...principal.roles].sort().join(',')}|${JSON.stringify(params)}|${currentBiennium}`;
+    const hit = this.resultCache.get(key);
+    if (hit && Date.now() - hit.at < 10_000) return hit.value;
+    if (this.resultCache.size > 2000) this.resultCache.clear();
+    const value = this.searchUncached(params, principal, currentBiennium).catch((err) => {
+      this.resultCache.delete(key);
+      throw err;
+    });
+    this.resultCache.set(key, { at: Date.now(), value });
+    return value;
+  }
+
+  private async searchUncached(params: { q?: string; biennium?: string; page?: number; size?: number; sort?: SearchRequest['sort'] } & SearchFilters, principal: Principal, currentBiennium: string): Promise<SearchResponse> {
     const started = Date.now();
     const q = (params.q ?? '').trim();
     const biennium = params.biennium ?? currentBiennium;

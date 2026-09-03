@@ -179,7 +179,7 @@ export function NoteVersionsPage() {
                 <p className="muted small">
                   {view.label ?? 'autosave'} · {fmtWhen(view.updatedAt)} · {view.updatedBy}
                 </p>
-                <div className="note-readonly note-html" dangerouslySetInnerHTML={{ __html: docToHtml(view.doc, { mode: view.mode, stripComments: true }) }} />
+                <div className="note-readonly note-html" tabIndex={0} role="region" aria-label="Note text" dangerouslySetInnerHTML={{ __html: docToHtml(view.doc, { mode: view.mode, stripComments: true }) }} />
               </>
             )}
             {diff && (
@@ -212,7 +212,7 @@ export function NoteVersionsPage() {
                 <p className="muted small legend">
                   <ins>Inserted text</ins> is underlined; <del>deleted text</del> is struck through.
                 </p>
-                <div className="note-readonly note-html redline" dangerouslySetInnerHTML={{ __html: diff.html }} />
+                <div className="note-readonly note-html redline" tabIndex={0} role="region" aria-label="Note text" dangerouslySetInnerHTML={{ __html: diff.html }} />
               </>
             )}
             {!view && !diff && <p className="muted">Choose View or Compare on a version.</p>}

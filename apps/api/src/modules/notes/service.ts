@@ -90,10 +90,20 @@ export class NotesService {
     return r;
   }
 
+  private readonly userCache = new Map<string, { at: number; name?: string; division: string | null }>();
+
+  private async user(userId: string): Promise<{ name?: string; division: string | null }> {
+    const hit = this.userCache.get(userId);
+    if (hit && Date.now() - hit.at < 60_000) return hit;
+    const r = (await this.db.execute(sql`SELECT display_name, divisions FROM users WHERE user_id = ${userId}`)).rows[0] as any;
+    const entry = { at: Date.now(), name: r?.display_name ?? undefined, division: (r?.divisions?.[0] as string | undefined) ?? null };
+    this.userCache.set(userId, entry);
+    return entry;
+  }
+
   private async userName(userId: string | null): Promise<string | undefined> {
     if (!userId) return undefined;
-    const r = (await this.db.execute(sql`SELECT display_name FROM users WHERE user_id = ${userId}`)).rows[0] as any;
-    return r?.display_name ?? undefined;
+    return (await this.user(userId)).name;
   }
 
   /** Resource for `can()` from a revision row and its workflow state. */
@@ -102,7 +112,7 @@ export class NotesService {
     const state = await readNoteState(this.app, noteRevisionId, row.drafter_id ?? null);
     const participants = ((await this.db.execute(sql`SELECT DISTINCT created_by AS u FROM note_comments WHERE note_revision_id = ${noteRevisionId}
         UNION SELECT DISTINCT author_id FROM note_comment_messages m JOIN note_comments c ON c.id = m.comment_id WHERE c.note_revision_id = ${noteRevisionId}`)).rows as any[]).map((r) => r.u as string);
-    const drafterDivision = state.drafterId ? ((await this.db.execute(sql`SELECT divisions FROM users WHERE user_id = ${state.drafterId}`)).rows[0] as any)?.divisions?.[0] ?? null : null;
+    const drafterDivision = state.drafterId ? (await this.user(state.drafterId)).division : null;
     const res: NoteResource = {
       type: 'note',
       state: state.state,
@@ -259,7 +269,7 @@ export class NotesService {
       await emitEvent(tx, 'fiscal_note.requested', { noteRevisionId, billKey: input.billKey, versionCode: input.versionCode, requestedAt, hearingAt, requestedBy: input.request?.requestedBy ?? p.userId, drafterId, priority: input.priority ?? 'normal', confidential: !!input.confidential });
     });
     this.app.bus.kick();
-    await this.app.bus.drain();
+    await this.app.bus.drain(3000);
     return this.summary(noteRevisionId);
   }
 
@@ -277,7 +287,7 @@ export class NotesService {
       await emitEvent(tx, 'note.revision_created', { noteId: row.note_id, noteRevisionId, billKey: row.bill_key, versionCode: input.versionCode, previousRevisionId: fromRevisionId, drafterId: state.drafterId, execChain: state.execChain });
     });
     this.app.bus.kick();
-    await this.app.bus.drain();
+    await this.app.bus.drain(3000);
     return this.summary(noteRevisionId);
   }
 

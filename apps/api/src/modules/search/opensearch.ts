@@ -132,7 +132,7 @@ export const MAPPINGS: Record<DocType, Record<string, unknown>> = {
   },
 };
 
-const HIGHLIGHT_FIELDS = { title: { number_of_fragments: 0 }, heading: { number_of_fragments: 0 }, text: { fragment_size: 180, number_of_fragments: 2 }, body: { fragment_size: 180, number_of_fragments: 2 }, description: { fragment_size: 180, number_of_fragments: 1 } };
+const HIGHLIGHT_FIELDS = { title: { number_of_fragments: 0 }, heading: { number_of_fragments: 0 }, text: { fragment_size: 180, number_of_fragments: 1 }, body: { fragment_size: 180, number_of_fragments: 1 }, description: { fragment_size: 180, number_of_fragments: 1 } };
 
 function permissionClause(p: Principal) {
   return { bool: { should: [{ term: { visibility: 'public' } }, { terms: { allowed_roles: p.roles } }, { term: { allowed_user_ids: p.userId } }], minimum_should_match: 1 } };
@@ -267,17 +267,27 @@ export class OpenSearchBackend implements SearchBackend {
           {
             bool: {
               should: [
+                // Fuzziness only on the short fields; expanding fuzzy terms across section bodies is the expensive part.
                 {
                   multi_match: {
                     query: q,
                     type: 'best_fields',
                     operator: 'and',
-                    fields: ['bill_number^5', 'bill_number_forms^5', 'title^3', 'heading^2', 'sponsor_names^2', 'sponsors.name^2', 'added_text^1.5', 'text', 'body', 'description', 'caption', 'name', 'history_text^0.5', 'last_action^0.5'],
+                    fields: ['bill_number^5', 'bill_number_forms^5', 'title^3', 'heading^2', 'sponsor_names^2', 'sponsors.name^2', 'name', 'caption'],
                     fuzziness: 'AUTO:4,7',
                     prefix_length: 2,
                   },
                 },
-                { multi_match: { query: q, type: 'phrase', slop: 2, fields: ['title.shingles^3', 'title^3', 'heading^2', 'text', 'body'], boost: 2 } },
+                {
+                  multi_match: {
+                    query: q,
+                    type: 'best_fields',
+                    operator: 'and',
+                    fields: ['added_text^1.5', 'text', 'body', 'description', 'history_text^0.5', 'last_action^0.5'],
+                  },
+                },
+                // Phrase boost on the short fields only; positional lookups across section bodies dominate query time.
+                { multi_match: { query: q, type: 'phrase', slop: 2, fields: ['title.shingles^3', 'title^3', 'heading^2'], boost: 2 } },
               ],
               minimum_should_match: 1,
             },
@@ -288,12 +298,20 @@ export class OpenSearchBackend implements SearchBackend {
     const body = {
       size: req.size,
       from: (req.page - 1) * req.size,
-      track_total_hits: true,
+      track_total_hits: 10_000,
       indices_boost: [{ [this.alias('bill')]: 2.0 }, { [this.alias('fiscal_note')]: 1.5 }, { [this.alias('section')]: 1.0 }, { [this.alias('amendment')]: 0.9 }, { [this.alias('rcw_section')]: 0.8 }, { [this.alias('template')]: 0.7 }],
       query: { bool: { must, filter, should: [{ term: { is_latest_version: { value: true, boost: 1.5 } } }, { range: { last_action_date: { gte: 'now-30d', boost: 1.2 } } }] } },
       sort,
-      collapse: { field: 'bill_key', inner_hits: { name: 'per_bill', size: 3, _source: ['doc_type', 'version_label', 'section_no', 'heading', 'url', 'display'], highlight: { pre_tags: ['<mark>'], post_tags: ['</mark>'], fields: { text: { fragment_size: 160, number_of_fragments: 1 }, body: { fragment_size: 160, number_of_fragments: 1 } } } } },
-      highlight: { type: 'unified', pre_tags: ['<mark>'], post_tags: ['</mark>'], fields: HIGHLIGHT_FIELDS },
+      // Inner hits carry no highlight: highlighting section bodies three times per group is the costly part.
+      collapse: { field: 'bill_key', inner_hits: { name: 'per_bill', size: 3, _source: ['doc_type', 'version_label', 'section_no', 'heading', 'url', 'display'] } },
+      highlight: { type: 'unified', pre_tags: ['<mark>'], post_tags: ['</mark>'], fields: HIGHLIGHT_FIELDS, max_analyzer_offset: 200_000 },
+      _source: { excludes: ['text', 'body', 'history_text', 'suggest', 'affected_by'] },
+    };
+    // Facets run as a size-0 request so OpenSearch's request cache serves repeated queries.
+    const facetBody = {
+      size: 0,
+      track_total_hits: false,
+      query: body.query,
       aggs: {
         doc_type: { terms: { field: 'doc_type' } },
         biennium: { terms: { field: 'biennium' } },
@@ -305,7 +323,6 @@ export class OpenSearchBackend implements SearchBackend {
         sponsor: { terms: { field: 'sponsors.last_name', size: 20 } },
         rcw_title: { terms: { field: 'rcw_titles', size: 20 } },
       },
-      _source: { excludes: ['text', 'body', 'history_text', 'suggest', 'affected_by'] },
     };
     // Documents without a bill_key (templates, RCW sections) collapse into one group; search them separately.
     const withBill = [this.alias('bill'), this.alias('section'), this.alias('amendment'), this.alias('fiscal_note')].join(',');
@@ -315,16 +332,18 @@ export class OpenSearchBackend implements SearchBackend {
         { index: withBill },
         body,
         { index: noBill },
-        { ...body, collapse: undefined, aggs: undefined, size: Math.min(5, req.size) },
+        { ...body, collapse: undefined, size: Math.min(5, req.size) },
+        { index: withBill, request_cache: true },
+        facetBody,
       ] as any,
     });
-    const [main, extra] = res.body.responses as any[];
+    const [main, extra, facetRes] = res.body.responses as any[];
     if (main.error) throw new Error(JSON.stringify(main.error).slice(0, 500));
     const hits: SearchHit[] = (main.hits.hits as any[]).map((h) => this.toHit(h));
     if (!extra.error) for (const h of extra.hits.hits as any[]) hits.push(this.toHit(h));
     hits.sort((a, b) => b.score - a.score);
     const facets: Record<string, Facet[]> = {};
-    for (const [k, v] of Object.entries(main.aggregations ?? {})) {
+    for (const [k, v] of Object.entries((facetRes?.error ? main.aggregations : facetRes?.aggregations) ?? {})) {
       facets[k] = ((v as any).buckets as any[]).map((b) => ({ key: String(b.key_as_string ?? b.key), count: b.doc_count }));
     }
     return { hits, facets, total: main.hits.total.value + (extra.error ? 0 : extra.hits.total.value), took_ms: Date.now() - started };

@@ -16,7 +16,7 @@ note beside the bill text. The design is in `design/`; `design/ARCHITECTURE.md` 
 | `packages/bill-document` | Bill Document schema, XML parser, section diff |
 | `packages/note-schema` | Tiptap extensions, template loader, estimate validator |
 | `packages/api-client` | Client generated from the OpenAPI document |
-| `docs/` | As-built notes and `OPEN-ITEMS.md` |
+| `docs/` | `ARCHITECTURE-AS-BUILT.md`, `DEMO.md`, `LOAD-TEST.md`, `OPEN-ITEMS.md` |
 
 ## Development
 
@@ -110,7 +110,12 @@ pnpm test                       # unit and route tests; needs Postgres (creates 
 pnpm test:e2e                   # Playwright; starts the dev issuer, API, and web app
 pnpm third-party                # writes THIRD_PARTY.md and fails on a non-permissive license
 pnpm --filter @wa-leg/api-client generate   # regenerates packages/api-client from the OpenAPI document
+pnpm load                       # autocannon against the running API; writes docs/LOAD-TEST.md
 ```
+
+`docs/` holds the as-built architecture notes, the demo script, the load-test results, and the open items.
+The admin pages are `/admin/audit` (admin, manager), `/admin/ingest` (admin) and `/admin/templates`
+(template_editor). `pnpm wa-leg token --user dev-viewer` prints a bearer token for scripts.
 
 ## Data
 

@@ -2,6 +2,8 @@ import { Route, Routes } from 'react-router';
 import { NoteWorkspace } from './routes/NoteWorkspace';
 import { NoteVersionsPage } from './routes/NoteVersionsPage';
 import { AdminAudit } from './routes/AdminAudit';
+import { AdminTemplates } from './routes/AdminTemplates';
+import { AdminIngest } from './routes/AdminIngest';
 import { SessionProvider } from './lib/session';
 import { Shell } from './components/Shell';
 import { Home } from './routes/Home';
@@ -9,7 +11,6 @@ import { DrafterDashboard } from './routes/DrafterDashboard';
 import { ReviewerDashboard } from './routes/ReviewerDashboard';
 import { Inbox } from './routes/Inbox';
 import { NotFound } from './routes/NotFound';
-import { Placeholder } from './routes/Placeholder';
 import { BillPage } from './routes/BillPage';
 import { ComparePage } from './routes/ComparePage';
 import { SearchResults } from './routes/SearchResults';
@@ -29,8 +30,8 @@ export function App() {
           <Route path="notes/:revisionId/versions" element={<NoteVersionsPage />} />
           <Route path="search" element={<SearchResults />} />
           <Route path="inbox" element={<Inbox />} />
-          <Route path="admin/templates" element={<Placeholder title="Templates" />} />
-          <Route path="admin/ingest" element={<Placeholder title="Ingest" />} />
+          <Route path="admin/templates" element={<AdminTemplates />} />
+          <Route path="admin/ingest" element={<AdminIngest />} />
           <Route path="admin/audit" element={<AdminAudit />} />
           <Route path="*" element={<NotFound />} />
         </Route>

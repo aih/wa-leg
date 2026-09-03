@@ -61,7 +61,7 @@ export function AdminAudit() {
         <button type="submit">Filter</button>
       </form>
       {rows.error && <p role="alert">{rows.error.message}</p>}
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0} role="region" aria-label="Table, scrolls horizontally on narrow screens">
         <table className="audit">
           <thead>
             <tr>

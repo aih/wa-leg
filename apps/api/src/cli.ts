@@ -7,7 +7,7 @@ import { seedUsers, seeders } from './db/seed.js';
 import { randomUUID } from 'node:crypto';
 import { resolve } from 'node:path';
 import pino from 'pino';
-import { CachingFetcher, finishIngestRun, ingestLegiscanBills, readDataset, recordIngestRun, refreshDocuments } from './modules/bills/index.js';
+import { CachingFetcher, DirectoryFetcher, finishIngestRun, ingestLegiscanBills, readDataset, recordIngestRun, refreshDocuments } from './modules/bills/index.js';
 
 const program = new Command();
 program.name('wa-leg').description('Fiscal Note Workbench command line');
@@ -44,7 +44,8 @@ ingest
   .option('--no-fetch', 'Index only; do not fetch documents')
   .option('--concurrency <n>', 'Parallel bills', (v) => Number(v), 4)
   .option('--force', 'Reload bills whose change_hash is unchanged')
-  .action(async (dir: string, o: { limit?: number; bills?: string; fetch: boolean; concurrency: number; force?: boolean }) => {
+  .option('--xml-dir <dir>', 'Read bill XML from a directory instead of lawfilesext (fixtures, CI)')
+  .action(async (dir: string, o: { limit?: number; bills?: string; fetch: boolean; concurrency: number; force?: boolean; xmlDir?: string }) => {
     const cfg = loadConfig();
     const handle = createDb(cfg.DATABASE_URL);
     const log = pino({ level: cfg.LOG_LEVEL });
@@ -54,7 +55,7 @@ ingest
       console.log(`loading ${billsJson.length} bills from ${dir}`);
       await recordIngestRun(handle.db, { id, source: 'legiscan', path: dir, requestedBy: 'cli' });
       const stats = await ingestLegiscanBills(
-        { db: handle.db, fetcher: new CachingFetcher(cfg.LAWFILES_CACHE_DIR), log },
+        { db: handle.db, fetcher: o.xmlDir ? new DirectoryFetcher(resolve(process.env.INIT_CWD ?? process.cwd(), o.xmlDir)) : new CachingFetcher(cfg.LAWFILES_CACHE_DIR), log },
         billsJson,
         { fetchDocuments: o.fetch, concurrency: o.concurrency, force: o.force, onProgress: (m) => process.stdout.write(m + '\n') },
       );
@@ -153,6 +154,25 @@ program
       console.log(`wrote ${opts.out}`);
     } finally {
       await app.close();
+    }
+  });
+
+program
+  .command('token')
+  .description('Print a bearer token for a seeded user (load tests, scripts)')
+  .requiredOption('--user <id>', 'User id, e.g. dev-viewer')
+  .option('--ttl <seconds>', 'Lifetime', (v) => Number(v), 3600)
+  .action(async (opts: { user: string; ttl: number }) => {
+    const { signSession } = await import('./modules/identity/index.js');
+    const { sql } = await import('drizzle-orm');
+    const cfg = loadConfig();
+    const handle = createDb(cfg.DATABASE_URL);
+    try {
+      const row = (await handle.db.execute(sql`SELECT user_id, display_name, email, roles, divisions FROM users WHERE user_id = ${opts.user}`)).rows[0] as { user_id: string; display_name: string; email: string | null; roles: string[]; divisions: string[] } | undefined;
+      if (!row) throw new Error(`Unknown user ${opts.user}; run db seed first`);
+      process.stdout.write((await signSession({ userId: row.user_id, displayName: row.display_name, email: row.email ?? undefined, roles: row.roles as never, divisions: row.divisions }, cfg.SESSION_SECRET, opts.ttl)) + '\n');
+    } finally {
+      await handle.close();
     }
   });
 

@@ -25,13 +25,34 @@ export function fnsBillNumber(type: string, number: number, versionCode: string)
   return [String(number), spaced, type, stage].filter(Boolean).join(' ');
 }
 
+const FACTS_TTL_MS = 60_000;
+const factsCache = new WeakMap<FastifyInstance, Map<string, { at: number; facts: BillFacts | null }>>();
+
+/** Bill facts, cached per process for a minute; bill events invalidate the entry (see createNotes). */
 export async function fetchBillFacts(app: FastifyInstance, billKey: string, principal?: Principal): Promise<BillFacts | null> {
-  const [, biennium, id] = billKey.split(':');
-  try {
-    return await internalCall<BillFacts>(app, `/bills/${biennium}/${id}`, principal ? { as: principal } : {});
-  } catch {
-    return null;
+  let cache = factsCache.get(app);
+  if (!cache) {
+    cache = new Map();
+    factsCache.set(app, cache);
   }
+  const hit = cache.get(billKey);
+  if (hit && Date.now() - hit.at < FACTS_TTL_MS) return hit.facts;
+  const [, biennium, id] = billKey.split(':');
+  let facts: BillFacts | null = null;
+  try {
+    facts = await internalCall<BillFacts>(app, `/bills/${biennium}/${id}`, principal ? { as: principal } : {});
+  } catch {
+    facts = null;
+  }
+  cache.set(billKey, { at: Date.now(), facts });
+  return facts;
+}
+
+export function invalidateBillFacts(app: FastifyInstance, billKey?: string): void {
+  const cache = factsCache.get(app);
+  if (!cache) return;
+  if (billKey) cache.delete(billKey);
+  else cache.clear();
 }
 
 export interface NoteContextInput {
