@@ -214,6 +214,30 @@ export class BillsService {
     }));
   }
 
+  /** Upcoming hearings across bills inside a window, with bill facts, for the reviewer dashboard. */
+  async listUpcomingHearings(opts: { from?: string; to?: string; biennium?: string; limit?: number } = {}): Promise<(HearingRow & { biennium: string; billId: string; title: string })[]> {
+    const from = opts.from ?? new Date().toISOString();
+    const to = opts.to ?? new Date(Date.now() + 72 * 3_600_000).toISOString();
+    const rows = (await this.db.execute(sql`SELECT h.*, b.current_version_code, b.biennium, b.id AS bill_id, b.title FROM hearings h JOIN bills b ON b.bill_key = h.bill_key
+      WHERE NOT h.cancelled AND h.hearing_at >= ${from}::timestamptz AND h.hearing_at <= ${to}::timestamptz AND (${opts.biennium ?? null}::text IS NULL OR b.biennium = ${opts.biennium ?? null})
+      ORDER BY h.hearing_at LIMIT ${Math.min(opts.limit ?? 500, 2000)}`)).rows as any[];
+    return rows.map((r) => ({
+      id: r.id,
+      billKey: r.bill_key,
+      biennium: r.biennium,
+      billId: r.bill_id,
+      title: r.title,
+      versionCode: r.current_version_code ?? undefined,
+      committee: r.committee,
+      chamber: r.chamber ?? undefined,
+      kind: r.kind,
+      hearingAt: iso(r.hearing_at)!,
+      location: r.location ?? undefined,
+      description: r.description ?? undefined,
+      cancelled: r.cancelled,
+    }));
+  }
+
   async listHearings(key: string): Promise<HearingRow[]> {
     const rows = (await this.db.execute(sql`SELECT h.*, b.current_version_code FROM hearings h JOIN bills b ON b.bill_key = h.bill_key WHERE h.bill_key = ${key} ORDER BY h.hearing_at`)).rows as any[];
     return rows.map((r) => ({

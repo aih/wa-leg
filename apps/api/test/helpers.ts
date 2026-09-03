@@ -1,3 +1,4 @@
+import type { Mailer } from '../src/modules/notifications/index.js';
 import type { FastifyInstance } from 'fastify';
 import { sql } from 'drizzle-orm';
 import { loadConfig, type Config } from '../src/config.js';
@@ -50,10 +51,10 @@ export interface TestContext {
   close(): Promise<void>;
 }
 
-export async function createTestApp(overrides: Partial<Record<keyof Config, string>> = {}): Promise<TestContext> {
+export async function createTestApp(overrides: Partial<Record<keyof Config, string>> = {}, extra: { mailer?: Mailer } = {}): Promise<TestContext> {
   const config = testConfig(overrides);
   const handle = createDb(config.DATABASE_URL, 5);
-  const app = await buildApp({ config, dbHandle: handle, oidc: fakeOidc, workers: false });
+  const app = await buildApp({ config, dbHandle: handle, oidc: fakeOidc, workers: false, mailer: extra.mailer });
   await app.ready();
   const tokens = new Map<string, string>();
   return {

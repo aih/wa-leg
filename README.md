@@ -65,6 +65,25 @@ Open http://localhost:5173 and sign in. The dev issuer lists the test users:
 7. **Versions** lists autosaves and named snapshots, renders any version, compares two as a redline with a
    table-cell diff, and restores a version as a new head.
 
+## Review workflow
+
+Each note revision has one workflow instance (`todo`, `in_progress`, `review.pending`, `review.active`,
+`changes_requested`, `exec_review.pending`, `exec_review.active`, `approved`, `cancelled`, `superseded`). The
+workspace bar shows the state, the due countdown with its band as text, the assignees, and the buttons the
+signed-in user may press: the drafter starts and submits; a reviewer claims, requests changes (a comment is
+required) or approves; an approver in the Executive Review chain claims, completes or returns each step in
+order. Assigners (reviewer, manager, admin) use **Assign** to set the drafter, reassign, or set the chain.
+
+Deadlines: the statutory clock (request time + 72 hours, `STATUTORY_HOURS`), the hearing cutoff (next hearing
+minus `HEARING_LEAD_HOURS`), and a per-assignment due time. A poller (`DEADLINE_POLL_MS`) emits due-soon and
+overdue events; dashboards sort by the earliest deadline and label the band (`Due later`, `Due within 24
+hours`, `Due within 4 hours`, `Overdue`). Notifications land in the inbox and, when `NOTIFY_EMAIL` is on, in
+the SMTP sink at http://localhost:8026.
+
+When the bills ingest adds a new version of a bill with an open note, the drafter is notified and the
+workspace offers **Create revision**; the new revision starts in `todo` with the same drafter and chain, and
+the old one becomes `superseded`.
+
 ## Checks
 
 ```sh

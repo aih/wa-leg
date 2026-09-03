@@ -41,6 +41,7 @@ export interface NoteRevisionSummary {
   execIndex: number;
   deadlines: { kind: string; dueAt: string }[];
   effectiveDueAt?: string | null;
+  nextHearingAt?: string | null;
   headVersion: number;
   approvedVersion?: number | null;
   previousRevisionId?: string | null;
@@ -170,6 +171,7 @@ export class NotesService {
       execIndex: state.execIndex,
       deadlines,
       effectiveDueAt: effective,
+      nextHearingAt: facts?.hearings.filter((h) => !h.cancelled && new Date(h.hearingAt) > new Date()).map((h) => h.hearingAt).sort()[0] ?? null,
       headVersion: row.head_version,
       approvedVersion: row.approved_document_version ?? null,
       previousRevisionId: row.previous_revision_id ?? null,

@@ -89,7 +89,7 @@ describe('notes: create, document autosave with If-Match, versions, comments, lo
     expect(res.statusCode).toBe(201);
     const s = res.json();
     revisionId = s.noteRevisionId;
-    expect(s).toMatchObject({ billKey: 'WA:2025-26:HB2402', versionCode: 'S', versionLabel: 'SHB 2402', kind: 'note', state: 'in_progress', drafterStatus: 'in-progress', headVersion: 1, templateId: 'sales-use-tax-exemption', priority: 'high', editable: true });
+    expect(s).toMatchObject({ billKey: 'WA:2025-26:HB2402', versionCode: 'S', versionLabel: 'SHB 2402', kind: 'note', state: 'todo', drafterStatus: 'to-do', headVersion: 1, templateId: 'sales-use-tax-exemption', priority: 'high', editable: true });
     expect(s.drafter.userId).toBe('dev-drafter');
     expect(s.billTitle).toMatch(/phthalates/i);
     // Events for the workflow and search modules.

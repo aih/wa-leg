@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const ALLOWED = /^(MIT|BSD-[23]-Clause|BSD-3-Clause-Clear|Apache-2\.0|MPL-2\.0|ISC|0BSD|Unlicense|CC0-1\.0|BlueOak-1\.0\.0|Python-2\.0|CC-BY-4\.0|CC-BY-3\.0|Zlib|W3C|LGPL-3\.0-or-later|LGPL-2\.1-or-later)$/;
+const ALLOWED = /^(MIT|MIT-0|BSD-[23]-Clause|BSD-3-Clause-Clear|Apache-2\.0|MPL-2\.0|ISC|0BSD|Unlicense|CC0-1\.0|BlueOak-1\.0\.0|Python-2\.0|CC-BY-4\.0|CC-BY-3\.0|Zlib|W3C|LGPL-3\.0-or-later|LGPL-2\.1-or-later)$/;
 const SHIPPED = ['apps/api', 'apps/web', 'packages/billref', 'packages/bill-document', 'packages/note-schema', 'packages/workflow-machine', 'packages/api-client'];
 
 const seen = new Map();

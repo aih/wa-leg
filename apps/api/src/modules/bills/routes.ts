@@ -181,6 +181,12 @@ export async function billsRoutes(app: FastifyInstance): Promise<void> {
     async (req) => (await svc.listHearings(svc.billKey(req.params.biennium, req.params.id.toUpperCase()))) as z.infer<typeof HearingSchema>[],
   );
 
+  r.get(
+    '/hearings',
+    { schema: { tags: ['bills'], summary: 'Upcoming hearings across bills inside a window (default: next 72 hours)', querystring: z.object({ from: z.string().optional(), to: z.string().optional(), biennium: z.string().optional(), limit: z.coerce.number().int().optional() }), response: { 200: z.array(HearingSchema.extend({ biennium: z.string(), billId: z.string(), title: z.string() })) } }, preHandler: app.requireAuth },
+    async (req) => (await svc.listUpcomingHearings(req.query)) as never,
+  );
+
   // ---- admin: ingest ----
   r.get(
     '/admin/ingest/runs',

@@ -53,6 +53,7 @@ const ConfigSchema = z.object({
   OPENSEARCH_INDEX_PREFIX: z.string().default('waleg_'),
   SMTP_URL: z.string().default('smtp://localhost:1025'),
   MAIL_FROM: z.string().default('fiscal-notes@dor.wa.gov.test'),
+  NOTIFY_EMAIL: bool.default(true),
   LAWFILES_CACHE_DIR: z.string().default('.cache/lawfiles').transform((p) => (isAbsolute(p) ? p : join(REPO_ROOT, p))),
   LEGISCAN_DIR: z.string().default('data/WA/2025-2026_Regular_Session').transform((p) => (isAbsolute(p) ? p : join(REPO_ROOT, p))),
   CURRENT_BIENNIUM: z.string().default('2025-26'),

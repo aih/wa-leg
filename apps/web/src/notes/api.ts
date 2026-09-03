@@ -141,6 +141,7 @@ export const notesApi = {
   list: (query: { billKey?: string; state?: string; assignee?: string } = {}) => api<NoteSummary[]>('/notes', { query }),
   forBill: (biennium: string, id: string) => api<NoteSummary[]>(`/bills/${biennium}/${id}/notes`),
   create: (body: Record<string, unknown>) => api<NoteSummary>('/notes', { method: 'POST', body }),
+  createRevision: (id: string, versionCode: string) => api<NoteSummary>(`/notes/${id}/revisions`, { method: 'POST', body: { versionCode } }),
   templates: (query: { mode?: EditorMode; kind?: string; taxType?: string; impactType?: string; q?: string } = {}) => api<TemplateSummary[]>('/templates', { query }),
   template: (id: string) => api<TemplateFull>(`/templates/${id}`),
   async templatePreview(id: string, noteId?: string): Promise<string> {
@@ -200,3 +201,125 @@ export const STATE_LABELS: Record<string, string> = {
   cancelled: 'Cancelled',
   superseded: 'Superseded',
 };
+
+// ---- workflow and notifications (milestone 6) ----
+
+export type DueBand = 'more_than_24h' | 'within_24h' | 'within_4h' | 'overdue' | 'none';
+
+export interface WorkflowView {
+  instanceId: string;
+  noteRevisionId: string;
+  state: string;
+  version: number;
+  drafterStatus: string;
+  reviewerStatus: string;
+  drafterId: string | null;
+  reviewerId: string | null;
+  execChain: { userId: string; division: string; dueAt: string | null; doneAt: string | null }[];
+  execIndex: number;
+  availableEvents: { type: string; label: string }[];
+  deadlines: { kind: string; dueAt: string; warnAt: string; band: DueBand; breached: boolean }[];
+  effectiveDueAt: string | null;
+  supersededBy: string | null;
+  duplicatedFrom: string | null;
+  editable: boolean;
+  updatedAt: string;
+}
+
+export interface TransitionRow {
+  seq: number;
+  event: string;
+  fromState: string;
+  toState: string;
+  actorId: string;
+  actorName?: string | null;
+  comment: string | null;
+  occurredAt: string;
+}
+
+export interface AssignmentRow {
+  instanceId: string;
+  noteRevisionId: string;
+  billKey: string;
+  versionCode: string;
+  versionLabel: string;
+  title: string | null;
+  kind: 'note' | 'estimate';
+  role: 'drafter' | 'reviewer' | 'exec';
+  position: number;
+  pool: boolean;
+  status: string;
+  state: string;
+  priority: string;
+  dueAt: string | null;
+  effectiveDueAt: string | null;
+  band: DueBand;
+  nextHearingAt: string | null;
+  assignedAt: string;
+  updatedAt: string;
+  counterpart: { userId: string; displayName?: string } | null;
+  supersededBy: string | null;
+  confidential: boolean;
+}
+
+export interface Notification {
+  id: string;
+  type: string;
+  title: string;
+  body: string;
+  payload: Record<string, unknown>;
+  link: string | null;
+  createdAt: string;
+  readAt: string | null;
+}
+
+export interface UnassignedHearing {
+  id: string;
+  billKey: string;
+  biennium: string;
+  billId: string;
+  title: string;
+  versionCode: string | null;
+  committee: string;
+  chamber: string | null;
+  kind: string;
+  hearingAt: string;
+}
+
+export const workflowApi = {
+  view: (id: string) => api<WorkflowView>(`/notes/${id}/workflow`),
+  transitions: (id: string) => api<TransitionRow[]>(`/notes/${id}/transitions`),
+  send: (id: string, body: { event: string; comment?: string; expectedVersion?: number }) => api<{ state: string; version: number; seq: number }>(`/notes/${id}/transitions`, { method: 'POST', body }),
+  assign: (id: string, body: { role: 'drafter' | 'reviewer' | 'exec'; userId: string; position?: number; dueAt?: string }) => api<{ state: string; version: number }>(`/notes/${id}/assign`, { method: 'POST', body }),
+  setExecChain: (id: string, chain: { userId: string; division?: string; dueAt?: string | null }[]) => api<{ state: string; version: number }>(`/notes/${id}/exec-chain`, { method: 'PUT', body: { chain } }),
+  assignments: (query: { assignee?: string; role?: string; status?: string; state?: string; all?: boolean } = {}) => api<AssignmentRow[]>('/assignments', { query }),
+  summary: (query: { state?: string; drafter?: string; reviewer?: string } = {}) => api<Record<string, number>>('/workflow/summary', { query }),
+  unassignedHearings: (withinHours = 72) => api<UnassignedHearing[]>('/workflow/unassigned-hearings', { query: { withinHours } }),
+};
+
+export const notificationsApi = {
+  list: (unread = false) => api<Notification[]>('/notifications', { query: { unread } }),
+  unreadCount: () => api<{ unread: number }>('/notifications/unread-count'),
+  markRead: (id: string) => api<void>(`/notifications/${id}/read`, { method: 'POST' }),
+  readAll: () => api<{ marked: number }>('/notifications/read-all', { method: 'POST' }),
+};
+
+export const BAND_LABELS: Record<DueBand, string> = {
+  overdue: 'Overdue',
+  within_4h: 'Due within 4 hours',
+  within_24h: 'Due within 24 hours',
+  more_than_24h: 'Due later',
+  none: 'No deadline',
+};
+
+/** "Due in 3 h", "Overdue by 2 d", from an ISO time. */
+export function dueCountdown(iso: string | null | undefined, now = Date.now()): string {
+  if (!iso) return 'No deadline';
+  const ms = new Date(iso).getTime() - now;
+  const abs = Math.abs(ms);
+  const unit = abs >= 48 * 3_600_000 ? `${Math.round(abs / 86_400_000)} d` : abs >= 3_600_000 ? `${Math.round(abs / 3_600_000)} h` : `${Math.max(1, Math.round(abs / 60_000))} min`;
+  return ms < 0 ? `Overdue by ${unit}` : `Due in ${unit}`;
+}
+
+export const DRAFTER_LABELS: Record<string, string> = { 'to-do': 'To do', 'in-progress': 'In progress', 'ready-for-review': 'Ready for review', 'address-review': 'Address review', approved: 'Approved', cancelled: 'Cancelled', superseded: 'Superseded' };
+export const REVIEWER_LABELS: Record<string, string> = { unstarted: 'Unstarted', drafting: 'Drafting', pending: 'Pending my review', 'in-review': 'In review', 'changes-requested': 'Changes requested', approved: 'Approved', cancelled: 'Cancelled', superseded: 'Superseded' };

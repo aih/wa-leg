@@ -29,7 +29,7 @@ test.describe('search', () => {
 
   test('a reference with words keeps the direct card and filters results to the bill', async ({ page }) => {
     await loginAs(page, 'dev-viewer', '/search?q=HB%202402%20intravenous');
-    await expect(page.locator('.direct-card').getByRole('link', { name: /SHB 2402/ })).toBeVisible();
+    await expect(page.locator('.direct-card').getByRole('link', { name: /SHB 2402/ }).first()).toBeVisible();
     await expect(page.locator('.hits > li').first()).toBeVisible();
   });
 

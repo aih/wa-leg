@@ -109,6 +109,10 @@ export function can(p: Principal, action: Action, resource: Resource = { type: '
       return admin;
     case 'audit.read_all':
     case 'assignments.read_all':
+    case 'note.assign':
+    case 'note.cancel':
+    case 'note.duplicate':
+    case 'note.patch':
       return admin || isReviewerRole(p);
     case 'note.create': {
       if (admin || isReviewerRole(p)) return true;
@@ -145,11 +149,6 @@ export function can(p: Principal, action: Action, resource: Resource = { type: '
       return canReadNote(p, n, o) && (hasRole(p, 'drafter') || isReviewerRole(p) || admin);
     case 'note.reopen':
       return n.state === 'approved' && (admin || hasRole(p, 'approver'));
-    case 'note.assign':
-    case 'note.cancel':
-    case 'note.duplicate':
-    case 'note.patch':
-      return admin || isReviewerRole(p);
     default:
       return false;
   }

@@ -12,7 +12,8 @@ import { ApiError } from '../lib/api';
 import { NoteEditor, type NoteEditorHandle } from '../notes/NoteEditor';
 import { TemplatePanel } from '../notes/TemplatePanel';
 import { CommentsPanel, type PendingComment } from '../notes/CommentsPanel';
-import { fmtTime, fmtWhen, isConflict, notesApi, useResource, STATE_LABELS, type CommentThread, type ConflictDetails, type LockInfo, type NoteDocument, type NoteSummary } from '../notes/api';
+import { fmtTime, isConflict, notesApi, useResource, type CommentThread, type ConflictDetails, type LockInfo, type NoteDocument, type NoteSummary } from '../notes/api';
+import { WorkflowBar } from '../notes/WorkflowBar';
 import '../notes/notes.css';
 
 type Tab = 'editor' | 'comments' | 'templates';
@@ -283,7 +284,6 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
     window.setTimeout(() => editorRef.current?.focusSlot('next'), 0);
   };
 
-  const state = STATE_LABELS[summary.state] ?? summary.state;
   const billLabel = summary.billId.replace(/^([A-Z]+)(\d+)$/, '$1 $2');
 
   const right = (
@@ -418,50 +418,7 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
 
   return (
     <div className="bill-page two-pane workspace">
-      <header className="workflow-bar">
-        <h1>
-          <Link to={`/bills/${summary.biennium}/${summary.billId}/${summary.versionCode}`}>{summary.versionLabel}</Link> {summary.kind === 'estimate' ? 'estimate' : 'fiscal note'}
-          {summary.billTitle && <span className="muted"> · {summary.billTitle}</span>}
-        </h1>
-        <dl className="wf-facts">
-          <dt>State</dt>
-          <dd>
-            <span className={`status status-${summary.state.replace('.', '-')}`}>{state}</span>
-          </dd>
-          <dt>Drafter</dt>
-          <dd>{summary.drafter?.displayName ?? summary.drafter?.userId ?? 'unassigned'}</dd>
-          {summary.reviewer && (
-            <>
-              <dt>Reviewer</dt>
-              <dd>{summary.reviewer.displayName ?? summary.reviewer.userId}</dd>
-            </>
-          )}
-          <dt>Due</dt>
-          <dd>{summary.effectiveDueAt ? fmtWhen(summary.effectiveDueAt) : 'no deadline yet'}</dd>
-          {summary.requestId && (
-            <>
-              <dt>Request</dt>
-              <dd>{summary.requestId}</dd>
-            </>
-          )}
-          {summary.confidential && (
-            <>
-              <dt>Access</dt>
-              <dd>Confidential</dd>
-            </>
-          )}
-        </dl>
-        <div className="wf-actions">
-          {summary.supersededBy && (
-            <button type="button" className="secondary" onClick={() => navigate(`/notes/${summary.supersededBy}`)}>
-              Open newer revision
-            </button>
-          )}
-          <button type="button" className="secondary" onClick={() => void reloadSummary()}>
-            Refresh
-          </button>
-        </div>
-      </header>
+      <WorkflowBar revisionId={revisionId} summary={summary} bill={bill.data} onChanged={reloadSummary} />
       <SplitPane
         railLabel={billLabel}
         storageKey="workspace.split"
