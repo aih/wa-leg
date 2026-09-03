@@ -12,11 +12,12 @@ import { ApiError } from '../lib/api';
 import { NoteEditor, type NoteEditorHandle } from '../notes/NoteEditor';
 import { TemplatePanel } from '../notes/TemplatePanel';
 import { CommentsPanel, type PendingComment } from '../notes/CommentsPanel';
-import { fmtTime, isConflict, notesApi, useResource, type CommentThread, type ConflictDetails, type LockInfo, type NoteDocument, type NoteSummary } from '../notes/api';
+import { ChangeRequestsPanel } from '../notes/ChangeRequestsPanel';
+import { fmtTime, fmtWhen, isConflict, notesApi, useResource, type ChangeRequest, type CommentThread, type ConflictDetails, type LockInfo, type NoteDocument, type NoteSummary } from '../notes/api';
 import { WorkflowBar } from '../notes/WorkflowBar';
 import '../notes/notes.css';
 
-type Tab = 'editor' | 'comments' | 'templates';
+type Tab = 'editor' | 'comments' | 'changes' | 'templates';
 type SaveState = { kind: 'idle' } | { kind: 'dirty' } | { kind: 'saving' } | { kind: 'saved'; at: string; version: number } | { kind: 'error'; message: string } | { kind: 'conflict'; server: ConflictDetails };
 
 const DEBOUNCE_MS = 1500;
@@ -71,6 +72,7 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
   const [slots, setSlots] = useState({ filled: 0, required: 0, unfilled: [] as string[] });
   const [lock, setLock] = useState<{ status: 'mine' | 'other' | 'none' | 'unavailable'; info?: LockInfo }>({ status: 'none' });
   const [threads, setThreads] = useState<CommentThread[]>([]);
+  const [changeRequests, setChangeRequests] = useState<ChangeRequest[]>([]);
   const [activeComment, setActiveComment] = useState<string | null>(null);
   const [pending, setPending] = useState<PendingComment | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -83,6 +85,7 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
   const mayEdit = summary.editable && (isDrafter || (summary.state === 'review.active' && summary.reviewer?.userId === principal?.userId) || (summary.state === 'exec_review.active' && summary.execChain.some((e) => e.userId === principal?.userId)));
   const editing = mayEdit && lock.status !== 'other';
   const canComment = !!principal && (isDrafter || isReviewerOrManager || summary.reviewer?.userId === principal.userId);
+  const openRequest = changeRequests.find((c) => c.status === 'open') ?? null;
 
   // ---- autosave ----
   const versionRef = useRef(initialDocument.version);
@@ -198,6 +201,42 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
     void refreshThreads();
   }, [refreshThreads]);
 
+  // ---- change requests ----
+  const refreshChangeRequests = useCallback(async () => {
+    try {
+      setChangeRequests(await notesApi.changeRequests(revisionId));
+    } catch {
+      /* keep the last list */
+    }
+  }, [revisionId]);
+  useEffect(() => {
+    void refreshChangeRequests();
+  }, [refreshChangeRequests, summary.state, summary.headVersion]);
+  const headVersionNow = () => Math.max(summary.headVersion, save.kind === 'saved' ? save.version : 0, versionRef.current);
+  const addressItem = async (crId: string, itemId: string, resolution: string) => {
+    if (dirtyRef.current) await doSave();
+    await notesApi.addressItem(revisionId, crId, itemId, resolution);
+    const item = changeRequests.flatMap((c) => c.items).find((i) => i.id === itemId);
+    if (item?.commentId) editorRef.current?.setComment(item.commentId, { resolved: true });
+    await Promise.all([refreshChangeRequests(), refreshThreads()]);
+    if (editing && item?.commentId) {
+      dirtyRef.current = editorRef.current?.getJSON() ?? null;
+      await doSave();
+    }
+  };
+  const reopenItem = async (crId: string, itemId: string, reason?: string) => {
+    await notesApi.reopenItem(revisionId, crId, itemId, reason);
+    const item = changeRequests.flatMap((c) => c.items).find((i) => i.id === itemId);
+    if (item?.commentId) editorRef.current?.setComment(item.commentId, { resolved: false });
+    await Promise.all([refreshChangeRequests(), refreshThreads()]);
+  };
+  const closeChangeRequest = async (crId: string, resolution: string) => {
+    if (dirtyRef.current) await doSave();
+    await notesApi.closeChangeRequest(revisionId, crId, resolution);
+    await refreshChangeRequests();
+    setNotice('Change request closed. Submit for review when the note is ready.');
+  };
+
   const createComment = async (body: string) => {
     if (!pending) return;
     const { id } = await notesApi.createComment(revisionId, pending.anchorText, body);
@@ -295,6 +334,7 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
           [
             ['editor', mayEdit ? 'Editor' : 'Note'],
             ['comments', `Comments${threads.filter((t) => t.status === 'open').length ? ` (${threads.filter((t) => t.status === 'open').length})` : ''}`],
+            ['changes', `Changes${openRequest ? ` (${openRequest.openItems} open)` : changeRequests.length ? ` (${changeRequests.length})` : ''}`],
             ['templates', 'Templates'],
           ] as [Tab, string][]
         ).map(([id, label]) => (
@@ -308,6 +348,17 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
           Versions
         </Link>
       </div>
+      {openRequest && tab !== 'changes' && (
+        <div role="status" className="banner changes">
+          <p>
+            <strong>{openRequest.requestedByName ?? openRequest.requestedBy} requested changes</strong> on {fmtWhen(openRequest.requestedAt)}: {openRequest.summary || openRequest.items[0]?.body}
+            {openRequest.summary && openRequest.items.length > 0 ? ` (${openRequest.items.length} item${openRequest.items.length === 1 ? '' : 's'})` : ''}. {openRequest.openItems} of {openRequest.items.length} still open.
+          </p>
+          <button type="button" className="secondary" onClick={() => setTab('changes')}>
+            {isDrafter ? 'Review and address' : 'Open change request'}
+          </button>
+        </div>
+      )}
       {notice && (
         <p role="status" className="notice">
           {notice}{' '}
@@ -398,6 +449,23 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
           onDelete={deleteComment}
         />
       </div>
+      <div role="tabpanel" id="panel-changes" aria-labelledby="tab-changes" hidden={tab !== 'changes'} className="tabpanel">
+        <ChangeRequestsPanel
+          revisionId={revisionId}
+          requests={changeRequests}
+          headVersion={headVersionNow()}
+          canAddress={isDrafter || editing}
+          canReopen={isDrafter || isReviewerOrManager || summary.reviewer?.userId === principal?.userId}
+          onOpenThread={(id) => {
+            setActiveComment(id);
+            setTab('editor');
+            window.setTimeout(() => editorRef.current?.focusComment(id), 0);
+          }}
+          onAddress={addressItem}
+          onReopen={reopenItem}
+          onClose={closeChangeRequest}
+        />
+      </div>
       <div role="tabpanel" id="panel-templates" aria-labelledby="tab-templates" hidden={tab !== 'templates'} className="tabpanel">
         {tab === 'templates' && (
           <TemplatePanel
@@ -420,7 +488,18 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
 
   return (
     <div className="bill-page two-pane workspace">
-      <WorkflowBar revisionId={revisionId} summary={summary} bill={bill.data} onChanged={reloadSummary} />
+      <WorkflowBar
+        revisionId={revisionId}
+        summary={summary}
+        bill={bill.data}
+        openThreads={threads.filter((t) => t.status === 'open' && !t.detached).length}
+        openChangeItems={openRequest?.openItems ?? 0}
+        onChanged={async () => {
+          await reloadSummary();
+          await refreshChangeRequests();
+        }}
+        onShowChanges={() => setTab('changes')}
+      />
       <SplitPane
         railLabel={billLabel}
         storageKey="workspace.split"

@@ -245,6 +245,48 @@ export function notesRoutes(svc: NotesService) {
       async (req, reply) => reply.code(201).send(await svc.reply(req.principal!, req.params.id, req.params.cid, req.body.body, req.id)),
     );
 
+    // ---- change requests ----
+    r.get(
+      '/notes/:id/change-requests',
+      { schema: { tags: ['notes'], summary: 'Change requests on this revision (newest first) with their items', params: noteId, response: { 200: z.array(AnyObject) } }, preHandler: app.requireAuth },
+      async (req) => {
+        await svc.assertCan(req.principal!, 'note.read', req.params.id, req.id);
+        return (await svc.listChangeRequests(req.params.id)) as unknown as Record<string, unknown>[];
+      },
+    );
+    r.post(
+      '/notes/:id/change-requests',
+      { schema: { tags: ['notes'], summary: 'Record a change request (the workflow module calls this after REQUEST_CHANGES or EXEC_RETURN)', params: noteId, body: z.object({ transitionSeq: z.number().int().optional(), event: z.string().optional(), summary: z.string() }), response: { 201: AnyObject } }, preHandler: app.requireAuth },
+      async (req, reply) => {
+        if (!can(req.principal!, 'note.assign')) throw forbidden('Only reviewers may open a change request');
+        return reply.code(201).send((await svc.recordChangeRequest(req.principal!, req.params.id, req.body, req.id)) as unknown as Record<string, unknown>);
+      },
+    );
+    r.post(
+      '/notes/:id/change-requests/:crId/items/:itemId/address',
+      { schema: { tags: ['notes'], summary: 'Mark an item addressed, citing how (the linked comment thread is answered and resolved)', params: noteId.extend({ crId: z.string().uuid(), itemId: z.string().uuid() }), body: z.object({ resolution: z.string().min(1) }), response: { 200: z.object({ ok: z.boolean() }) } }, preHandler: app.requireAuth },
+      async (req) => {
+        await svc.addressChangeRequestItem(req.principal!, req.params.id, req.params.crId, req.params.itemId, req.body, req.id);
+        return { ok: true };
+      },
+    );
+    r.post(
+      '/notes/:id/change-requests/:crId/items/:itemId/reopen',
+      { schema: { tags: ['notes'], summary: 'Reopen an addressed item', params: noteId.extend({ crId: z.string().uuid(), itemId: z.string().uuid() }), body: z.object({ reason: z.string().optional() }).default({}), response: { 200: z.object({ ok: z.boolean() }) } }, preHandler: app.requireAuth },
+      async (req) => {
+        await svc.reopenChangeRequestItem(req.principal!, req.params.id, req.params.crId, req.params.itemId, req.body, req.id);
+        return { ok: true };
+      },
+    );
+    r.post(
+      '/notes/:id/change-requests/:crId/close',
+      { schema: { tags: ['notes'], summary: 'Close the request once every item is addressed', params: noteId.extend({ crId: z.string().uuid() }), body: z.object({ resolution: z.string().min(1) }), response: { 200: z.object({ ok: z.boolean() }), 409: AnyObject } }, preHandler: app.requireAuth },
+      async (req) => {
+        await svc.closeChangeRequest(req.principal!, req.params.id, req.params.crId, req.body, req.id);
+        return { ok: true };
+      },
+    );
+
     // ---- exports ----
     const exportQuery = z.object({ format: z.enum(['html', 'pdf', 'docx', 'xml']), version: z.coerce.number().int().optional(), comments: z.union([z.boolean(), z.string()]).optional(), strict: z.union([z.boolean(), z.string()]).optional() });
     const sendExport = async (reply: FastifyReply, res: { filename: string; contentType: string; body: Buffer; exportId: string; version: number }, inline: boolean) => {

@@ -1,6 +1,5 @@
 import { Link } from 'react-router';
-import { drafterStatus, reviewerStatus, type WorkflowState } from '@wa-leg/workflow-machine';
-import { BAND_LABELS, DRAFTER_LABELS, REVIEWER_LABELS, dueCountdown, fmtWhen, type AssignmentRow } from './api';
+import { BAND_LABELS, STATE_HINTS, STATE_LABELS, dueCountdown, fmtWhen, type AssignmentRow } from './api';
 
 export interface QueueTableProps {
   rows: AssignmentRow[];
@@ -11,11 +10,10 @@ export interface QueueTableProps {
   showAssignee?: boolean;
 }
 
-/** Work queue: bill, version, title, status in the role vocabulary, due (band as text), hearing, counterpart, last activity. */
+/** Work queue: bill, version, title, status (one vocabulary for every role), due (band as text), hearing, counterpart, last activity. */
 export function QueueTable({ rows, vocabulary, empty, extra, showAssignee }: QueueTableProps) {
   if (rows.length === 0) return <p className="muted">{empty}</p>;
-  // Labels come from the state in the viewer's vocabulary, whichever role the row was fetched for.
-  const labelOf = (state: string) => (vocabulary === 'drafter' ? DRAFTER_LABELS[drafterStatus(state as WorkflowState)] : REVIEWER_LABELS[reviewerStatus(state as WorkflowState)]) ?? state;
+  const labelOf = (state: string) => STATE_LABELS[state] ?? state;
   return (
     <div className="table-scroll" tabIndex={0} role="region" aria-label="Table, scrolls horizontally on narrow screens">
       <table className="queue">
@@ -41,7 +39,9 @@ export function QueueTable({ rows, vocabulary, empty, extra, showAssignee }: Que
                 {r.title && <div className="muted small">{r.title}</div>}
               </td>
               <td>
-                <span className={`status status-${r.state.replace('.', '-')}`}>{labelOf(r.state)}</span>
+                <span className={`status status-${r.state.replace('.', '-')}`} title={STATE_HINTS[r.state]}>
+                  {labelOf(r.state)}
+                </span>
                 {r.pool && <div className="muted small">unclaimed</div>}
                 {r.role === 'exec' && <div className="muted small">executive step {r.position + 1}</div>}
                 {r.supersededBy && <div className="muted small">superseded</div>}

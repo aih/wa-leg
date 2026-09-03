@@ -338,7 +338,21 @@ export class WorkflowService {
     const ev = { type: body.event, actor, comment: body.comment ?? '' } as Ev;
     if (['REQUEST_CHANGES', 'EXEC_RETURN', 'CANCEL'].includes(body.event) && !body.comment?.trim()) throw conflict('comment_required', `${EVENT_LABELS[body.event]} needs a comment`);
     if (!(BUTTON_EVENTS as readonly string[]).includes(body.event)) throw forbidden('Administrative events use the assignment endpoints');
-    return this.apply(noteRevisionId, ev, { expectedVersion: body.expectedVersion, requestId });
+    if (body.event === 'SUBMIT_FOR_REVIEW') await this.settleChangeRequest(principal, noteRevisionId, body.comment);
+    const res = await this.apply(noteRevisionId, ev, { expectedVersion: body.expectedVersion, requestId });
+    if (body.event === 'REQUEST_CHANGES' || body.event === 'EXEC_RETURN') {
+      // The notes module keeps the itemised request the drafter works through.
+      await internalCall(this.app, `/notes/${noteRevisionId}/change-requests`, { method: 'POST', as: principal, body: { transitionSeq: res.seq, event: body.event, summary: body.comment ?? '' } });
+    }
+    return res;
+  }
+
+  /** Resubmitting needs every change request item addressed; a request left open with no open items is closed with the submit comment. */
+  private async settleChangeRequest(principal: Principal, noteRevisionId: string, comment: string | undefined): Promise<void> {
+    const open = (await internalCall<{ id: string; status: string; openItems: number }[]>(this.app, `/notes/${noteRevisionId}/change-requests`)).find((c) => c.status === 'open');
+    if (!open) return;
+    if (open.openItems > 0) throw conflict('change_request_open', `${open.openItems} change request item(s) are still open; address each one in the Changes tab before resubmitting`, { changeRequestId: open.id, openItems: open.openItems });
+    await internalCall(this.app, `/notes/${noteRevisionId}/change-requests/${open.id}/close`, { method: 'POST', as: principal, body: { resolution: comment?.trim() || 'Resubmitted for review' } });
   }
 
   async assign(principal: Principal, noteRevisionId: string, body: { role: 'drafter' | 'reviewer' | 'exec'; userId: string; position?: number; dueAt?: string }, requestId: string) {

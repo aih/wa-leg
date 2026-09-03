@@ -1,4 +1,4 @@
-import type { BillDocument, BillSection, Block, CiteEvent } from '@wa-leg/bill-document/browser';
+import { sectionSubject, type BillDocument, type BillSection, type Block, type CiteEvent } from '@wa-leg/bill-document/browser';
 import { label as shortLabel, type BillType } from '@wa-leg/billref';
 
 export interface BillUrlBuilder {
@@ -143,4 +143,14 @@ export function sectionGloss(s: BillSection): string {
     }
   }
   return KIND_LABELS[s.kind] ?? s.kind;
+}
+
+/**
+ * Subject line for outlines and section bars. RCW captions are shown as they are; a paraphrase of a new section's
+ * first sentence is shown in brackets.
+ */
+export function sectionSubjectLabel(s: BillSection): string | null {
+  const sub = sectionSubject(s);
+  if (!sub) return null;
+  return sub.paraphrased ? `[${sub.text}]` : sub.text;
 }

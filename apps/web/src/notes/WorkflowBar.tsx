@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { useSession } from '../lib/session';
 import { ApiError } from '../lib/api';
 import type { BillSummary } from '../bill/api';
-import { BAND_LABELS, dueCountdown, fmtWhen, notesApi, STATE_LABELS, useResource, workflowApi, type NoteSummary, type WorkflowView } from './api';
+import { BAND_LABELS, dueCountdown, fmtWhen, notesApi, STATE_HINTS, STATE_LABELS, useResource, workflowApi, type NoteSummary, type WorkflowView } from './api';
 
 const COMMENT_REQUIRED = new Set(['REQUEST_CHANGES', 'EXEC_RETURN', 'CANCEL']);
 const COMMENT_OPTIONAL = new Set(['SUBMIT_FOR_REVIEW', 'APPROVE', 'EXEC_DONE']);
@@ -14,10 +14,15 @@ export interface WorkflowBarProps {
   bill: BillSummary | null;
   /** Called after any transition or assignment so the workspace reloads the summary and lock state. */
   onChanged: () => Promise<void> | void;
+  /** Open comment threads that a Request changes will attach as items. */
+  openThreads?: number;
+  /** Items of the open change request still to address; Submit for review is blocked while > 0. */
+  openChangeItems?: number;
+  onShowChanges?: () => void;
 }
 
 /** State, due countdown, assignees, the transition buttons the caller may press, and assigner controls. */
-export function WorkflowBar({ revisionId, summary, bill, onChanged }: WorkflowBarProps) {
+export function WorkflowBar({ revisionId, summary, bill, onChanged, openThreads = 0, openChangeItems = 0, onShowChanges }: WorkflowBarProps) {
   const { principal, hasRole } = useSession();
   const navigate = useNavigate();
   const wf = useResource(() => workflowApi.view(revisionId), [revisionId, summary.state, summary.headVersion]);
@@ -62,6 +67,11 @@ export function WorkflowBar({ revisionId, summary, bill, onChanged }: WorkflowBa
   };
 
   const press = (ev: { type: string; label: string }) => {
+    if (ev.type === 'SUBMIT_FOR_REVIEW' && openChangeItems > 0) {
+      setError(`${openChangeItems} change request item${openChangeItems === 1 ? ' is' : 's are'} still open. Address each one in the Changes tab before resubmitting.`);
+      onShowChanges?.();
+      return;
+    }
     if (COMMENT_REQUIRED.has(ev.type) || COMMENT_OPTIONAL.has(ev.type)) setDialog({ event: ev.type, label: ev.label });
     else void run(ev.type);
   };
@@ -99,7 +109,10 @@ export function WorkflowBar({ revisionId, summary, bill, onChanged }: WorkflowBa
         <dl className="wf-facts">
           <dt>State</dt>
           <dd>
-            <span className={`status status-${state.replace('.', '-')}`}>{stateLabel}</span>
+            <span className={`status status-${state.replace('.', '-')}`} title={STATE_HINTS[state]}>
+              {stateLabel}
+            </span>
+            {STATE_HINTS[state] && <span className="muted small state-hint"> {STATE_HINTS[state]}</span>}
             {view && view.execChain.length > 0 && state.startsWith('exec_review') && <span className="muted"> step {Math.min(view.execIndex + 1, view.execChain.length)} of {view.execChain.length}</span>}
           </dd>
           <dt>Due</dt>
@@ -187,7 +200,13 @@ export function WorkflowBar({ revisionId, summary, bill, onChanged }: WorkflowBa
         <form className="wf-dialog" onSubmit={submitDialog} aria-labelledby="wf-dialog-h">
           <h2 id="wf-dialog-h">{dialog.label}</h2>
           <label htmlFor="wf-comment">Comment{COMMENT_REQUIRED.has(dialog.event) ? ' (required)' : ' (optional)'}</label>
-          <textarea id="wf-comment" rows={3} value={comment} onChange={(e) => setComment(e.target.value)} autoFocus />
+          {(dialog.event === 'REQUEST_CHANGES' || dialog.event === 'EXEC_RETURN') && (
+            <p className="muted small wf-hint">
+              Lines that start with “-” or “1.” become items the drafter checks off one by one.
+              {openThreads > 0 ? ` The ${openThreads} open comment thread${openThreads === 1 ? '' : 's'} on the text will be attached as items too.` : ' Comment threads on the text, if any, are attached as items too.'}
+            </p>
+          )}
+          <textarea id="wf-comment" rows={dialog.event === 'REQUEST_CHANGES' || dialog.event === 'EXEC_RETURN' ? 5 : 3} value={comment} onChange={(e) => setComment(e.target.value)} autoFocus placeholder={dialog.event === 'REQUEST_CHANGES' ? 'Summary of what needs to change\n- First item\n- Second item' : undefined} />
           <div className="row">
             <button type="submit" disabled={busy}>
               {dialog.label}
@@ -337,7 +356,7 @@ function HistoryPanel({ revisionId, version }: { revisionId: string; version: nu
     <section className="history-panel" aria-labelledby="history-h">
       <h2 id="history-h">Transition history</h2>
       {log.error && <p role="alert">{log.error.message}</p>}
-      <ol className="transitions">
+      <ol className="transitions" tabIndex={0} aria-label="Transitions, scrolls">
         {(log.data ?? []).map((t) => (
           <li key={t.seq}>
             <span className="seq">#{t.seq}</span> <strong>{t.event.replace(/_/g, ' ').toLowerCase()}</strong> · {STATE_LABELS[t.fromState] ?? t.fromState} → {STATE_LABELS[t.toState] ?? t.toState} · {t.actorName ?? t.actorId} · {fmtWhen(t.occurredAt)}
@@ -347,7 +366,7 @@ function HistoryPanel({ revisionId, version }: { revisionId: string; version: nu
         {log.data && log.data.length === 0 && <li className="muted">No transitions yet.</li>}
       </ol>
       <h3>Audit trail</h3>
-      <ol className="audit-rows">
+      <ol className="audit-rows" tabIndex={0} aria-label="Audit rows, scrolls">
         {(audit.data ?? []).slice(0, 60).map((a) => (
           <li key={a.id}>
             <span className="seq">{fmtWhen(a.at)}</span> <strong>{a.action}</strong> · {a.actorId}

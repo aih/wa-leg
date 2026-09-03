@@ -4,7 +4,7 @@ import { BillOutline } from './BillOutline';
 import { ReadingColumn, type Annotation } from './ReadingColumn';
 import { VersionCompare } from './VersionCompare';
 import { SHORTCUTS, actionForKey, type ShortcutAction } from './shortcuts';
-import { citationString, defaultUrlBuilder, findBlock, makeCiteEvent, sectionGloss, sectionPlainText, versionShortLabel, type BillUrlBuilder } from './cite';
+import { citationString, defaultUrlBuilder, findBlock, makeCiteEvent, sectionGloss, sectionSubjectLabel, sectionPlainText, versionShortLabel, type BillUrlBuilder } from './cite';
 
 export interface SectionSelectEvent {
   sectionId: string;
@@ -436,7 +436,8 @@ export function BillViewer(props: BillViewerProps) {
                   Sec. {activeSection.num}
                 </a>
                 {activeSection.isNewSection && <span className="badge"> NEW SECTION</span>}
-                <span className="muted"> · {sectionGloss(activeSection)}</span>
+                {sectionSubjectLabel(activeSection) && <span className="section-subject"> · {sectionSubjectLabel(activeSection)}</span>}
+                {activeSection.target && <span className="muted"> · {sectionGloss(activeSection)}</span>}
               </>
             ) : (
               <span className="muted">{compare ? 'Comparison' : 'Bill'}</span>

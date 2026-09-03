@@ -7,6 +7,7 @@ import { AdminIngest } from './routes/AdminIngest';
 import { SessionProvider } from './lib/session';
 import { Shell } from './components/Shell';
 import { Home } from './routes/Home';
+import { Guide } from './routes/Guide';
 import { DrafterDashboard } from './routes/DrafterDashboard';
 import { ReviewerDashboard } from './routes/ReviewerDashboard';
 import { Inbox } from './routes/Inbox';
@@ -21,6 +22,7 @@ export function App() {
       <Routes>
         <Route element={<Shell />}>
           <Route index element={<Home />} />
+          <Route path="guide" element={<Guide />} />
           <Route path="dashboard/drafter" element={<DrafterDashboard />} />
           <Route path="dashboard/reviewer" element={<ReviewerDashboard />} />
           <Route path="bills/:biennium/:id" element={<BillPage />} />

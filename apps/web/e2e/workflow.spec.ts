@@ -53,7 +53,7 @@ test.describe.serial('workflow', () => {
     const dialog = page.getByRole('form', { name: 'Submit for review' });
     await dialog.getByLabel(/Comment/).fill('First draft ready');
     await dialog.getByRole('button', { name: 'Submit for review' }).click();
-    await expect(state(page)).toHaveText('Waiting for reviewer');
+    await expect(state(page)).toHaveText('Ready for review');
     await expect(page.locator('.save-state')).toHaveText('Read-only');
     // Drafter vocabulary on the dashboard.
     await page.goto('/dashboard/drafter');
@@ -63,7 +63,7 @@ test.describe.serial('workflow', () => {
   test('the reviewer claims, requests changes; the drafter resubmits; the reviewer approves', async ({ page }) => {
     await loginAs(page, 'dev-reviewer', '/dashboard/reviewer');
     const pending = page.locator(`section:has(#pending) tr:has(a[href="/notes/${revisionId}"])`).first();
-    await expect(pending).toContainText('Pending my review');
+    await expect(pending).toContainText('Ready for review');
     await expect(pending).toContainText('unclaimed');
     await pending.getByRole('link', { name: 'SHB 2402' }).click();
     await page.waitForURL(new RegExp(revisionId));
@@ -73,27 +73,57 @@ test.describe.serial('workflow', () => {
     const dialog = page.getByRole('form', { name: 'Request changes' });
     await dialog.getByRole('button', { name: 'Request changes' }).click();
     await expect(page.getByRole('alert')).toContainText('comment is required');
-    await dialog.getByLabel(/Comment/).fill('Please fill Part II');
+    await dialog.getByLabel(/Comment/).fill('Please fill Part II\n- Add the effective date sentence\n- Fill the cash receipts table');
     await dialog.getByRole('button', { name: 'Request changes' }).click();
     await expect(state(page)).toHaveText('Changes requested');
-    // Reviewer dashboard shows it under changes requested.
+    // Reviewer dashboard shows it under changes requested, in the same words the drafter will see.
     await page.goto('/dashboard/reviewer');
     await expect(page.locator(`section:has(#changes) tr:has(a[href="/notes/${revisionId}"])`).first()).toContainText('Changes requested');
-    // Drafter sees Address review, the comment in the inbox, and resubmits.
+    // Drafter sees the same status, the comment in the inbox, and the itemised request in the workspace.
     await loginAs(page, 'dev-drafter', '/inbox');
     await expect(page.locator('.inbox-item', { hasText: 'Please fill Part II' }).first()).toBeVisible();
     await page.goto('/dashboard/drafter');
-    await expect(page.locator(`section:has(#need-action) tr:has(a[href="/notes/${revisionId}"])`).first()).toContainText('Address review');
+    await expect(page.locator(`section:has(#need-action) tr:has(a[href="/notes/${revisionId}"])`).first()).toContainText('Changes requested');
     await page.goto(noteUrl);
     await expect(state(page)).toHaveText('Changes requested');
     await expect(page.locator('.save-state')).toHaveText('All changes saved');
+    const banner = page.locator('.banner.changes');
+    await expect(banner).toContainText('Rae Reviewer requested changes');
+    await expect(banner).toContainText('2 of 2 still open');
+    // Submitting is blocked while items are open; the bar points at the Changes tab.
+    await page.getByRole('button', { name: 'Submit for review' }).click();
+    await expect(page.getByRole('alert')).toContainText('2 change request items are still open');
+    await expect(page.getByRole('tab', { name: /Changes/ })).toHaveAttribute('aria-selected', 'true');
+    const request = page.locator('.change-request.open');
+    await expect(request.locator('.cr-summary')).toHaveText('Please fill Part II');
+    await expect(request.locator('.cr-item')).toHaveCount(2);
+    await expect(request.locator('.cr-item').first()).toContainText('Add the effective date sentence');
+    // Address each item with a note on how; then close the request with a message to the reviewer.
+    for (const [i, how] of ['Added the sentence to Part II.A', 'Filled FY 2026 and FY 2027'].entries()) {
+      const item = request.locator('.cr-item').nth(i);
+      await item.getByRole('button', { name: 'Mark addressed' }).click();
+      await item.getByRole('textbox', { name: 'How this item was addressed' }).fill(how);
+      await item.getByRole('button', { name: 'Save' }).click();
+      await expect(item).toHaveClass(/addressed/);
+      await expect(item).toContainText(how);
+    }
+    await expect(page.getByRole('tab', { name: /Changes/ })).toContainText('0 open');
+    await request.getByRole('textbox', { name: /How the request was addressed/ }).fill('Both points done; see v2.');
+    await request.getByRole('button', { name: 'Close request' }).click();
+    await expect(page.locator('.change-request.closed')).toContainText('Closed by Dana Drafter');
+    await expect(page.locator('.change-request.closed')).toContainText('Both points done; see v2.');
     await page.getByRole('button', { name: 'Submit for review' }).click();
     await page.getByRole('form', { name: 'Submit for review' }).getByRole('button', { name: 'Submit for review' }).click();
-    await expect(state(page)).toHaveText('Waiting for reviewer');
+    await expect(state(page)).toHaveText('Ready for review');
     // The assigned reviewer approves.
     await loginAs(page, 'dev-reviewer', noteUrl);
     await page.getByRole('button', { name: 'Claim review' }).click();
     await expect(state(page)).toHaveText('In review');
+    // The reviewer reads how each item was addressed before approving.
+    await page.getByRole('tab', { name: /Changes/ }).click();
+    await expect(page.locator('.change-request.closed .cr-item.addressed')).toHaveCount(2);
+    await expect(page.locator('.change-request.closed')).toContainText('Addressed by Dana Drafter');
+    await page.getByRole('tab', { name: /^(Editor|Note)$/ }).click();
     await page.getByRole('button', { name: 'Approve' }).click();
     await page.getByRole('form', { name: 'Approve' }).getByRole('button', { name: 'Approve' }).click();
     await expect(state(page)).toHaveText('Approved');

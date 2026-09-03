@@ -29,7 +29,8 @@ test.beforeAll(async ({ browser }) => {
 });
 
 const ROUTES: { path: string; user: string | null; ready: string; exclude?: string; name: string }[] = [
-  { name: 'home (anonymous)', path: '/', user: null, ready: 'text=Sign in' },
+  { name: 'home (anonymous)', path: '/', user: null, ready: 'text=How to try it' },
+  { name: 'guide', path: '/guide', user: null, ready: 'text=Walkthrough' },
   { name: 'home (viewer)', path: '/', user: 'dev-viewer', ready: 'h1' },
   { name: 'drafter dashboard', path: '/dashboard/drafter', user: 'dev-drafter', ready: 'h1' },
   { name: 'reviewer dashboard', path: '/dashboard/reviewer', user: 'dev-reviewer', ready: 'h1' },

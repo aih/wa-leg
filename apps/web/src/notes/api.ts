@@ -87,6 +87,41 @@ export interface CommentThread {
   messages: { id: string; authorId: string; authorName: string; body: string; createdAt: string }[];
 }
 
+export interface ChangeRequestItem {
+  id: string;
+  seq: number;
+  commentId: string | null;
+  threadStatus: 'open' | 'resolved' | null;
+  anchorText: string | null;
+  body: string;
+  status: 'open' | 'addressed';
+  addressedBy: string | null;
+  addressedByName?: string;
+  addressedAt: string | null;
+  resolution: string | null;
+  resolutionVersion: number | null;
+}
+
+export interface ChangeRequest {
+  id: string;
+  noteRevisionId: string;
+  transitionSeq: number | null;
+  event: string;
+  requestedBy: string;
+  requestedByName?: string;
+  requestedAt: string;
+  documentVersion: number | null;
+  summary: string;
+  status: 'open' | 'closed';
+  closedBy: string | null;
+  closedByName?: string;
+  closedAt: string | null;
+  resolution: string | null;
+  resolutionVersion: number | null;
+  openItems: number;
+  items: ChangeRequestItem[];
+}
+
 export interface LockInfo {
   holder: string;
   holderName?: string;
@@ -151,6 +186,10 @@ export const notesApi = {
     if (!res.ok) throw new ApiError(res.status, 'preview_failed', res.statusText);
     return res.text();
   },
+  changeRequests: (id: string) => api<ChangeRequest[]>(`/notes/${id}/change-requests`),
+  addressItem: (id: string, crId: string, itemId: string, resolution: string) => api<{ ok: boolean }>(`/notes/${id}/change-requests/${crId}/items/${itemId}/address`, { method: 'POST', body: { resolution } }),
+  reopenItem: (id: string, crId: string, itemId: string, reason?: string) => api<{ ok: boolean }>(`/notes/${id}/change-requests/${crId}/items/${itemId}/reopen`, { method: 'POST', body: { reason } }),
+  closeChangeRequest: (id: string, crId: string, resolution: string) => api<{ ok: boolean }>(`/notes/${id}/change-requests/${crId}/close`, { method: 'POST', body: { resolution } }),
   audit: (id: string) => api<{ id: number; actorId: string; action: string; objectType: string; objectId: string; before: unknown; after: unknown; requestId: string | null; at: string }[]>(`/notes/${id}/audit`),
   users: (role?: string) => api<{ userId: string; displayName: string; roles: string[]; divisions: string[] }[]>('/users', { query: { role } }),
 };
@@ -190,10 +229,14 @@ export function fmtTime(iso: string): string {
   return new Date(iso).toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', minute: '2-digit' });
 }
 
+/**
+ * One status vocabulary for every screen. The same note shows the same word on the drafter's dashboard, the
+ * reviewer's dashboard and the workspace bar.
+ */
 export const STATE_LABELS: Record<string, string> = {
   todo: 'To do',
   in_progress: 'In progress',
-  'review.pending': 'Waiting for reviewer',
+  'review.pending': 'Ready for review',
   'review.active': 'In review',
   changes_requested: 'Changes requested',
   'exec_review.pending': 'Waiting for executive review',
@@ -201,6 +244,20 @@ export const STATE_LABELS: Record<string, string> = {
   approved: 'Approved',
   cancelled: 'Cancelled',
   superseded: 'Superseded',
+};
+
+/** What the state means for the person reading it; shown as a hint beside the status. */
+export const STATE_HINTS: Record<string, string> = {
+  todo: 'Assigned; the drafter has not started',
+  in_progress: 'The drafter is writing',
+  'review.pending': 'Submitted; waiting for a reviewer to claim it',
+  'review.active': 'A reviewer is reading it',
+  changes_requested: 'Back with the drafter; see the Changes tab',
+  'exec_review.pending': 'Approved by the reviewer; waiting for the executive chain',
+  'exec_review.active': 'An executive reviewer is reading it',
+  approved: 'Published beside the bill',
+  cancelled: 'Withdrawn',
+  superseded: 'Replaced by a revision for a newer bill version',
 };
 
 // ---- workflow and notifications (milestone 6) ----
@@ -322,5 +379,3 @@ export function dueCountdown(iso: string | null | undefined, now = Date.now()): 
   return ms < 0 ? `Overdue by ${unit}` : `Due in ${unit}`;
 }
 
-export const DRAFTER_LABELS: Record<string, string> = { 'to-do': 'To do', 'in-progress': 'In progress', 'ready-for-review': 'Ready for review', 'address-review': 'Address review', approved: 'Approved', cancelled: 'Cancelled', superseded: 'Superseded' };
-export const REVIEWER_LABELS: Record<string, string> = { unstarted: 'Unstarted', drafting: 'Drafting', pending: 'Pending my review', 'in-review': 'In review', 'changes-requested': 'Changes requested', approved: 'Approved', cancelled: 'Cancelled', superseded: 'Superseded' };

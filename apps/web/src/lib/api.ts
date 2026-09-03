@@ -46,6 +46,6 @@ function safeJson(text: string): unknown {
   }
 }
 
-export function loginUrl(returnTo: string = window.location.pathname + window.location.search): string {
-  return `/api/v1/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
+export function loginUrl(returnTo: string = window.location.pathname + window.location.search, loginHint?: string): string {
+  return `/api/v1/auth/login?returnTo=${encodeURIComponent(returnTo)}${loginHint ? `&login_hint=${encodeURIComponent(loginHint)}` : ''}`;
 }

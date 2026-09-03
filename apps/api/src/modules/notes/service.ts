@@ -10,7 +10,7 @@ import type { Db, DbOrTx } from '../../db/client.js';
 import { badRequest, conflict, forbidden, notFound, preconditionFailed } from '../../lib/errors.js';
 import { writeAudit } from '../../lib/audit.js';
 import { emitEvent } from '../../lib/outbox.js';
-import { can, type NoteResource, type Principal } from '../identity/index.js';
+import { can, hasRole, type NoteResource, type Principal } from '../identity/index.js';
 import { buildTemplateContext, fetchBillFacts } from './context.js';
 import { readNoteState, type NoteState } from './state.js';
 
@@ -53,6 +53,41 @@ export interface NoteRevisionSummary {
   editable: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ChangeRequestItem {
+  id: string;
+  seq: number;
+  commentId: string | null;
+  threadStatus: 'open' | 'resolved' | null;
+  anchorText: string | null;
+  body: string;
+  status: 'open' | 'addressed';
+  addressedBy: string | null;
+  addressedByName?: string;
+  addressedAt: string | null;
+  resolution: string | null;
+  resolutionVersion: number | null;
+}
+
+export interface ChangeRequest {
+  id: string;
+  noteRevisionId: string;
+  transitionSeq: number | null;
+  event: string;
+  requestedBy: string;
+  requestedByName?: string;
+  requestedAt: string;
+  documentVersion: number | null;
+  summary: string;
+  status: 'open' | 'closed';
+  closedBy: string | null;
+  closedByName?: string;
+  closedAt: string | null;
+  resolution: string | null;
+  resolutionVersion: number | null;
+  openItems: number;
+  items: ChangeRequestItem[];
 }
 
 export interface NoteDocument {
@@ -515,6 +550,150 @@ export class NotesService {
   /** Everything the search indexer and the bill page need: visible revisions on a bill grouped by version. */
   async forBill(p: Principal, billKey: string): Promise<NoteRevisionSummary[]> {
     return this.listVisible(p, { billKey, page: 1, size: 100 });
+  }
+
+  // ---------- change requests ----------
+
+  /** Bullet or numbered lines of a request comment become items; the rest is the summary. */
+  static splitRequest(text: string): { summary: string; items: string[] } {
+    const lines = text.split(/\r?\n/).map((l) => l.trim());
+    const items: string[] = [];
+    const rest: string[] = [];
+    for (const l of lines) {
+      const m = /^(?:[-*•]|\d{1,2}[.)])\s+(.+)$/.exec(l);
+      if (m) items.push(m[1]!.trim());
+      else if (l) rest.push(l);
+    }
+    return { summary: rest.join('\n'), items };
+  }
+
+  /**
+   * Record what a reviewer asked for when returning the note. Called by the workflow module after REQUEST_CHANGES or
+   * EXEC_RETURN. Each bullet line of the comment and each open comment thread becomes an item; a comment with neither
+   * becomes a single item so the drafter still has something to close.
+   */
+  async recordChangeRequest(p: Principal, noteRevisionId: string, input: { transitionSeq?: number; event?: string; summary: string }, requestId: string): Promise<ChangeRequest> {
+    const { row } = await this.resource(noteRevisionId);
+    const existing = input.transitionSeq !== undefined ? ((await this.db.execute(sql`SELECT id FROM note_change_requests WHERE note_revision_id = ${noteRevisionId} AND transition_seq = ${input.transitionSeq}`)).rows[0] as { id: string } | undefined) : undefined;
+    if (existing) return (await this.listChangeRequests(noteRevisionId)).find((c) => c.id === existing.id)!;
+    const { summary, items } = NotesService.splitRequest(input.summary);
+    const threads = (await this.listComments(noteRevisionId)).filter((t) => t.status === 'open' && !t.detached);
+    const id = randomUUID();
+    await this.db.transaction(async (tx) => {
+      await tx.execute(sql`INSERT INTO note_change_requests (id, note_revision_id, transition_seq, event, requested_by, document_version, summary)
+        VALUES (${id}, ${noteRevisionId}, ${input.transitionSeq ?? null}, ${input.event ?? 'REQUEST_CHANGES'}, ${p.userId}, ${row.head_version}, ${summary || input.summary})`);
+      let seq = 0;
+      const rows: { commentId: string | null; anchor: string | null; body: string }[] = items.map((body) => ({ commentId: null, anchor: null, body }));
+      for (const t of threads) rows.push({ commentId: t.id, anchor: t.anchorText, body: t.messages[0]?.body ?? t.anchorText });
+      if (rows.length === 0) rows.push({ commentId: null, anchor: null, body: input.summary.trim() || 'Address the reviewer\u2019s request' });
+      for (const r of rows) {
+        await tx.execute(sql`INSERT INTO note_change_request_items (id, change_request_id, seq, comment_id, anchor_text, body) VALUES (${randomUUID()}, ${id}, ${++seq}, ${r.commentId}, ${r.anchor}, ${r.body})`);
+      }
+      await writeAudit(tx, { actorId: p.userId, action: 'note.change_request_open', objectType: 'note_revision', objectId: noteRevisionId, after: { changeRequestId: id, items: rows.length, transitionSeq: input.transitionSeq ?? null }, requestId });
+    });
+    return (await this.listChangeRequests(noteRevisionId)).find((c) => c.id === id)!;
+  }
+
+  async listChangeRequests(noteRevisionId: string): Promise<ChangeRequest[]> {
+    const reqs = (await this.db.execute(sql`SELECT * FROM note_change_requests WHERE note_revision_id = ${noteRevisionId} ORDER BY requested_at DESC`)).rows as any[];
+    if (reqs.length === 0) return [];
+    const items = (await this.db.execute(sql`SELECT i.*, c.status AS thread_status FROM note_change_request_items i JOIN note_change_requests r ON r.id = i.change_request_id LEFT JOIN note_comments c ON c.id = i.comment_id WHERE r.note_revision_id = ${noteRevisionId} ORDER BY i.seq`)).rows as any[];
+    const names = new Map<string, string | undefined>();
+    const nameOf = async (u: string | null): Promise<string | undefined> => {
+      if (!u) return undefined;
+      if (!names.has(u)) names.set(u, await this.userName(u));
+      return names.get(u);
+    };
+    const out: ChangeRequest[] = [];
+    for (const r of reqs) {
+      const its: ChangeRequestItem[] = [];
+      for (const i of items.filter((x) => x.change_request_id === r.id)) {
+        its.push({ id: i.id, seq: i.seq, commentId: i.comment_id ?? null, threadStatus: i.thread_status ?? null, anchorText: i.anchor_text ?? null, body: i.body, status: i.status, addressedBy: i.addressed_by ?? null, addressedByName: await nameOf(i.addressed_by ?? null), addressedAt: i.addressed_at ? iso(i.addressed_at) : null, resolution: i.resolution ?? null, resolutionVersion: i.resolution_version ?? null });
+      }
+      out.push({
+        id: r.id,
+        noteRevisionId,
+        transitionSeq: r.transition_seq ?? null,
+        event: r.event,
+        requestedBy: r.requested_by,
+        requestedByName: await nameOf(r.requested_by),
+        requestedAt: iso(r.requested_at),
+        documentVersion: r.document_version ?? null,
+        summary: r.summary,
+        status: r.status,
+        closedBy: r.closed_by ?? null,
+        closedByName: await nameOf(r.closed_by ?? null),
+        closedAt: r.closed_at ? iso(r.closed_at) : null,
+        resolution: r.resolution ?? null,
+        resolutionVersion: r.resolution_version ?? null,
+        openItems: its.filter((i) => i.status === 'open').length,
+        items: its,
+      });
+    }
+    return out;
+  }
+
+  private async changeRequestItem(noteRevisionId: string, crId: string, itemId: string): Promise<any> {
+    const i = (await this.db.execute(sql`SELECT i.* FROM note_change_request_items i JOIN note_change_requests r ON r.id = i.change_request_id WHERE i.id = ${itemId} AND r.id = ${crId} AND r.note_revision_id = ${noteRevisionId}`)).rows[0];
+    if (!i) throw notFound('Change request item');
+    return i;
+  }
+
+  /** The drafter (or whoever may edit the note) marks an item addressed, citing how; the linked thread gets a reply and is resolved. */
+  async addressChangeRequestItem(p: Principal, noteRevisionId: string, crId: string, itemId: string, input: { resolution: string }, requestId: string): Promise<void> {
+    const ctx = await this.resource(noteRevisionId);
+    const allowed = can(p, 'note.edit', ctx.res, this.canOpts()) || ctx.state.drafterId === p.userId || can(p, 'note.review', ctx.res, this.canOpts()) || hasRole(p, 'admin');
+    if (!allowed) throw forbidden('Only the drafter or a reviewer may address a change request item');
+    const item = await this.changeRequestItem(noteRevisionId, crId, itemId);
+    const version = Number(ctx.row.head_version);
+    await this.db.transaction(async (tx) => {
+      await tx.execute(sql`UPDATE note_change_request_items SET status = 'addressed', addressed_by = ${p.userId}, addressed_at = now(), resolution = ${input.resolution}, resolution_version = ${version} WHERE id = ${itemId}`);
+      if (item.comment_id) {
+        await tx.execute(sql`INSERT INTO note_comment_messages (id, comment_id, author_id, body) VALUES (${`m_${randomUUID()}`}, ${item.comment_id}, ${p.userId}, ${`Addressed in version ${version}: ${input.resolution}`})`);
+        await tx.execute(sql`UPDATE note_comments SET status = 'resolved', resolved_by = ${p.userId}, resolved_at = now() WHERE id = ${item.comment_id}`);
+      }
+      await writeAudit(tx, { actorId: p.userId, action: 'note.change_request_item_addressed', objectType: 'note_revision', objectId: noteRevisionId, after: { changeRequestId: crId, itemId, version }, requestId });
+    });
+  }
+
+  /** Reopen an item (the reviewer is not satisfied, or the drafter changed their mind). */
+  async reopenChangeRequestItem(p: Principal, noteRevisionId: string, crId: string, itemId: string, input: { reason?: string }, requestId: string): Promise<void> {
+    const ctx = await this.resource(noteRevisionId);
+    const allowed = ctx.state.drafterId === p.userId || can(p, 'note.assign') || can(p, 'note.review', ctx.res, this.canOpts());
+    if (!allowed) throw forbidden('Only the drafter or a reviewer may reopen a change request item');
+    const item = await this.changeRequestItem(noteRevisionId, crId, itemId);
+    await this.db.transaction(async (tx) => {
+      await tx.execute(sql`UPDATE note_change_request_items SET status = 'open', addressed_by = NULL, addressed_at = NULL, resolution = NULL, resolution_version = NULL WHERE id = ${itemId}`);
+      await tx.execute(sql`UPDATE note_change_requests SET status = 'open', closed_by = NULL, closed_at = NULL WHERE id = ${crId}`);
+      if (item.comment_id) {
+        await tx.execute(sql`UPDATE note_comments SET status = 'open', resolved_by = NULL, resolved_at = NULL WHERE id = ${item.comment_id}`);
+        if (input.reason) await tx.execute(sql`INSERT INTO note_comment_messages (id, comment_id, author_id, body) VALUES (${`m_${randomUUID()}`}, ${item.comment_id}, ${p.userId}, ${`Reopened: ${input.reason}`})`);
+      }
+      await writeAudit(tx, { actorId: p.userId, action: 'note.change_request_item_reopened', objectType: 'note_revision', objectId: noteRevisionId, after: { changeRequestId: crId, itemId, reason: input.reason ?? null }, requestId });
+    });
+  }
+
+  /** Close the request once every item is addressed; the resolution is the drafter's note to the reviewer. */
+  async closeChangeRequest(p: Principal, noteRevisionId: string, crId: string, input: { resolution: string }, requestId: string): Promise<void> {
+    const ctx = await this.resource(noteRevisionId);
+    const allowed = ctx.state.drafterId === p.userId || can(p, 'note.assign') || hasRole(p, 'admin');
+    if (!allowed) throw forbidden('Only the drafter or an assigner may close a change request');
+    const cr = (await this.db.execute(sql`SELECT id, status FROM note_change_requests WHERE id = ${crId} AND note_revision_id = ${noteRevisionId}`)).rows[0] as { id: string; status: string } | undefined;
+    if (!cr) throw notFound('Change request');
+    const open = (await this.db.execute(sql`SELECT count(*)::int AS n FROM note_change_request_items WHERE change_request_id = ${crId} AND status = 'open'`)).rows[0] as { n: number };
+    if (Number(open.n) > 0) throw conflict('change_request_items_open', `${open.n} item(s) are still open; address each one before closing the request`, { openItems: Number(open.n) });
+    const version = Number(ctx.row.head_version);
+    await this.db.transaction(async (tx) => {
+      await tx.execute(sql`UPDATE note_change_requests SET status = 'closed', closed_by = ${p.userId}, closed_at = now(), resolution = ${input.resolution}, resolution_version = ${version} WHERE id = ${crId}`);
+      await writeAudit(tx, { actorId: p.userId, action: 'note.change_request_close', objectType: 'note_revision', objectId: noteRevisionId, after: { changeRequestId: crId, version }, requestId });
+    });
+  }
+
+  /** Counts the workflow module checks before letting the drafter resubmit. */
+  async changeRequestStatus(noteRevisionId: string): Promise<{ openRequestId: string | null; openItems: number }> {
+    const r = (await this.db.execute(sql`SELECT r.id, (SELECT count(*)::int FROM note_change_request_items i WHERE i.change_request_id = r.id AND i.status = 'open') AS open_items
+      FROM note_change_requests r WHERE r.note_revision_id = ${noteRevisionId} AND r.status = 'open' ORDER BY r.requested_at DESC LIMIT 1`)).rows[0] as { id: string; open_items: number } | undefined;
+    return { openRequestId: r?.id ?? null, openItems: Number(r?.open_items ?? 0) };
   }
 
   async templateContext(noteRevisionId: string, p: Principal) {

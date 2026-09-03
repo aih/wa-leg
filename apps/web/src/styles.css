@@ -53,6 +53,21 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 .main { flex: 1; padding: 1rem 1.25rem 3rem; max-width: 80rem; width: 100%; margin: 0 auto; }
 .main:has(> .bill-page) { max-width: none; padding: 0; }
 .hero { max-width: 44rem; }
+.landing .lede { font-size: 1.1rem; max-width: 44rem; }
+.landing-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1rem 2.5rem; }
+.landing ul, .guide ul, .guide ol { padding-left: 1.2rem; }
+.landing li, .guide li { margin: .3rem 0; }
+.personas { display: grid; grid-template-columns: max-content 1fr; gap: .3rem 1rem; margin: 0; }
+.personas dt { font-weight: 600; }
+.personas dd { margin: 0; }
+.guide { max-width: 56rem; }
+.guide-toc { font-size: .9rem; color: var(--muted); margin-bottom: 1rem; }
+.guide h2 { margin-top: 1.8rem; }
+.guide h3 { font-size: 1rem; margin: 1rem 0 .3rem; }
+.guide-table td, .guide-table th { font-size: .92rem; }
+.try-steps { margin-top: .8rem; }
+.landing code, .guide code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; background: var(--surface); border: 1px solid var(--line); border-radius: 3px; padding: 0 .3em; }
+@media (max-width: 40em) { .personas { grid-template-columns: 1fr; } }
 .muted { color: var(--muted); }
 h1 { font-size: 1.6rem; margin: .4rem 0 .8rem; }
 h2 { font-size: 1.15rem; margin: 1.4rem 0 .5rem; }

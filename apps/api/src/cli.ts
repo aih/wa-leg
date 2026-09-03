@@ -35,6 +35,25 @@ db.command('seed')
     }
   });
 
+const demo = program.command('demo').description('Demo scenario');
+demo
+  .command('seed')
+  .description('Create ten notes on ten different bills, one per workflow state, as the test users (docs/DEMO.md)')
+  .option('--reset', 'Delete every existing note, workflow instance and notification first')
+  .action(async (o: { reset?: boolean }) => {
+    const { buildApp } = await import('./app.js');
+    const { seedDemo } = await import('./db/demo.js');
+    const cfg = loadConfig({ LOG_LEVEL: 'warn' });
+    const app = await buildApp({ config: cfg, workers: false });
+    await app.ready();
+    try {
+      const res = await seedDemo(app, { reset: o.reset, log: (m) => console.log(m) });
+      console.log(`${res.notes.length} note(s) created${res.skipped.length ? `; skipped: ${res.skipped.join(', ')}` : ''}`);
+    } finally {
+      await app.close();
+    }
+  });
+
 const ingest = program.command('ingest').description('Load and refresh bill data');
 ingest
   .command('legiscan <dir>')

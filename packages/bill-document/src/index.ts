@@ -7,3 +7,4 @@ export { textHash, sectionText, blockText, runsText, sha256, normalizeSpace, cha
 export { parseTitle, citesIn, rcwHref, RCW_BASE } from './title.js';
 export * from './diffdoc.js';
 export { validateBillDocument, validateAmendmentDocument } from './validate.js';
+export { sectionSubject, paraphrase, cleanCaption, type SectionSubject } from './subject.js';

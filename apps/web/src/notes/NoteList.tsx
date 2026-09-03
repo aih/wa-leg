@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import { fmtWhen, STATE_LABELS, type NoteSummary } from './api';
 
 /** Compact table of note revisions with links into the workspace. */
-export function NoteList({ notes, empty = 'No notes.', showBill = true, vocabulary = 'drafter' }: { notes: NoteSummary[]; empty?: string; showBill?: boolean; vocabulary?: 'drafter' | 'reviewer' }) {
+export function NoteList({ notes, empty = 'No notes.', showBill = true }: { notes: NoteSummary[]; empty?: string; showBill?: boolean; vocabulary?: 'drafter' | 'reviewer' }) {
   if (notes.length === 0) return <p className="muted">{empty}</p>;
   return (
     <table className="note-list">
@@ -27,8 +27,7 @@ export function NoteList({ notes, empty = 'No notes.', showBill = true, vocabula
             )}
             <td>{showBill ? n.kind : <Link to={`/notes/${n.noteRevisionId}`}>{n.versionLabel} {n.kind}</Link>}</td>
             <td>
-              <span className={`status status-${n.state.replace('.', '-')}`}>{vocabulary === 'reviewer' ? n.reviewerStatus : n.drafterStatus}</span>
-              <span className="visually-hidden"> ({STATE_LABELS[n.state] ?? n.state})</span>
+              <span className={`status status-${n.state.replace('.', '-')}`}>{STATE_LABELS[n.state] ?? n.state}</span>
             </td>
             <td>{n.drafter?.displayName ?? n.drafter?.userId ?? '—'}</td>
             <td>{n.effectiveDueAt ? fmtWhen(n.effectiveDueAt) : '—'}</td>

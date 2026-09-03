@@ -29,6 +29,7 @@ export function Shell() {
           {hasRole('template_editor', 'admin') && <NavLink to="/admin/templates">Templates</NavLink>}
           {hasRole('admin') && <NavLink to="/admin/ingest">Ingest</NavLink>}
           {hasRole('admin', 'manager') && <NavLink to="/admin/audit">Audit</NavLink>}
+          <NavLink to="/guide">Guide</NavLink>
         </nav>
         <div className="session">
           {loading ? (

@@ -114,8 +114,16 @@ describe('workflow: the review cycle', () => {
     expect((await inbox(users.drafter)).some((n) => n.type === 'note.changes_requested' && /Fix the FTE table/.test(n.body))).toBe(true);
     const mine = (await t.app.inject({ method: 'GET', url: '/api/v1/assignments?role=drafter', headers: await t.as(users.drafter) })).json();
     expect(mine.find((r: any) => r.noteRevisionId === noteId).status).toBe('address-review');
+    // The comment became a one-item change request; resubmitting waits for it to be addressed.
+    const blocked = await send(users.drafter, 'SUBMIT_FOR_REVIEW');
+    expect(blocked.statusCode).toBe(409);
+    expect(blocked.json().code).toBe('change_request_open');
+    const [cr] = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/change-requests`, headers: await t.as(users.drafter) })).json();
+    expect(cr.items.map((i: any) => i.body)).toEqual(['Fix the FTE table']);
+    expect((await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/change-requests/${cr.id}/items/${cr.items[0].id}/address`, headers: await t.as(users.drafter), payload: { resolution: 'FTE table corrected' } })).statusCode).toBe(200);
     const again = await send(users.drafter, 'SUBMIT_FOR_REVIEW');
     expect(again.json().state).toBe('review.pending');
+    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/change-requests`, headers: await t.as(users.reviewer) })).json()[0].status).toBe('closed');
     await drain();
     // The assigned reviewer keeps the review and is the one notified.
     expect((await workflow(users.reviewer)).reviewerId).toBe('dev-reviewer');

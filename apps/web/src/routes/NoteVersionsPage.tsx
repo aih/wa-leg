@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { docToHtml } from '@wa-leg/note-schema';
 import { RequireRole } from '../components/RequireRole';
 import { fmtWhen, notesApi, useResource, type NoteDiff, type NoteDocument } from '../notes/api';
@@ -9,10 +9,12 @@ import '../notes/notes.css';
 export function NoteVersionsPage() {
   const { revisionId } = useParams();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const summary = useResource(revisionId ? () => notesApi.summary(revisionId) : null, [revisionId]);
   const versions = useResource(revisionId ? () => notesApi.versions(revisionId) : null, [revisionId]);
-  const [from, setFrom] = useState<number | null>(null);
-  const [to, setTo] = useState<number | null>(null);
+  // A change request links here with ?from=&to= to show the edits that answered it.
+  const [from, setFrom] = useState<number | null>(params.get('from') ? Number(params.get('from')) : null);
+  const [to, setTo] = useState<number | null>(params.get('to') ? Number(params.get('to')) : null);
   const [diff, setDiff] = useState<NoteDiff | null>(null);
   const [view, setView] = useState<NoteDocument | null>(null);
   const [busy, setBusy] = useState(false);

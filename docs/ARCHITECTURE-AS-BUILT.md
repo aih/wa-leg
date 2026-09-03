@@ -26,7 +26,7 @@ with a system token) or the event bus.
 | identity | `users` | `/me`, `/users`, `/auth/*` | | |
 | bills | `bills`, `bill_versions`, `amendments`, `hearings`, `prior_fiscal_notes`, `ingest_runs` | `/bills/*`, `/hearings`, `/admin/ingest/*` | | `bill.created`, `bill.version_added`, `bill.amendment_added`, `bill.status_changed`, `hearing.*` |
 | search | `search_docs` (fallback) | `/search`, `/search/suggest`, `/search/reindex` | bill and note events | |
-| notes | `notes`, `note_revisions`, `note_documents`, `note_comments`, `note_comment_messages`, `note_locks`, `note_exports` | `/notes/*`, `/bills/{b}/{id}/notes`, `/export-jobs/*` | `bill.version_added`, `note.approved` | `note.created`, `note.revision_created`, `note.document_saved`, `fiscal_note.requested`, `note.exported` |
+| notes | `notes`, `note_revisions`, `note_documents`, `note_comments`, `note_comment_messages`, `note_change_requests`, `note_change_request_items`, `note_locks`, `note_exports` | `/notes/*` (including `/notes/{id}/change-requests/*`), `/bills/{b}/{id}/notes`, `/export-jobs/*` | `bill.version_added`, `note.approved` | `note.created`, `note.revision_created`, `note.document_saved`, `fiscal_note.requested`, `note.exported` |
 | templates | `templates` | `/templates/*` | | |
 | reference | `reference_sets` | `/reference/*` | | |
 | workflow | `workflow_instances`, `workflow_transitions`, `workflow_assignments`, `workflow_deadlines` | `/notes/{id}/workflow`, `/notes/{id}/transitions`, `/notes/{id}/assign`, `/notes/{id}/exec-chain`, `/assignments`, `/workflow/*` | `fiscal_note.requested`, `note.revision_created`, `note.document_saved`, `hearing.*` | `note.transitioned`, `note.assigned`, `note.due_soon`, `note.overdue`, `note.approved`, `note.superseded` |
@@ -38,7 +38,7 @@ with a system token) or the event bus.
 | Package | Contents |
 |---|---|
 | `billref` | Bill reference parser and labels; version codes (`I` for introduced) |
-| `bill-document` | Bill Document schema, XML and HTM parsers, section identity, two-pass diff, JSON schemas, fixture corpus |
+| `bill-document` | Bill Document schema, XML and HTM parsers, section identity, two-pass diff, section subjects (`sectionSubject`: RCW caption or a paraphrase of a new section's first sentence), JSON schemas, fixture corpus |
 | `note-schema` | Tiptap extensions for both modes, template loader, computed-cell evaluator, estimate extractor, validator, diff, HTML |
 | `workflow-machine` | XState v5 machine, vocabularies, pure `step` and `can` |
 | `api-client` | `openapi-fetch` client typed from the generated schema |
@@ -57,6 +57,14 @@ with a system token) or the event bus.
   query. Facets run as a size-0 OpenSearch request so its request cache applies.
 - Autosaves reindex only the note document; the bill document is reindexed when a note's status or assignees
   change.
+- Change requests are a notes-module object rather than part of the workflow snapshot. The workflow module
+  records one after `REQUEST_CHANGES` or `EXEC_RETURN` through `POST /notes/{id}/change-requests` (items from
+  the comment's bullet lines and the open comment threads) and refuses `SUBMIT_FOR_REVIEW` while a request
+  has open items.
+- One status vocabulary is shown to every role. The machine still exposes `drafterStatus` and
+  `reviewerStatus`, and `GET /assignments` still filters by them, but the web app labels rows from the state.
+- `wa-leg demo seed` (`apps/api/src/db/demo.ts`) builds the demo scenario through the HTTP API as the test
+  users; `docs/DEMO.md` describes the result.
 
 Open questions the design marked unverified are listed in `OPEN-ITEMS.md`.
 

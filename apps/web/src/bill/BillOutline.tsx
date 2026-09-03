@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import type { BillDocument } from '@wa-leg/bill-document/browser';
-import { sectionGloss, sectionPlainText, type BillUrlBuilder } from './cite';
+import { sectionGloss, sectionPlainText, sectionSubjectLabel, type BillUrlBuilder } from './cite';
 
 interface Props {
   document: BillDocument;
@@ -21,7 +21,7 @@ export function BillOutline({ document, activeSectionId, changedSectionIds, amen
   const [query, setQuery] = useState('');
   const texts = useMemo(() => new Map(document.sections.map((s) => [s.id, sectionPlainText(s).toLowerCase()])), [document]);
   const q = query.trim().toLowerCase();
-  const matches = q ? document.sections.filter((s) => texts.get(s.id)?.includes(q) || sectionGloss(s).toLowerCase().includes(q)) : document.sections;
+  const matches = q ? document.sections.filter((s) => texts.get(s.id)?.includes(q) || sectionGloss(s).toLowerCase().includes(q) || (sectionSubjectLabel(s)?.toLowerCase().includes(q) ?? false)) : document.sections;
   const changed = new Set(changedSectionIds ?? []);
   const amended = new Set(amendedSectionIds ?? []);
   const submit = (e: FormEvent) => {
@@ -43,7 +43,10 @@ export function BillOutline({ document, activeSectionId, changedSectionIds, amen
       </form>
       <ol className="outline-list">
         {matches.map((s) => {
+          const subject = sectionSubjectLabel(s);
+          // The action ("amends RCW 82.04.260") stays as a second line unless the subject already says it.
           const gloss = sectionGloss(s);
+          const showGloss = gloss && !!s.target && (subject ?? '').replace(/^\[|\]$/g, '').toLowerCase() !== gloss.toLowerCase();
           const count = annotationCounts?.[s.id];
           return (
             <li key={s.id} className={`outline-item kind-${s.kind}${changed.has(s.id) ? ' changed' : ''}${amended.has(s.id) ? ' amended' : ''}`}>
@@ -55,11 +58,19 @@ export function BillOutline({ document, activeSectionId, changedSectionIds, amen
                   onSelect?.(s.id, 'click');
                 }}
               >
-                <span className="outline-num">Sec. {s.num}</span>
-                {gloss && <span className="outline-gloss"> {gloss}</span>}
+                <span className="outline-num">
+                  {s.isNewSection && (
+                    <i className="outline-new" title="New section (not an amendment of existing law)">
+                      NEW SECTION{' '}
+                    </i>
+                  )}
+                  Sec. {s.num}
+                </span>
                 {changed.has(s.id) && <span className="dot" aria-label="changed in this comparison" />}
                 {amended.has(s.id) && <span className="dot dot-amend" aria-label="amended by the overlay" />}
                 {count ? <span className="count" aria-label={`${count} annotations`}>{count}</span> : null}
+                {subject && <span className="outline-subject">{subject}</span>}
+                {showGloss && <span className="outline-gloss">{gloss}</span>}
               </a>
             </li>
           );

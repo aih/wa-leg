@@ -31,7 +31,8 @@ pnpm wa-leg db seed
 pnpm dev                        # API on 4800, web on 5173, dev OIDC on 4801
 ```
 
-Open http://localhost:5173 and sign in. The dev issuer lists the test users:
+Open http://localhost:5173. The landing page explains the tool, the personas and how to test it; `/guide` is the
+walkthrough. The dev issuer lists the test users:
 
 | User | Roles |
 |---|---|
@@ -47,10 +48,20 @@ Open http://localhost:5173 and sign in. The dev issuer lists the test users:
 
 `?login_hint=dev-drafter` on `/api/v1/auth/login` skips the picker.
 
+## Demo data
+
+`pnpm wa-leg demo seed` creates ten notes on ten different bills, one in each workflow state, as the test users
+(`--reset` deletes existing notes first). The bills it needs are HB 1004, HB 1016, HB 1019, HB 1043, HB 1044,
+HB 1047, HB 2081, HB 2402, SB 5814 and SB 6137; `docs/DEMO.md` lists what each note shows. The seed drives the
+HTTP API, so every note carries its transitions, notifications, audit rows and, where a reviewer returned it, a
+change request.
+
 ## Drafting a note
 
 1. Sign in as Rae Reviewer, open a bill (`/bills/2025-26/HB2402/S`), and use **New fiscal note** beside the text:
-   choose the bill version, a template, and the drafter.
+   choose the bill version, a template, and the drafter. The outline on the left names each section: the RCW
+   caption for amendatory and repealing sections, a bracketed paraphrase of the first sentence for new sections
+   (`packages/bill-document` `sectionSubject`), with *NEW SECTION* before the number.
 2. Sign in as Dana Drafter and open the note from the drafter dashboard. The workspace shows the bill on the
    left and the editor on the right. Unfilled slots carry a dashed outline and their hint; `Tab` moves to the
    next slot (inside a table, to the next cell) and `Ctrl+]` to the next unfilled one. Computed cells and
@@ -68,11 +79,28 @@ Open http://localhost:5173 and sign in. The dev issuer lists the test users:
 ## Review workflow
 
 Each note revision has one workflow instance (`todo`, `in_progress`, `review.pending`, `review.active`,
-`changes_requested`, `exec_review.pending`, `exec_review.active`, `approved`, `cancelled`, `superseded`). The
-workspace bar shows the state, the due countdown with its band as text, the assignees, and the buttons the
-signed-in user may press: the drafter starts and submits; a reviewer claims, requests changes (a comment is
-required) or approves; an approver in the Executive Review chain claims, completes or returns each step in
-order. Assigners (reviewer, manager, admin) use **Assign** to set the drafter, reassign, or set the chain.
+`changes_requested`, `exec_review.pending`, `exec_review.active`, `approved`, `cancelled`, `superseded`). Every
+screen labels a state with the same word (To do, In progress, Ready for review, In review, Changes requested,
+Waiting for executive review, In executive review, Approved, Cancelled, Superseded); hovering the status shows
+what it means. The workspace bar shows the state, the due countdown with its band as text, the assignees, and
+the buttons the signed-in user may press: the drafter starts and submits; a reviewer claims, requests changes
+(a comment is required) or approves; an approver in the Executive Review chain claims, completes or returns
+each step in order. Assigners (reviewer, manager, admin) use **Assign** to set the drafter, reassign, or set
+the chain.
+
+### Change requests
+
+**Request changes** (and **Return to drafter** from executive review) records a change request. Lines of the
+comment that start with `-`, `*` or `1.` become items; each open comment thread on the text becomes an item
+linked to that thread; a comment with neither becomes a single item. The workspace shows a banner naming the
+reviewer, the date and the count of open items, and a **Changes** tab with the request. The drafter marks each
+item addressed with a note on what changed (the linked thread receives that note and is resolved), then closes
+the request with a message to the reviewer. **Submit for review** is refused (`409 change_request_open`)
+while items are open; a request left open with no open items is closed with the submit comment. Closed
+requests keep every resolution, the document version each cites, and a link to the version comparison. A
+reviewer or the drafter can reopen an item, which reopens its thread and the request. Endpoints:
+`GET /notes/{id}/change-requests`, `POST .../items/{itemId}/address`, `POST .../items/{itemId}/reopen`,
+`POST .../{crId}/close`.
 
 Deadlines: the statutory clock (request time + 72 hours, `STATUTORY_HOURS`), the hearing cutoff (next hearing
 minus `HEARING_LEAD_HOURS`), and a per-assignment due time. A poller (`DEADLINE_POLL_MS`) emits due-soon and
@@ -114,6 +142,7 @@ pnpm load                       # autocannon against the running API; writes doc
 ```
 
 `docs/` holds the as-built architecture notes, the demo script, the load-test results, and the open items.
+`pnpm wa-leg demo seed --reset` rebuilds the demo notes.
 The admin pages are `/admin/audit` (admin, manager), `/admin/ingest` (admin) and `/admin/templates`
 (template_editor). `pnpm wa-leg token --user dev-viewer` prints a bearer token for scripts.
 
