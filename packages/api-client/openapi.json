@@ -4096,7 +4096,7 @@
     },
     "/notes/{id}/export": {
       "post": {
-        "summary": "Export a document version as docx, pdf, xml (FNS placeholder), or html",
+        "summary": "Export a document version as docx, pdf, xml (FNS placeholder), or html. Viewers and anonymous callers (PUBLISHED_PUBLIC) get the published version.",
         "tags": [
           "notes"
         ],
@@ -4720,6 +4720,162 @@
                     "properties": {},
                     "additionalProperties": {}
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/published": {
+      "get": {
+        "summary": "Published fiscal notes, newest first, with export URLs. Paged by limit and cursor.",
+        "tags": [
+          "published"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "default": 50,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "cursor",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "revisionId": {
+                            "type": "string"
+                          },
+                          "bill": {
+                            "type": "object",
+                            "properties": {
+                              "biennium": {
+                                "type": "string"
+                              },
+                              "billId": {
+                                "type": "string"
+                              },
+                              "number": {
+                                "type": "string"
+                              },
+                              "title": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "biennium",
+                              "billId",
+                              "number",
+                              "title"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "versionCode": {
+                            "type": "string"
+                          },
+                          "versionLabel": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "publishedAt": {
+                            "type": "string"
+                          },
+                          "publishedBy": {
+                            "type": "object",
+                            "properties": {
+                              "userId": {
+                                "type": "string"
+                              },
+                              "displayName": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "userId",
+                              "displayName"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "publishedVersion": {
+                            "type": "number"
+                          },
+                          "exports": {
+                            "type": "object",
+                            "properties": {
+                              "pdf": {
+                                "type": "string"
+                              },
+                              "docx": {
+                                "type": "string"
+                              },
+                              "html": {
+                                "type": "string"
+                              },
+                              "xml": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "pdf",
+                              "docx",
+                              "html",
+                              "xml"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "revisionId",
+                          "bill",
+                          "versionCode",
+                          "versionLabel",
+                          "title",
+                          "publishedAt",
+                          "publishedBy",
+                          "publishedVersion",
+                          "exports"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "nextCursor": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "nextCursor"
+                  ],
+                  "additionalProperties": false
                 }
               }
             }

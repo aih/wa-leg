@@ -26,6 +26,17 @@ export const CONTENT_TYPES: Record<ExportFormat, string> = {
   xml: 'application/xml; charset=utf-8',
 };
 
+/** `HB2402-S-fiscal-note.pdf`; an introduced version (`I`) has no version suffix: `HB1004-fiscal-note.pdf`. */
+export function exportFilename(billId: string, versionCode: string, format: ExportFormat): string {
+  const stem = versionCode && versionCode !== 'I' ? `${billId}-${versionCode}` : billId;
+  return `${stem}-fiscal-note.${format}`;
+}
+
+/** `September 3, 2026` in Olympia's time zone. */
+export function publishedDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
 export interface ExportResult {
   exportId: string;
   format: ExportFormat;
@@ -44,22 +55,30 @@ export class ExportService {
     private readonly notes: NotesService,
   ) {}
 
-  /** Render and store one export. Viewers get the approved snapshot; editors default to the head. */
-  async export(p: Principal, noteRevisionId: string, opts: { format: ExportFormat; version?: number; comments?: boolean; strict?: boolean }, requestId: string): Promise<ExportResult> {
-    const ctx = await this.notes.assertCan(p, 'note.export', noteRevisionId, requestId);
+  /**
+   * Render and store one export. Drafters and reviewers get the head version, the approved version of an
+   * approved note, or the published version of a published note. Viewers and anonymous callers get the
+   * published version of a published note and 404 otherwise.
+   */
+  async export(p: Principal | null, noteRevisionId: string, opts: { format: ExportFormat; version?: number; comments?: boolean; strict?: boolean }, requestId: string): Promise<ExportResult> {
+    const participant = !!p && (p.roles.includes('admin') || p.roles.includes('reviewer') || p.roles.includes('drafter'));
+    const ctx = participant ? await this.notes.assertCan(p!, 'note.export', noteRevisionId, requestId) : await this.notes.resource(noteRevisionId);
+    if (!participant && ctx.state.state !== 'published') throw notFound('Published note');
     const summary = await this.notes.summary(noteRevisionId, ctx);
-    const participant = p.roles.includes('admin') || p.roles.includes('reviewer') || summary.drafter?.userId === p.userId;
+    const frozen = summary.state === 'published' ? summary.publishedVersion : summary.state === 'approved' ? summary.approvedVersion : null;
     let version = opts.version;
-    if (version === undefined) version = participant ? summary.headVersion : (summary.approvedVersion ?? undefined);
-    if (version === undefined) throw notFound('Approved version');
-    if (!participant && summary.approvedVersion !== null && version !== summary.approvedVersion) throw forbidden('Only the approved version is available');
+    if (version === undefined) version = participant ? (frozen ?? summary.headVersion) : (summary.publishedVersion ?? undefined);
+    if (version === undefined) throw notFound('Published version');
+    if (!participant && version !== summary.publishedVersion) throw forbidden('Only the published version is available');
+    const actorId = p?.userId ?? 'anonymous';
     const stored = await this.notes.getDocument(noteRevisionId, version);
     const doc = recompute(stored.doc as PMNode).doc;
     const missing = unfilledSlots(doc);
     if ((opts.strict || opts.format === 'xml') && missing.length) throw unprocessable('unfilled_slots', `${missing.length} required slot(s) are empty`, { unfilledSlots: missing });
-    const facts = await this.notes.billFacts(summary.billKey, p);
+    const facts = await this.notes.billFacts(summary.billKey, p ?? undefined);
     const title = `${summary.versionLabel} Fiscal Note`;
-    const footer = ['Form FN (Rev 1/00)', `Bill # ${summary.versionLabel}`, 'FNS062 Department of Revenue Fiscal Note'].join('   ');
+    const published = summary.state === 'published' && summary.publishedAt ? `Published ${publishedDate(summary.publishedAt)}` : null;
+    const footer = ['Form FN (Rev 1/00)', `Bill # ${summary.versionLabel}`, 'FNS062 Department of Revenue Fiscal Note', published].filter(Boolean).join('   ');
     const comments = opts.comments ? await this.commentMap(noteRevisionId) : undefined;
     let body: Buffer;
     switch (opts.format) {
@@ -73,7 +92,7 @@ export class ExportService {
         break;
       }
       case 'docx':
-        body = await docToDocx(doc, { title, billNumber: summary.versionLabel, comments });
+        body = await docToDocx(doc, { title, billNumber: summary.versionLabel, identifier: published, comments });
         break;
       case 'xml': {
         const estimate = extractEstimateData(doc);
@@ -94,12 +113,12 @@ export class ExportService {
     mkdirSync(dir, { recursive: true });
     const path = join(dir, `${exportId}.${opts.format}`);
     writeFileSync(path, body);
-    const filename = `${summary.versionLabel.replace(/\s+/g, '_')}_fiscal_note_v${version}.${opts.format}`;
+    const filename = exportFilename(summary.billId, summary.versionCode, opts.format);
     await this.db.transaction(async (tx) => {
       await tx.execute(sql`INSERT INTO note_exports (id, note_revision_id, format, document_version, status, path, content_type, size_bytes, created_by)
-        VALUES (${exportId}, ${noteRevisionId}, ${opts.format}, ${version}, 'done', ${path}, ${CONTENT_TYPES[opts.format]}, ${body.length}, ${p.userId})`);
-      await writeAudit(tx, { actorId: p.userId, action: 'note.export', objectType: 'note_revision', objectId: noteRevisionId, after: { exportId, format: opts.format, version, comments: !!opts.comments, bytes: body.length }, requestId });
-      await emitEvent(tx, 'note.exported', { noteRevisionId, exportId, format: opts.format, version, actorId: p.userId });
+        VALUES (${exportId}, ${noteRevisionId}, ${opts.format}, ${version}, 'done', ${path}, ${CONTENT_TYPES[opts.format]}, ${body.length}, ${actorId})`);
+      await writeAudit(tx, { actorId, action: 'note.export', objectType: 'note_revision', objectId: noteRevisionId, after: { exportId, format: opts.format, version, comments: !!opts.comments, bytes: body.length }, requestId });
+      await emitEvent(tx, 'note.exported', { noteRevisionId, exportId, format: opts.format, version, actorId });
     });
     this.app.bus.kick();
     return { exportId, format: opts.format, version, filename, contentType: CONTENT_TYPES[opts.format], body };

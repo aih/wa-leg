@@ -2,7 +2,7 @@ import type { FastifyInstance, FastifyReply } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import type { NotesService } from './service.js';
-import { badRequest, forbidden } from '../../lib/errors.js';
+import { badRequest, forbidden, unauthorized } from '../../lib/errors.js';
 import { can } from '../identity/can.js';
 import { writeAudit } from '../../lib/audit.js';
 
@@ -218,11 +218,14 @@ export function notesRoutes(svc: NotesService) {
       r.route({
         method,
         url: '/notes/:id/export',
-        schema: { tags: ['notes'], summary: method === 'POST' ? 'Export a document version as docx, pdf, xml (FNS placeholder), or html' : 'Export (link form: opens in the browser)', params: noteId, querystring: exportQuery, response: { 422: AnyObject } },
-        preHandler: app.requireAuth,
+        schema: { tags: ['notes'], summary: method === 'POST' ? 'Export a document version as docx, pdf, xml (FNS placeholder), or html. Viewers and anonymous callers (PUBLISHED_PUBLIC) get the published version.' : 'Export (link form: opens in the browser)', params: noteId, querystring: exportQuery, response: { 422: AnyObject } },
+        // Anonymous callers reach the published version when PUBLISHED_PUBLIC is set.
+        preHandler: async (req) => {
+          if (!req.principal && !app.config.PUBLISHED_PUBLIC) throw unauthorized();
+        },
         handler: async (req, reply) => {
           const q = req.query as z.infer<typeof exportQuery>;
-          const res = await svc.exports.export(req.principal!, (req.params as { id: string }).id, { format: q.format, version: q.version, comments: truthy(q.comments), strict: truthy(q.strict) }, req.id);
+          const res = await svc.exports.export(req.principal, (req.params as { id: string }).id, { format: q.format, version: q.version, comments: truthy(q.comments), strict: truthy(q.strict) }, req.id);
           return sendExport(reply, res, method === 'GET' && (q.format === 'pdf' || q.format === 'html'));
         },
       });
