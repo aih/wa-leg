@@ -349,13 +349,12 @@ function activeCommentPlugin(): Plugin<string | null> {
 
 export interface NoteAppOptions {
   onSaveRequest?: () => void;
-  onTemplateRequest?: () => void;
 }
 
 export const NoteApp = Extension.create<NoteAppOptions>({
   name: 'noteApp',
   addOptions() {
-    return { onSaveRequest: undefined, onTemplateRequest: undefined };
+    return { onSaveRequest: undefined };
   },
   addProseMirrorPlugins() {
     return [lockPlugin(), recomputePlugin(), decorationPlugin(), citationControlPlugin(this.editor), activeCommentPlugin()];
@@ -368,10 +367,6 @@ export const NoteApp = Extension.create<NoteAppOptions>({
       'Mod-[': ({ editor }) => moveToSlot(editor, 'prev', true),
       'Mod-s': () => {
         this.options.onSaveRequest?.();
-        return true;
-      },
-      'Mod-Shift-t': () => {
-        this.options.onTemplateRequest?.();
         return true;
       },
       'Mod-Shift-u': ({ editor }) => {

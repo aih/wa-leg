@@ -1,6 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
-import { loginAs } from './helpers';
+import { axeClean, loginAs } from './helpers';
 
 /**
  * The path from draft to Committee (docs/SIMPLIFY-0.2.md section 4): Rae creates a note for Dana, Dana submits, Rae
@@ -14,11 +13,6 @@ let noteUrl: string;
 const state = (page: Page) => page.locator('.workflow-bar .status').first();
 const bar = (page: Page) => page.locator('.workflow-bar');
 const cancelButtons = (page: Page) => page.getByRole('button', { name: 'Cancel' });
-
-async function axeClean(page: Page) {
-  const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).exclude('.bill-viewer').analyze();
-  expect(r.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)).toEqual([]);
-}
 
 async function waitSaved(page: Page) {
   await expect(page.locator('.save-state')).toHaveText(/Saved at/, { timeout: 15_000 });

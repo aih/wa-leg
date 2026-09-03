@@ -1,8 +1,9 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import type { BillSummary } from '../bill/api';
 import { useSession } from '../lib/session';
 import { ApiError } from '../lib/api';
+import { listUsers } from '../lib/listApi';
 import { notesApi, useResource } from './api';
 
 function Field({ id, label, children }: { id: string; label: string; children: ReactNode }) {
@@ -14,27 +15,25 @@ function Field({ id, label, children }: { id: string; label: string; children: R
   );
 }
 
-/** Start a fiscal note (reviewer, manager, admin) or an estimate (drafter, for themselves) on a bill version. */
+/** Start a fiscal note on a bill version: version, template, and (for reviewers) the drafter. A drafter creates for themselves. */
 export function NewNoteForm({ bill, currentCode }: { bill: BillSummary; currentCode: string }) {
-  const { principal, hasRole } = useSession();
+  const { hasRole } = useSession();
   const navigate = useNavigate();
-  const canCreateNote = hasRole('reviewer', 'manager', 'admin');
-  const canCreateEstimate = hasRole('drafter');
-  const [kind, setKind] = useState<'note' | 'estimate'>(canCreateNote ? 'note' : 'estimate');
+  const isReviewer = hasRole('reviewer');
+  const isDrafter = hasRole('drafter');
   const [versionCode, setVersionCode] = useState(currentCode);
   const [templateId, setTemplateId] = useState('');
-  const [drafterId, setDrafterId] = useState(principal?.userId ?? '');
-  const [requestId, setRequestId] = useState('');
-  const [contactName, setContactName] = useState('');
-  const [contactPhone, setContactPhone] = useState('');
-  const [priority, setPriority] = useState<'low' | 'normal' | 'high' | 'urgent'>('normal');
-  const [confidential, setConfidential] = useState(false);
+  const [drafterId, setDrafterId] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const templates = useResource(() => notesApi.templates({ mode: kind === 'estimate' ? undefined : 'limited' }), [kind]);
-  const drafters = useResource(canCreateNote ? () => notesApi.users('drafter') : null, [canCreateNote]);
+  const templates = useResource(() => notesApi.templates({ kind: 'document' }), []);
+  const drafters = useResource(isReviewer ? () => listUsers('drafter') : null, [isReviewer]);
 
-  if (!canCreateNote && !canCreateEstimate) return null;
+  useEffect(() => {
+    if (!templateId && templates.data?.length) setTemplateId(templates.data[0]!.id);
+  }, [templates.data, templateId]);
+
+  if (!isReviewer && !isDrafter) return null;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -44,12 +43,8 @@ export function NewNoteForm({ bill, currentCode }: { bill: BillSummary; currentC
       const created = await notesApi.create({
         billKey: bill.billKey,
         versionCode,
-        kind,
-        templateId: templateId || undefined,
-        drafterId: kind === 'note' ? drafterId || undefined : undefined,
-        priority,
-        confidential,
-        request: kind === 'note' ? { requestId: requestId || undefined, legContact: contactName || contactPhone ? { name: contactName, phone: contactPhone } : undefined } : undefined,
+        templateId,
+        drafterId: isReviewer && drafterId ? drafterId : undefined,
       });
       navigate(`/notes/${created.noteRevisionId}`);
     } catch (err) {
@@ -61,19 +56,8 @@ export function NewNoteForm({ bill, currentCode }: { bill: BillSummary; currentC
 
   return (
     <details className="new-note">
-      <summary>New {kind === 'note' ? 'fiscal note' : 'estimate'}</summary>
-      <form onSubmit={(e) => void submit(e)} className="stack" aria-label="New note">
-        {canCreateNote && canCreateEstimate && (
-          <fieldset>
-            <legend>Kind</legend>
-            <label className="inline">
-              <input type="radio" name="kind" checked={kind === 'note'} onChange={() => setKind('note')} /> Fiscal note
-            </label>
-            <label className="inline">
-              <input type="radio" name="kind" checked={kind === 'estimate'} onChange={() => setKind('estimate')} /> Estimate
-            </label>
-          </fieldset>
-        )}
+      <summary>New fiscal note</summary>
+      <form onSubmit={(e) => void submit(e)} className="stack" aria-label="New fiscal note">
         <Field id="nn-version" label="Bill version">
           <select id="nn-version" value={versionCode} onChange={(e) => setVersionCode(e.target.value)}>
             {bill.versions.map((v) => (
@@ -85,8 +69,7 @@ export function NewNoteForm({ bill, currentCode }: { bill: BillSummary; currentC
           </select>
         </Field>
         <Field id="nn-template" label="Template">
-          <select id="nn-template" value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
-            <option value="">Blank</option>
+          <select id="nn-template" value={templateId} onChange={(e) => setTemplateId(e.target.value)} required>
             {(templates.data ?? []).map((t) => (
               <option key={t.id} value={t.id}>
                 {t.name}
@@ -94,50 +77,24 @@ export function NewNoteForm({ bill, currentCode }: { bill: BillSummary; currentC
             ))}
           </select>
         </Field>
-        {kind === 'note' && (
-          <>
-            <Field id="nn-drafter" label="Drafter">
-              <select id="nn-drafter" value={drafterId} onChange={(e) => setDrafterId(e.target.value)} required>
-                <option value="">Choose a drafter</option>
-                {(drafters.data ?? []).map((u) => (
-                  <option key={u.userId} value={u.userId}>
-                    {u.displayName} ({u.divisions.join(', ') || 'no division'})
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field id="nn-request" label="Request id">
-              <input id="nn-request" value={requestId} onChange={(e) => setRequestId(e.target.value)} placeholder="e.g. 2402-1-1" />
-            </Field>
-            <div className="row">
-              <Field id="nn-contact" label="Legislative contact">
-                <input id="nn-contact" value={contactName} onChange={(e) => setContactName(e.target.value)} />
-              </Field>
-              <Field id="nn-phone" label="Phone">
-                <input id="nn-phone" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
-              </Field>
-            </div>
-          </>
-        )}
-        <div className="row">
-          <Field id="nn-priority" label="Priority">
-            <select id="nn-priority" value={priority} onChange={(e) => setPriority(e.target.value as typeof priority)}>
-              <option value="low">Low</option>
-              <option value="normal">Normal</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
+        {isReviewer && (
+          <Field id="nn-drafter" label="Drafter">
+            <select id="nn-drafter" value={drafterId} onChange={(e) => setDrafterId(e.target.value)} required={!isDrafter}>
+              <option value="">{isDrafter ? 'Myself' : 'Choose a drafter'}</option>
+              {(drafters.data ?? []).map((u) => (
+                <option key={u.userId} value={u.userId}>
+                  {u.displayName}
+                </option>
+              ))}
             </select>
           </Field>
-          <label className="inline">
-            <input type="checkbox" checked={confidential} onChange={(e) => setConfidential(e.target.checked)} /> Confidential
-          </label>
-        </div>
+        )}
         {error && (
           <p role="alert" className="error">
             {error}
           </p>
         )}
-        <button type="submit" disabled={busy}>
+        <button type="submit" disabled={busy || !templateId}>
           Create and open
         </button>
       </form>

@@ -11,7 +11,7 @@ type PublishedSummary = NoteSummary & { publishedAt: string; publishedVersion: n
 const EXPORT_FORMATS = ['pdf', 'docx', 'html', 'xml'] as const;
 
 /** The published fiscal note for the selected bill version, or the latest published note for an earlier version. */
-export function ApprovedNotePanel({ bill, currentCode, notes }: { bill: BillSummary; currentCode: string; notes: NoteSummary[] }) {
+export function PublishedNotePanel({ bill, currentCode, notes }: { bill: BillSummary; currentCode: string; notes: NoteSummary[] }) {
   const { principal } = useSession();
   const published = notes.filter((n): n is PublishedSummary => n.state === 'published' && (n as PublishedSummary).publishedVersion !== null && (n as PublishedSummary).publishedAt !== null);
   const seq = (code: string) => bill.versions.findIndex((v) => v.code === code);
