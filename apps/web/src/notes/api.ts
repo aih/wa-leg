@@ -151,6 +151,7 @@ export const notesApi = {
     if (!res.ok) throw new ApiError(res.status, 'preview_failed', res.statusText);
     return res.text();
   },
+  audit: (id: string) => api<{ id: number; actorId: string; action: string; objectType: string; objectId: string; before: unknown; after: unknown; requestId: string | null; at: string }[]>(`/notes/${id}/audit`),
   users: (role?: string) => api<{ userId: string; displayName: string; roles: string[]; divisions: string[] }[]>('/users', { query: { role } }),
 };
 

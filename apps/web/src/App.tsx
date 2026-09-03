@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router';
 import { NoteWorkspace } from './routes/NoteWorkspace';
 import { NoteVersionsPage } from './routes/NoteVersionsPage';
+import { AdminAudit } from './routes/AdminAudit';
 import { SessionProvider } from './lib/session';
 import { Shell } from './components/Shell';
 import { Home } from './routes/Home';
@@ -30,6 +31,7 @@ export function App() {
           <Route path="inbox" element={<Inbox />} />
           <Route path="admin/templates" element={<Placeholder title="Templates" />} />
           <Route path="admin/ingest" element={<Placeholder title="Ingest" />} />
+          <Route path="admin/audit" element={<AdminAudit />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

@@ -106,6 +106,8 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
         if (dirtyRef.current === doc) dirtyRef.current = null;
         setSave({ kind: 'saved', at: res.savedAt, version: res.version });
         void refreshThreads();
+        // The first save starts the task; the workflow bar follows the summary.
+        if (summary.state === 'todo') window.setTimeout(() => void reloadSummary(), 800);
       } catch (err) {
         if (isConflict(err)) {
           setSave({ kind: 'conflict', server: err.body.details });
@@ -114,7 +116,7 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
         setSave({ kind: 'error', message: err instanceof ApiError ? `${err.status}: ${err.message}` : (err as Error).message });
       }
     },
-    [revisionId, initialDocument.mode, clientId],
+    [revisionId, initialDocument.mode, clientId, summary.state, reloadSummary],
   );
   saveRef.current = doSave;
 

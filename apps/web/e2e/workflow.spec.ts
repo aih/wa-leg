@@ -34,8 +34,7 @@ test.describe.serial('workflow', () => {
     await expect(page.locator('.workflow-bar .due')).toContainText(/Due in|Overdue/);
     // Drafter dashboard: the note is in "needing action" as To do, with the reviewer vocabulary absent.
     await loginAs(page, 'dev-drafter', '/dashboard/drafter');
-    const section = page.getByRole('region', { name: 'My notes needing action' }).or(page.locator('section:has(#need-action)'));
-    const row = section.locator('tr', { hasText: 'SHB 2402' }).filter({ hasText: 'To do' }).first();
+    const row = page.locator(`section:has(#need-action) tr:has(a[href="/notes/${revisionId}"])`).filter({ hasText: 'To do' }).first();
     await expect(row).toBeVisible();
     await expect(row.locator('.band-label')).toHaveText(/Due later|Due within|Overdue/);
     // Inbox: the assignment notification arrived.
@@ -58,12 +57,12 @@ test.describe.serial('workflow', () => {
     await expect(page.locator('.save-state')).toHaveText('Read-only');
     // Drafter vocabulary on the dashboard.
     await page.goto('/dashboard/drafter');
-    await expect(page.locator('section:has(#waiting) tr', { hasText: 'SHB 2402' }).first()).toContainText('Ready for review');
+    await expect(page.locator(`section:has(#waiting) tr:has(a[href="/notes/${revisionId}"])`).first()).toContainText('Ready for review');
   });
 
   test('the reviewer claims, requests changes; the drafter resubmits; the reviewer approves', async ({ page }) => {
     await loginAs(page, 'dev-reviewer', '/dashboard/reviewer');
-    const pending = page.locator('section:has(#pending) tr', { hasText: 'SHB 2402' }).first();
+    const pending = page.locator(`section:has(#pending) tr:has(a[href="/notes/${revisionId}"])`).first();
     await expect(pending).toContainText('Pending my review');
     await expect(pending).toContainText('unclaimed');
     await pending.getByRole('link', { name: 'SHB 2402' }).click();
@@ -79,12 +78,12 @@ test.describe.serial('workflow', () => {
     await expect(state(page)).toHaveText('Changes requested');
     // Reviewer dashboard shows it under changes requested.
     await page.goto('/dashboard/reviewer');
-    await expect(page.locator('section:has(#changes) tr', { hasText: 'SHB 2402' }).first()).toContainText('Changes requested');
+    await expect(page.locator(`section:has(#changes) tr:has(a[href="/notes/${revisionId}"])`).first()).toContainText('Changes requested');
     // Drafter sees Address review, the comment in the inbox, and resubmits.
     await loginAs(page, 'dev-drafter', '/inbox');
     await expect(page.locator('.inbox-item', { hasText: 'Please fill Part II' }).first()).toBeVisible();
     await page.goto('/dashboard/drafter');
-    await expect(page.locator('section:has(#need-action) tr', { hasText: 'SHB 2402' }).first()).toContainText('Address review');
+    await expect(page.locator(`section:has(#need-action) tr:has(a[href="/notes/${revisionId}"])`).first()).toContainText('Address review');
     await page.goto(noteUrl);
     await expect(state(page)).toHaveText('Changes requested');
     await expect(page.locator('.save-state')).toHaveText('All changes saved');
@@ -111,15 +110,15 @@ test.describe.serial('workflow', () => {
 
   test('dashboards and the inbox after approval are consistent and axe clean', async ({ page }) => {
     await loginAs(page, 'dev-drafter', '/dashboard/drafter');
-    await expect(page.locator('section:has(#approved) tr', { hasText: 'SHB 2402' }).first()).toContainText('Approved');
-    await expect(page.locator('section:has(#need-action) tr', { hasText: 'wf-e2e' })).toHaveCount(0);
+    await expect(page.locator(`section:has(#approved) tr:has(a[href="/notes/${revisionId}"])`).first()).toContainText('Approved');
+    await expect(page.locator(`section:has(#need-action) tr:has(a[href="/notes/${revisionId}"])`)).toHaveCount(0);
     await axeClean(page);
     await page.goto('/inbox');
     await expect(page.locator('.inbox-item', { hasText: 'approved' }).first()).toBeVisible();
     await page.getByRole('button', { name: 'Mark all read' }).click();
     await expect(page.locator('.inbox-item.unread')).toHaveCount(0);
     await loginAs(page, 'dev-reviewer', '/dashboard/reviewer');
-    await expect(page.locator('section:has(#approved-h) tr', { hasText: 'SHB 2402' }).first()).toBeVisible();
+    await expect(page.locator(`section:has(#approved-h) tr:has(a[href="/notes/${revisionId}"])`).first()).toBeVisible();
     await axeClean(page);
   });
 });

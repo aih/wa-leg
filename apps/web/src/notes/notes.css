@@ -168,7 +168,7 @@ input:not([type='checkbox']):not([type='radio']), select, textarea { font: inher
 .due-within_4h, .band-within_4h { border-color: var(--danger); color: var(--danger); }
 .due-within_24h, .band-within_24h { border-color: var(--warn); color: var(--warn); }
 .due-more_than_24h, .band-more_than_24h { color: var(--fg); }
-.badge-count { display: inline-block; min-width: 1.2em; padding: 0 .35em; border-radius: 999px; background: var(--danger); color: #fff; font-size: .75rem; text-align: center; margin-left: .2rem; }
+.badge-count { display: inline-block; min-width: 1.2em; padding: 0 .35em; border-radius: 999px; background: var(--fg); color: var(--bg); font-size: .75rem; font-weight: 700; text-align: center; margin-left: .2rem; }
 
 /* ---- dashboards ---- */
 .queue { border-collapse: collapse; width: 100%; font-size: .92rem; }
@@ -191,3 +191,18 @@ input:not([type='checkbox']):not([type='radio']), select, textarea { font: inher
 .inbox-item.unread .inbox-title { font-weight: 700; }
 .inbox-item .inbox-body { grid-column: 1 / -1; margin: 0; color: var(--muted); }
 .inbox-item .inbox-actions { display: flex; gap: .6rem; align-items: center; }
+
+/* ---- exports and the approved note ---- */
+.export-menu { position: relative; }
+.export-menu summary { cursor: pointer; padding: .3rem .7rem; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); list-style: none; }
+.export-menu summary::-webkit-details-marker { display: none; }
+.export-menu .menu-body { position: absolute; z-index: 20; top: 100%; left: 0; display: flex; flex-direction: column; min-width: 12rem; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,.18); padding: .3rem 0; }
+.export-menu .menu-body a { padding: .35rem .8rem; text-decoration: none; color: var(--fg); }
+.export-menu .menu-body a:hover { background: var(--bg); }
+.approved-note { margin-bottom: 1rem; }
+.approved-note .export-links { margin: .4rem 0; }
+.approved-html { max-height: 60vh; }
+.audit-rows { margin: 0; padding-left: 1.2rem; font-size: .85rem; max-height: 14rem; overflow: auto; }
+.audit-rows .seq { color: var(--muted); }
+.audit td, .audit th { font-size: .88rem; vertical-align: top; }
+.table-scroll { overflow-x: auto; }

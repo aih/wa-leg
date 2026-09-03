@@ -1,8 +1,13 @@
 import type { FastifyInstance } from 'fastify';
 import { NotesService } from './service.js';
 import { notesRoutes } from './routes.js';
+import { ExportService } from './export/service.js';
+import { closePdfRenderer } from './export/pdf.js';
+import { sql } from 'drizzle-orm';
+import { writeAudit } from '../../lib/audit.js';
 
-export { NotesService, notesRoutes };
+export { NotesService, notesRoutes, ExportService };
+export type { ExportFormat } from './export/service.js';
 export { buildTemplateContext, fnsBillNumber } from './context.js';
 export { readNoteState } from './state.js';
 
@@ -15,7 +20,22 @@ declare module 'fastify' {
 /** Create the notes service on the root instance and subscribe to bill events. */
 export function createNotes(app: FastifyInstance): NotesService {
   const svc = new NotesService(app, app.db);
+  svc.exports = new ExportService(app, app.db, svc);
   app.decorate('notesModule', svc);
+  app.addHook('onClose', async () => {
+    await closePdfRenderer();
+  });
+  // Approval freezes the head as the published version.
+  app.bus.subscribe('notes:approved', ['note.approved'], async (ev) => {
+    const { noteRevisionId, approvedBy } = ev.payload as { noteRevisionId: string; approvedBy?: string };
+    await app.db.transaction(async (tx) => {
+      const row = (await tx.execute(sql`SELECT head_version FROM note_revisions WHERE note_revision_id = ${noteRevisionId}`)).rows[0] as { head_version: number } | undefined;
+      if (!row) return;
+      await tx.execute(sql`UPDATE note_revisions SET approved_document_version = ${row.head_version}, updated_at = now() WHERE note_revision_id = ${noteRevisionId}`);
+      await tx.execute(sql`UPDATE note_documents SET label = COALESCE(label, 'Approved') WHERE note_revision_id = ${noteRevisionId} AND version = ${row.head_version}`);
+      await writeAudit(tx, { actorId: approvedBy ?? 'system', action: 'note.publish', objectType: 'note_revision', objectId: noteRevisionId, after: { approvedVersion: row.head_version }, requestId: `event:${ev.eventId}` });
+    });
+  });
   // A new bill version: offer a new revision to the drafter (automatic creation is configurable).
   app.bus.subscribe('notes:bill-versions', ['bill.version_added'], async (ev) => {
     const { billKey, versionCode } = ev.payload as { billKey: string; versionCode: string };

@@ -84,6 +84,23 @@ When the bills ingest adds a new version of a bill with an open note, the drafte
 workspace offers **Create revision**; the new revision starts in `todo` with the same drafter and chain, and
 the old one becomes `superseded`.
 
+## Publishing and export
+
+Approval freezes the head document as the approved version. The bill page shows that version beside the text
+for every signed-in user; when the selected bill version has no approved note, the panel shows the latest
+approved note for an earlier version and says so. Exports (`GET` or `POST /notes/{id}/export?format=`):
+
+| Format | Renderer | Notes |
+|---|---|---|
+| `html` | note-schema HTML with KaTeX | Citation links point at the workbench; `comments=true` keeps comment marks and lists the threads |
+| `pdf` | Playwright Chromium from the HTML | Letter, 1-inch margins, footer with the request and bill numbers |
+| `docx` | `docx` mapper from ProseMirror JSON | Tables with repeated header rows, bold totals, formulas as Office Math (a LaTeX subset), `comments=true` emits Word comments |
+| `xml` | placeholder FNS mapper | Slot values, Part I tables from the estimate data, narrative parts as HTML; refuses (422) while required slots are empty |
+
+Viewers get the approved version; participants get the head unless `version=` names another. Every export
+writes a `note_exports` row, an audit row, and a `note.exported` event. `/admin/audit` in the web app lists
+the audit log for admins and managers. Set `PDF_ENABLED=false` where Chromium is unavailable.
+
 ## Checks
 
 ```sh

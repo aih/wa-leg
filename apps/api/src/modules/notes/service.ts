@@ -1,4 +1,5 @@
 // Notes module: notes, revisions, documents (autosave heads and named snapshots), comments, locks.
+import type { ExportService } from './export/service.js';
 import { randomUUID } from 'node:crypto';
 import { sql } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
@@ -71,6 +72,9 @@ function iso(v: unknown): string {
 }
 
 export class NotesService {
+  /** Export renderer, attached by createNotes(). */
+  exports!: ExportService;
+
   constructor(
     private readonly app: FastifyInstance,
     private readonly db: Db,
@@ -125,6 +129,10 @@ export class NotesService {
       throw forbidden(`Not allowed: ${action}`);
     }
     return ctx;
+  }
+
+  async billFacts(billKey: string, p?: Principal) {
+    return fetchBillFacts(this.app, billKey, p);
   }
 
   async summary(noteRevisionId: string, ctx?: { row: any; state: NoteState }): Promise<NoteRevisionSummary> {

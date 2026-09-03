@@ -10,6 +10,7 @@ import { BillSidebar } from '../components/BillSidebar';
 import { ApiError } from '../lib/api';
 import { NewNoteForm } from '../notes/NewNoteForm';
 import { NoteList } from '../notes/NoteList';
+import { ApprovedNotePanel } from '../notes/ApprovedNotePanel';
 import { notesApi, useResource } from '../notes/api';
 import { useSession } from '../lib/session';
 
@@ -92,9 +93,10 @@ export function BillPage() {
           right={
             <div className="note-pane pad">
               {bill.data && <BillSidebar bill={bill.data} currentCode={version.data?.version.code ?? code ?? bill.data.currentVersionCode} />}
+              {bill.data && <ApprovedNotePanel bill={bill.data} currentCode={version.data?.version.code ?? code ?? bill.data.currentVersionCode} notes={notes.data ?? []} />}
               <section aria-labelledby="notes-h" className="bill-notes">
                 <h2 id="notes-h">Fiscal notes</h2>
-                <NoteList notes={notes.data ?? []} showBill={false} empty="No fiscal notes you can see on this bill." />
+                <NoteList notes={(notes.data ?? []).filter((n) => !!principal && (n.state !== 'approved' || principal.roles.some((r) => ['drafter', 'reviewer', 'manager', 'admin', 'approver'].includes(r))))} showBill={false} empty={principal ? 'No drafts you can see on this bill.' : 'Sign in to see drafts.'} />
                 {bill.data && <NewNoteForm bill={bill.data} currentCode={version.data?.version.code ?? code ?? bill.data.currentVersionCode} />}
               </section>
               {cites.length > 0 && (

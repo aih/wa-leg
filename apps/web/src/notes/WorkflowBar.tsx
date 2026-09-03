@@ -148,6 +148,20 @@ export function WorkflowBar({ revisionId, summary, bill, onChanged }: WorkflowBa
         <button type="button" className="secondary" aria-expanded={showHistory} onClick={() => setShowHistory((s) => !s)}>
           History
         </button>
+        <details className="export-menu">
+          <summary>Export</summary>
+          <div className="menu-body" role="group" aria-label="Export formats">
+            <a href={`/api/v1/notes/${revisionId}/export?format=pdf`} target="_blank" rel="noreferrer">
+              PDF
+            </a>
+            <a href={`/api/v1/notes/${revisionId}/export?format=docx`}>DOCX</a>
+            <a href={`/api/v1/notes/${revisionId}/export?format=docx&comments=true`}>DOCX with comments</a>
+            <a href={`/api/v1/notes/${revisionId}/export?format=html`} target="_blank" rel="noreferrer">
+              HTML
+            </a>
+            <a href={`/api/v1/notes/${revisionId}/export?format=xml`}>FNS XML (placeholder)</a>
+          </div>
+        </details>
         {summary.supersededBy && (
           <button type="button" className="secondary" onClick={() => navigate(`/notes/${summary.supersededBy}`)}>
             Open newer revision
@@ -318,6 +332,7 @@ function AssignPanel({ revisionId, view, onDone, onClose }: { revisionId: string
 
 function HistoryPanel({ revisionId, version }: { revisionId: string; version: number }) {
   const log = useResource(() => workflowApi.transitions(revisionId), [revisionId, version]);
+  const audit = useResource(() => notesApi.audit(revisionId), [revisionId, version]);
   return (
     <section className="history-panel" aria-labelledby="history-h">
       <h2 id="history-h">Transition history</h2>
@@ -330,6 +345,16 @@ function HistoryPanel({ revisionId, version }: { revisionId: string; version: nu
           </li>
         ))}
         {log.data && log.data.length === 0 && <li className="muted">No transitions yet.</li>}
+      </ol>
+      <h3>Audit trail</h3>
+      <ol className="audit-rows">
+        {(audit.data ?? []).slice(0, 60).map((a) => (
+          <li key={a.id}>
+            <span className="seq">{fmtWhen(a.at)}</span> <strong>{a.action}</strong> · {a.actorId}
+            {a.after != null && <span className="muted small"> {JSON.stringify(a.after).slice(0, 120)}</span>}
+          </li>
+        ))}
+        {audit.error && <li className="muted">Audit rows are visible to participants and reviewers.</li>}
       </ol>
     </section>
   );

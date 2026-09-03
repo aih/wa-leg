@@ -1,4 +1,4 @@
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyReply } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import type { NotesService } from './service.js';
@@ -243,6 +243,46 @@ export function notesRoutes(svc: NotesService) {
       '/notes/:id/comments/:cid/messages',
       { schema: { tags: ['notes'], summary: 'Reply in a thread', params: noteId.extend({ cid: z.string() }), body: z.object({ body: z.string().min(1) }), response: { 201: z.object({ id: z.string() }) } }, preHandler: app.requireAuth },
       async (req, reply) => reply.code(201).send(await svc.reply(req.principal!, req.params.id, req.params.cid, req.body.body, req.id)),
+    );
+
+    // ---- exports ----
+    const exportQuery = z.object({ format: z.enum(['html', 'pdf', 'docx', 'xml']), version: z.coerce.number().int().optional(), comments: z.union([z.boolean(), z.string()]).optional(), strict: z.union([z.boolean(), z.string()]).optional() });
+    const sendExport = async (reply: FastifyReply, res: { filename: string; contentType: string; body: Buffer; exportId: string; version: number }, inline: boolean) => {
+      reply.header('content-type', res.contentType);
+      reply.header('content-disposition', `${inline ? 'inline' : 'attachment'}; filename="${res.filename}"`);
+      reply.header('x-export-id', res.exportId);
+      reply.header('x-document-version', String(res.version));
+      reply.header('cache-control', 'no-store');
+      return reply.send(res.body);
+    };
+    const truthy = (v: boolean | string | undefined) => v === true || v === 'true';
+    for (const method of ['POST', 'GET'] as const) {
+      r.route({
+        method,
+        url: '/notes/:id/export',
+        schema: { tags: ['notes'], summary: method === 'POST' ? 'Export a document version as docx, pdf, xml (FNS placeholder), or html' : 'Export (link form: opens in the browser)', params: noteId, querystring: exportQuery, response: { 422: AnyObject } },
+        preHandler: app.requireAuth,
+        handler: async (req, reply) => {
+          const q = req.query as z.infer<typeof exportQuery>;
+          const res = await svc.exports.export(req.principal!, (req.params as { id: string }).id, { format: q.format, version: q.version, comments: truthy(q.comments), strict: truthy(q.strict) }, req.id);
+          return sendExport(reply, res, method === 'GET' && (q.format === 'pdf' || q.format === 'html'));
+        },
+      });
+    }
+    r.get(
+      '/notes/:id/exports',
+      { schema: { tags: ['notes'], summary: 'Stored exports of this revision', params: noteId, response: { 200: z.array(AnyObject) } }, preHandler: app.requireAuth },
+      async (req) => svc.exports.list(req.principal!, req.params.id, req.id),
+    );
+    r.get(
+      '/notes/:id/exports/:exportId',
+      { schema: { tags: ['notes'], summary: 'Download a stored export', params: noteId.extend({ exportId: z.string().uuid() }) }, preHandler: app.requireAuth },
+      async (req, reply) => sendExport(reply, await svc.exports.stored(req.principal!, req.params.id, req.params.exportId, req.id), false),
+    );
+    r.get(
+      '/export-jobs/:jobId',
+      { schema: { tags: ['notes'], summary: 'Export job status (exports run synchronously; the job is the stored export)', params: z.object({ jobId: z.string().uuid() }), response: { 200: AnyObject } }, preHandler: app.requireAuth },
+      async (req) => svc.exports.job(req.principal!, req.params.jobId) as unknown as Record<string, unknown>,
     );
 
     // Audit of one note (participants see their own note's history).
