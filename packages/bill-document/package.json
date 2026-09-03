@@ -1,0 +1,27 @@
+{
+  "name": "@wa-leg/bill-document",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schemas/*": "./schemas/*"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "fixtures:update": "UPDATE_FIXTURES=1 vitest run test/parser.test.ts"
+  },
+  "dependencies": {
+    "@wa-leg/billref": "workspace:*",
+    "diff-match-patch": "1.0.5",
+    "sax": "1.6.1"
+  },
+  "devDependencies": {
+    "@types/diff-match-patch": "1.0.36",
+    "@types/node": "22.20.1",
+    "@types/sax": "1.2.7",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}

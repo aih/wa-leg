@@ -1,0 +1,140 @@
+{
+ "schemaVersion": "1.0",
+ "bill": {
+  "biennium": "2025-26",
+  "chamber": "S",
+  "type": "B",
+  "number": 5506,
+  "id": "SB5506",
+  "billPageUrl": "https://app.leg.wa.gov/billsummary?BillNumber=5506&Year=2025&Initiative=false",
+  "shortTitle": "Extending the effective date of licensing living accommodations for residential private schools."
+ },
+ "version": {
+  "code": "I",
+  "label": "Senate Bill",
+  "seq": 0,
+  "sourceHash": "sha256:1f2b5bb409c7fccb9c1aae04ce1453769c851cfd9d9a68b3d14bdb4a129d7ea3"
+ },
+ "header": {
+  "title": "AN ACT Relating to extending the effective date of licensing living accommodations for residential private schools; amending 2023 c 441 s 8 (uncodified); and declaring an emergency.",
+  "relatingTo": "extending the effective date of licensing living accommodations for residential private schools",
+  "titleActions": [
+   {
+    "kind": "amending",
+    "text": "amending 2023 c 441 s 8 (uncodified)"
+   },
+   {
+    "kind": "emergency",
+    "text": "declaring an emergency"
+   }
+  ],
+  "sponsors": [
+   "Senators Christian, C. Wilson, Nobles, and Wellman"
+  ],
+  "briefDescription": "Extending the effective date of licensing living accommodations for residential private schools.",
+  "requestNumber": "S-0835.1",
+  "shortBillId": "SB 5506",
+  "longBillId": "SENATE BILL 5506",
+  "legislature": "69th Legislature",
+  "session": "2025 Regular Session",
+  "referredTo": "Referred to Committee on Human Services.",
+  "readFirstTime": "2025-01-27"
+ },
+ "sections": [
+  {
+   "id": "sec-1",
+   "num": "1",
+   "label": "Sec. 1.",
+   "isNewSection": false,
+   "kind": "amendatory",
+   "sourceKind": "amenduncod",
+   "identity": "uncod:2023c441s8",
+   "blocks": [
+    {
+     "id": "sec-1.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Sections 2 and 4 of this act take effect July 1, "
+      },
+      {
+       "t": "del",
+       "text": "((2025))"
+      },
+      {
+       "t": "text",
+       "text": " "
+      },
+      {
+       "t": "ins",
+       "text": "2026"
+      },
+      {
+       "t": "text",
+       "text": "."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:dc3e775a746ebf6bc23d50e3f72d4f9187f2f75383d0c572496faf86bb092d6a",
+   "target": {
+    "action": "amend",
+    "uncodified": "2023 c 441 s 8"
+   },
+   "introText": [
+    {
+     "t": "cite",
+     "text": "2023 c 441 s 8",
+     "cite": {
+      "kind": "session-law",
+      "text": "2023 c 441 s 8",
+      "cite": "2023 c 441 s 8"
+     }
+    },
+    {
+     "t": "text",
+     "text": " (uncodified) is amended to read as follows:"
+    }
+   ],
+   "changeSummary": {
+    "insWords": 1,
+    "delWords": 1
+   }
+  },
+  {
+   "id": "sec-2",
+   "num": "2",
+   "label": "NEW SECTION. Sec. 2.",
+   "isNewSection": true,
+   "kind": "emergency",
+   "sourceKind": "emerg",
+   "identity": "kind:emergency",
+   "blocks": [
+    {
+     "id": "sec-2.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "This act is necessary for the immediate preservation of the public peace, health, or safety, or support of the state government and its existing public institutions, and takes effect immediately."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:6c886caf11ca58c06303decd6097c979b81784d83f21ec8c121c11d65f533334"
+  }
+ ],
+ "rcwAffected": [],
+ "provenance": {
+  "fetchedAt": "2026-09-01T00:00:00.000Z",
+  "parser": "wa-bill-xml",
+  "parserVersion": "1.0.0",
+  "warnings": [],
+  "hasLineNumbers": false
+ }
+}

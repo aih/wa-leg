@@ -1,0 +1,242 @@
+{
+ "schemaVersion": "1.0",
+ "id": "6137 AMS CORA S4812.1",
+ "bill": {
+  "biennium": "2025-26",
+  "id": "SB6137"
+ },
+ "baseVersion": "I",
+ "kind": "page-line",
+ "scope": "floor",
+ "status": "withdrawn",
+ "provenance": {
+  "fetchedAt": "2026-09-01T00:00:00.000Z",
+  "parser": "wa-amendment-xml",
+  "parserVersion": "1.0.0",
+  "warnings": []
+ },
+ "chamber": "S",
+ "sponsor": "Senator Cortes",
+ "drafterCode": "S4812.1",
+ "floorNumber": "579",
+ "actionDate": "2026-02-11",
+ "effect": "Makes it a class C felony to threaten a sports official, coach, or participant involved in a sporting event, athletic event, or competition that is being wagered on where the threat relates to the event. Makes it a class C felony for a person who has threatened a sports official, coach, or participant to place any sports wagers.",
+ "sourceHash": "sha256:a5f517b51102e0616d613c733ecb858a6d54be7725d7e3191510004dd49885a6",
+ "instructions": [
+  {
+   "id": "i1",
+   "seq": 1,
+   "text": "On page 3, after line 17, insert the following:",
+   "op": "insert-section",
+   "location": {
+    "page": 3,
+    "line": 17,
+    "anchor": "after"
+   },
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   },
+   "insertSections": [
+    {
+     "id": "sec-5",
+     "num": "5",
+     "label": "Sec. 5.",
+     "isNewSection": false,
+     "kind": "amendatory",
+     "sourceKind": "amend",
+     "identity": "",
+     "blocks": [
+      {
+       "id": "sec-5.1",
+       "label": "(1)",
+       "level": 1,
+       "kind": "subsection",
+       "runs": [
+        {
+         "t": "text",
+         "text": "No person shall offer, promise, give, or attempt to give any thing of value to any person for the purpose of influencing the outcome of a sporting event, athletic event, or competition upon which a wager may be made."
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-5.2",
+       "label": "(2)",
+       "level": 1,
+       "kind": "subsection",
+       "runs": [
+        {
+         "t": "text",
+         "text": "No person shall place, increase, or decrease a wager after acquiring knowledge, not available to the general public, that anyone has been offered, promised, or given any thing of value for the purpose of influencing the outcome of a sporting event, athletic event, or competition upon which the wager is placed, increased, or decreased."
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-5.3",
+       "label": "(3)",
+       "level": 1,
+       "kind": "subsection",
+       "runs": [
+        {
+         "t": "text",
+         "text": "No person shall offer, promise, give, or attempt to give any thing of value to obtain confidential or insider information not available to the public with intent to use the information to gain a wagering advantage on a sporting event, athletic event, or competition."
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-5.4",
+       "label": "(4)",
+       "level": 1,
+       "kind": "subsection",
+       "runs": [
+        {
+         "t": "text",
+         "text": "No person shall accept or agree to accept, any thing of value for the purpose of wrongfully influencing his or her play, action, decision making, or conduct in any sporting event, athletic event, or competition upon which a wager may be made."
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-5.5",
+       "label": "(5)",
+       "level": 1,
+       "kind": "subsection",
+       "runs": [
+        {
+         "t": "ins",
+         "text": "No person shall threaten a sports official, coach, or participant involved in a sporting event, athletic event, or competition upon which a wager may be made where the threat is related to that sporting event, athletic event, or competition. For the purposes of this subsection, \"threaten\" means to communicate, directly or indirectly, the intent to:"
+        }
+       ],
+       "children": [
+        {
+         "id": "sec-5.5.a",
+         "label": "(a)",
+         "level": 2,
+         "kind": "paragraph",
+         "runs": [
+          {
+           "t": "ins",
+           "text": "Cause bodily injury immediately or in the future to the person threatened; or"
+          }
+         ],
+         "children": [],
+         "labelMark": "ins"
+        },
+        {
+         "id": "sec-5.5.b",
+         "label": "(b)",
+         "level": 2,
+         "kind": "paragraph",
+         "runs": [
+          {
+           "t": "ins",
+           "text": "Cause physical damage immediately or in the future to the property of the person threatened."
+          }
+         ],
+         "children": [],
+         "labelMark": "ins"
+        }
+       ]
+      },
+      {
+       "id": "sec-5.6",
+       "label": "(6)",
+       "level": 1,
+       "kind": "subsection",
+       "runs": [
+        {
+         "t": "ins",
+         "text": "No person who violates subsection (5) of this section may place any sports wagers."
+        }
+       ],
+       "children": [],
+       "labelMark": "ins"
+      },
+      {
+       "id": "sec-5.7",
+       "label": "(7)",
+       "level": 1,
+       "kind": "subsection",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Any person who violates this section shall be guilty of a class C felony subject to the penalty set forth in RCW 9A.20.021."
+        }
+       ],
+       "children": [],
+       "labelMark": "ins"
+      }
+     ],
+     "textHash": "sha256:20360bdfdb99c83e25baa1dfa95c5a3788ca0a510106d492a434d24e183e4f01",
+     "heading": "Sports wagering—Prohibited activities—Penalty.",
+     "target": {
+      "action": "amend",
+      "cite": "9.46.037",
+      "chapter": "9.46",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=9.46.037",
+      "caption": "Sports wagering—Prohibited activities—Penalty.",
+      "history": "2020 c 127 s 5"
+     },
+     "introText": [
+      {
+       "t": "cite",
+       "text": "RCW 9.46.037",
+       "cite": {
+        "kind": "rcw",
+        "text": "RCW 9.46.037",
+        "cite": "9.46.037",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=9.46.037"
+       }
+      },
+      {
+       "t": "text",
+       "text": " and 2020 c 127 s 5 are each amended to read as follows:"
+      }
+     ],
+     "notes": [
+      "2020 c 127 s 5.",
+      "Intent—Effective date—2020 c 127: See notes following RCW 9.46.0364."
+     ],
+     "fixedNumber": true,
+     "changeSummary": {
+      "insWords": 97,
+      "delWords": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "i2",
+   "seq": 2,
+   "text": "Renumber the remaining sections consecutively and correct any internal references accordingly.",
+   "op": "renumber",
+   "location": {},
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  },
+  {
+   "id": "i3",
+   "seq": 3,
+   "text": "On page 1, line 2 of the title, after \"9.46.0364,\" strike \"and 9.46.0368\" and insert \"9.46.0368, and 9.46.037\"",
+   "op": "title-strike-insert",
+   "location": {
+    "page": 1,
+    "line": 2,
+    "title": true,
+    "anchorText": "9.46.0364,",
+    "anchor": "after"
+   },
+   "strikeText": "and 9.46.0368",
+   "insertText": "9.46.0368, and 9.46.037",
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  }
+ ]
+}

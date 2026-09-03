@@ -1,0 +1,115 @@
+{
+ "schemaVersion": "1.0",
+ "id": "1069 AMS SALD S3166.1",
+ "bill": {
+  "biennium": "2025-26",
+  "id": "HB1069"
+ },
+ "baseVersion": "I",
+ "kind": "page-line",
+ "scope": "committee",
+ "status": "unknown",
+ "provenance": {
+  "fetchedAt": "2026-09-01T00:00:00.000Z",
+  "parser": "wa-amendment-xml",
+  "parserVersion": "1.0.0",
+  "warnings": []
+ },
+ "chamber": "S",
+ "sponsor": "Senator Saldaña",
+ "committee": "SALD",
+ "drafterCode": "S3166.1",
+ "floorNumber": "415",
+ "actionDate": "2025-04-27",
+ "effect": "Limits the application of the bill to Department of Corrections employees.",
+ "sourceHash": "sha256:090ee50c500fb8fe3cbfb1addc88de1398c441659d44abc08e9941abc85a471c",
+ "instructions": [
+  {
+   "id": "i1",
+   "seq": 1,
+   "text": "On page 3, at the beginning of line 9, strike \"(((5))) (e) Retirement\" and insert \"(((5) Retirement)) (e) Except for bargaining over supplemental retirement benefits for department of corrections employees as required under subsection (2) of this section, retirement\"",
+   "op": "strike-insert",
+   "location": {
+    "page": 3,
+    "line": 9,
+    "anchor": "beginning"
+   },
+   "strikeText": "(((5))) (e) Retirement",
+   "insertText": "(((5) Retirement)) (e) Except for bargaining over supplemental retirement benefits for department of corrections employees as required under subsection (2) of this section, retirement",
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  },
+  {
+   "id": "i2",
+   "seq": 2,
+   "text": "On page 3, beginning on line 9, after \"benefits\" strike all material through \"systems\" on line 10",
+   "op": "strike",
+   "location": {
+    "page": 3,
+    "line": 9,
+    "lineEnd": 10,
+    "anchorText": "benefits",
+    "anchor": "after"
+   },
+   "strikeText": "systems",
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  },
+  {
+   "id": "i3",
+   "seq": 3,
+   "text": "On page 3, line 11, after \"(2)(a)\" strike \"Subsection\" and insert \"For department of corrections employees, subsection\"",
+   "op": "strike-insert",
+   "location": {
+    "page": 3,
+    "line": 11,
+    "anchorText": "(2)(a)",
+    "anchor": "after"
+   },
+   "strikeText": "Subsection",
+   "insertText": "For department of corrections employees, subsection",
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  },
+  {
+   "id": "i4",
+   "seq": 4,
+   "text": "On page 3, line 14, after \"organization\" insert \"that represents department of corrections employees\"",
+   "op": "insert",
+   "location": {
+    "page": 3,
+    "line": 14,
+    "anchorText": "organization",
+    "anchor": "after"
+   },
+   "insertText": "that represents department of corrections employees",
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  },
+  {
+   "id": "i5",
+   "seq": 5,
+   "text": "On page 3, line 16, after \"benefits\" insert \"for department of corrections employees\"",
+   "op": "insert",
+   "location": {
+    "page": 3,
+    "line": 16,
+    "anchorText": "benefits",
+    "anchor": "after"
+   },
+   "insertText": "for department of corrections employees",
+   "resolved": {
+    "confidence": "unresolved",
+    "note": "No line map for this version"
+   }
+  }
+ ]
+}

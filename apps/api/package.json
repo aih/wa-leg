@@ -18,6 +18,8 @@
     "@fastify/cookie": "11.1.2",
     "@fastify/cors": "11.3.0",
     "@fastify/swagger": "9.8.1",
+    "@wa-leg/bill-document": "workspace:*",
+    "@wa-leg/billref": "workspace:*",
     "@wa-leg/workflow-machine": "workspace:*",
     "commander": "15.0.0",
     "drizzle-orm": "0.45.2",

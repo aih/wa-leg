@@ -1,0 +1,1412 @@
+{
+ "schemaVersion": "1.0",
+ "bill": {
+  "biennium": "2025-26",
+  "chamber": "H",
+  "type": "B",
+  "number": 1717,
+  "id": "HB1717",
+  "billPageUrl": "https://app.leg.wa.gov/billsummary?BillNumber=1717&Year=2025&Initiative=false",
+  "shortTitle": "Creating a sales and use tax remittance program for affordable housing."
+ },
+ "version": {
+  "code": "S",
+  "label": "Substitute House Bill",
+  "seq": 10,
+  "sourceHash": "sha256:4919832f24bf4ee506d824833f0100669ff82003fd3225fd5a43764fb8475978"
+ },
+ "header": {
+  "title": "AN ACT Relating to a sales and use tax remittance program for affordable housing; adding a new chapter to Title 82 RCW; and providing an effective date.",
+  "relatingTo": "a sales and use tax remittance program for affordable housing",
+  "titleActions": [
+   {
+    "kind": "adding-chapter",
+    "text": "adding a new chapter to Title 82 RCW",
+    "cites": [
+     {
+      "kind": "rcw-title",
+      "text": "Title 82 RCW",
+      "cite": "82",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82"
+     }
+    ]
+   },
+   {
+    "kind": "effective-date",
+    "text": "providing an effective date"
+   }
+  ],
+  "sponsors": [
+   "House Finance (originally sponsored by Representatives Leavitt, Low, Richards, Shavers, Walen, Parshley, Reed, and Nance)"
+  ],
+  "briefDescription": "Creating a sales and use tax remittance program for affordable housing.",
+  "requestNumber": "H-2891.2",
+  "shortBillId": "SHB 1717",
+  "longBillId": "SUBSTITUTE HOUSE BILL 1717",
+  "legislature": "69th Legislature",
+  "session": "2026 Regular Session",
+  "readFirstTime": "2026-02-03"
+ },
+ "sections": [
+  {
+   "id": "sec-1",
+   "num": "1",
+   "label": "NEW SECTION. Sec. 1.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:15a441511edd57d5",
+   "blocks": [
+    {
+     "id": "sec-1.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The definitions in this section apply throughout this chapter unless the context clearly requires otherwise."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"Affordable housing\" means residential housing that is rented by a person or household whose monthly housing costs, including utilities other than telephone, do not exceed 30 percent of the household's monthly income."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"City\" means any city or town."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"County\" means any county of the state."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"Eligible organization\" means nonprofit developers, for-profit developers, public housing authorities, public development authorities, or other applicants eligible under rules established by the Washington state housing finance commission."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.5",
+     "label": "(5)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"Governing authority\" means the local legislative authority of a city or county."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.6",
+     "label": "(6)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [],
+     "children": [
+      {
+       "id": "sec-1.6.a",
+       "label": "(a)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "\"Initiation of construction\" means the date that a building permit is issued under the building code adopted under RCW 19.27.031 for construction of the qualified building, if the underlying ownership of the building vests exclusively with the person receiving the economic benefit of the exemption."
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-1.6.b",
+       "label": "(b)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "\"Initiation of construction\" does not include soil testing, site clearing and grading, site preparation, or any other related activities that are initiated before the issuance of a building permit of the construction of the foundation of a building."
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-1.6.c",
+       "label": "(c)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "If the qualifying project is a phased project, \"initiation of construction\" applies separately to each phase."
+        }
+       ],
+       "children": []
+      }
+     ]
+    },
+    {
+     "id": "sec-1.7",
+     "label": "(7)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"Low-income household\" means a single person, family, or unrelated persons living together whose adjusted income is at or below 80 percent of the median family income adjusted for family size, for the county, city, or metropolitan statistical area, where the property is located, as reported by the United States department of housing and urban development."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.8",
+     "label": "(8)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"Moderate-income household\" means a single person, family, or unrelated persons living together whose adjusted income is more than 80 percent but is at or below 120 percent of the median family income adjusted for family size, for the county, city, or metropolitan statistical area, where the project is located, as reported by the United States department of housing and urban development."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.9",
+     "label": "(9)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"Nonprofit developer\" means:"
+      }
+     ],
+     "children": [
+      {
+       "id": "sec-1.9.a",
+       "label": "(a)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A nonprofit defined in RCW 84.36.800 that is exempt from income tax under section 501(c)(3) of the federal internal revenue code;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-1.9.b",
+       "label": "(b)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A limited partnership or limited liability company, consisting of any of the following:"
+        }
+       ],
+       "children": [
+        {
+         "id": "sec-1.9.b.i",
+         "label": "(i)",
+         "level": 3,
+         "kind": "subparagraph",
+         "runs": [
+          {
+           "t": "text",
+           "text": "A nonprofit defined in RCW 84.36.800 that is exempt from income tax under section 501(c)(3) of the federal internal revenue code;"
+          }
+         ],
+         "children": []
+        },
+        {
+         "id": "sec-1.9.b.ii",
+         "label": "(ii)",
+         "level": 3,
+         "kind": "subparagraph",
+         "runs": [
+          {
+           "t": "text",
+           "text": "A public corporation established under RCW 35.21.660, 35.21.670, or 35.21.730;"
+          }
+         ],
+         "children": []
+        },
+        {
+         "id": "sec-1.9.b.iii",
+         "label": "(iii)",
+         "level": 3,
+         "kind": "subparagraph",
+         "runs": [
+          {
+           "t": "text",
+           "text": "A housing authority created under RCW 35.82.030 or 35.82.300; and"
+          }
+         ],
+         "children": []
+        },
+        {
+         "id": "sec-1.9.b.iv",
+         "label": "(iv)",
+         "level": 3,
+         "kind": "subparagraph",
+         "runs": [
+          {
+           "t": "text",
+           "text": "A housing authority that meets the qualifications in RCW 35.82.210(2)(a) and is a managing member."
+          }
+         ],
+         "children": []
+        }
+       ]
+      },
+      {
+       "id": "sec-1.9.c",
+       "label": "(c)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A mobile home park cooperative or a manufactured housing cooperative as defined in RCW 59.20.030."
+        }
+       ],
+       "children": []
+      }
+     ]
+    },
+    {
+     "id": "sec-1.10",
+     "label": "(10)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"Owner\" means the property owner of record."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.11",
+     "label": "(11)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "\"Qualifying project\" means an affordable housing or mixed-use affordable housing development with a minimum of 50 percent of residential units dedicated to housing for low or moderate-income households and those units that are affordable to such households for a minimum of 40 years. \"Qualifying project\" includes related facilities such as playgrounds, sidewalks, and project-related infrastructure improvements, as well as facilities used for commercial use for mixed-use development."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:14e21d10cffbcd60b929cd5a1dd0f70bf26debde763c7dc2ece6e83d8b4a0138"
+  },
+  {
+   "id": "sec-2",
+   "num": "2",
+   "label": "NEW SECTION. Sec. 2.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:f5c6351f4fb6d4a5",
+   "blocks": [
+    {
+     "id": "sec-2.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "For the purpose of creating a local sales and use tax remittance program for the development of affordable housing under this chapter, the governing authority may adopt a resolution of intention to create the remittance program generally described in the resolution. The resolution must state the time and place of a hearing to be held by the governing authority to consider the creation of the tax remittance program and may include such other as the governing authority deems appropriate to apprise the public of the action intended. However, the resolution must provide information pertaining to:"
+      }
+     ],
+     "children": [
+      {
+       "id": "sec-2.1.a",
+       "label": "(a)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "The application process;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.1.b",
+       "label": "(b)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "The approval process;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.1.c",
+       "label": "(c)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "The appeals process for applications denied approval; and"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-2.1.d",
+       "label": "(d)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Additional requirements, conditions, and obligations that must be followed after the approval of an application."
+        }
+       ],
+       "children": []
+      }
+     ]
+    },
+    {
+     "id": "sec-2.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The governing authority must give notice of a hearing held under this chapter by publication of the notice once each week for two consecutive weeks, not less than seven days, nor more than 30 days, before the date of the hearing in a paper having a general circulation in the city or county. The notice must state the time, date, place, and purpose of the hearing."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Following the hearing or a continuance of the hearing, the governing authority may authorize the creation of the program."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "A county may not adopt the remittance program authorized under this section within the limits of a city that adopts such a program."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-2.5",
+     "label": "(5)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The remittance authorized under this chapter applies to taxes imposed by the city or county that has adopted a resolution as provided in subsection (1) of this section."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:1d80c6eb0f1e1652a42d22f074afe56174134dd09ccadfe808c6e7ea8e709306"
+  },
+  {
+   "id": "sec-3",
+   "num": "3",
+   "label": "NEW SECTION. Sec. 3.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:7d4c35d02fd324e1",
+   "blocks": [
+    {
+     "id": "sec-3.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "An eligible organization seeking a local sales and use tax remittance for a qualifying project under this chapter must complete the following procedures:"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-3.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The eligible organization must apply to the city or county on forms adopted by the governing authority. The application must contain the following:"
+      }
+     ],
+     "children": [
+      {
+       "id": "sec-3.1.a",
+       "label": "(a)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Information setting forth the grounds supporting the requested exemption including information indicated on the application form or in the guidelines;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-3.1.b",
+       "label": "(b)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A description of the qualifying project and site plan, and other information requested;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-3.1.c",
+       "label": "(c)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A statement of the expected total number of housing units and affordable housing units to be created;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-3.1.d",
+       "label": "(d)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A statement that the applicant is aware of the potential tax liability involved if the qualifying project ceases to be used for eligible uses under this chapter;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-3.1.e",
+       "label": "(e)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A statement that the applicant is aware the qualifying project must be completed within three years from the date of approval of the application; and"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-3.1.f",
+       "label": "(f)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A statement that the applicant is aware that the governing authority of the city or county or an official duly authorized by the governing authority may extend the deadline for completion of construction for a period not to exceed 24 consecutive months;"
+        }
+       ],
+       "children": []
+      }
+     ]
+    },
+    {
+     "id": "sec-3.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The applicant must verify the application by oath or affirmation; and"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-3.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The application must be accompanied by the application fee, if any, required under this chapter. The duly authorized administrative official or committee of the city or county may permit the applicant to revise an application before final action by the duly authorized administrative official or committee of the city or county."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:c9134f571ff57cf85fce5f854d657ad4f899ca7b1990ba977d4324f0878c82fe"
+  },
+  {
+   "id": "sec-4",
+   "num": "4",
+   "label": "NEW SECTION. Sec. 4.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:774b8480bd40c9c1",
+   "blocks": [
+    {
+     "id": "sec-4.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The duly authorized administrative official or committee of the city or county may approve the application and grant a conditional certificate for program approval if it finds that:"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-4.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The qualifying project is set aside primarily for affordable housing or mixed-use affordable housing development and the applicant commits to renting or selling at least 50 percent of the residential units to low and moderate-income households for a minimum of 40 years;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-4.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The applicant commits to any additional affordability conditions adopted by the local government under this chapter not otherwise inconsistent with this chapter;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-4.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The qualifying project is, or will be, at the time of completion, in conformance with all local plans and regulations that apply at the time the application is approved;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-4.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The area where the qualifying project will occur is located within an area zoned for residential or mixed uses;"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-4.5",
+     "label": "(5)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The terms and conditions of the implementation of the qualifying project meets the requirements of this chapter and any requirements of the city or county that are not otherwise inconsistent with this chapter; and"
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-4.6",
+     "label": "(6)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "All other requirements of this chapter have been satisfied as well as any other requirements of the city or county that are not otherwise inconsistent with this chapter."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:bca712893a5b1dc63d34296abb6e88eeadd0ede1ce1e6101d32475539da47c9d"
+  },
+  {
+   "id": "sec-5",
+   "num": "5",
+   "label": "NEW SECTION. Sec. 5.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:be6cf9f4ab1332f0",
+   "blocks": [
+    {
+     "id": "sec-5.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The duly authorized administrative official or committee of the city or county must rule on an application filed under this chapter within 90 days after receipt of the application."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-5.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "If the application is approved, the city or county must issue the applicant a conditional certificate of program approval. The certificate must contain a statement by a duly authorized administrative official of the governing authority that the qualifying project as described in the application will comply with the required criteria of this chapter."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-5.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "If the application is denied by the city or county, the city or county must state in writing the reasons for denial and send the notice to the applicant at the applicant's last known address."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-5.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Upon denial by the city or county, an applicant may appeal the denial to the city's or county's governing authority, or a city or county official designated by the city or county to hear such appeals, within 30 days after receipt of the denial. The appeal before the city's or county's governing authority or designated city or county official must be based upon the record made before the city or county with the burden of proof on the applicant to show that there was no substantial evidence to support the city's or county's decision. The decision of the city or county on the appeal is final."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:8cae05c1d67a8daed94f09ad842d37f40192a455a5f32abe0c239634fe50436f"
+  },
+  {
+   "id": "sec-6",
+   "num": "6",
+   "label": "NEW SECTION. Sec. 6.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:e9c3dc8e46336d54",
+   "blocks": [
+    {
+     "id": "sec-6.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The governing authority may establish an application fee. This fee may not exceed an amount required to cover the cost to be incurred by the governing authority in administering the program under this chapter. The application fee must be paid at the time the application for program approval is filed."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:0056564b7b82119f8217059153c60a0165fdcc9e4753989782fa29abe3509893"
+  },
+  {
+   "id": "sec-7",
+   "num": "7",
+   "label": "NEW SECTION. Sec. 7.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:14ee11068dcc57a6",
+   "blocks": [
+    {
+     "id": "sec-7.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Within 30 days of the issuance of a certificate of occupancy for a qualifying project, the eligible organization must file with the governing authority the following:"
+      }
+     ],
+     "children": [
+      {
+       "id": "sec-7.1.a",
+       "label": "(a)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A description of the work that has been completed and a statement that the qualifying project qualifies the property for a local sales and use tax remittance under this chapter;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-7.1.b",
+       "label": "(b)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A statement of the new affordable housing to be offered; and"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-7.1.c",
+       "label": "(c)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A statement that the work has been completed within three years of the issuance of the conditional certificate of program approval."
+        }
+       ],
+       "children": []
+      }
+     ]
+    },
+    {
+     "id": "sec-7.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Within 30 days after receipt of the statements required under subsection (1) of this section, the governing authority must determine and notify the eligible organization as to whether the work completed and the affordable housing to be offered are consistent with the application and the contract approved by the governing authority, and the project qualifies for a remittance under this chapter."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-7.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The governing authority must issue a certificate of completion of the qualifying project to the eligible organization if the project has complied with the required criteria of this chapter."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-7.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The governing authority must notify the eligible organization within 30 days that a project does not qualify for a remittance under this chapter if it determines that:"
+      }
+     ],
+     "children": [
+      {
+       "id": "sec-7.4.a",
+       "label": "(a)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "The work was not completed within three years of the application date;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-7.4.b",
+       "label": "(b)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "The work was not constructed consistent with the application or other applicable requirements;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-7.4.c",
+       "label": "(c)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "The affordable housing units to be offered are not consistent with the application and criteria of this chapter; or"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-7.4.d",
+       "label": "(d)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "The owner's property is otherwise not qualified for a remittance under this chapter."
+        }
+       ],
+       "children": []
+      }
+     ]
+    },
+    {
+     "id": "sec-7.5",
+     "label": "(5)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "If the governing authority finds that the work was not completed within the required time period due to circumstances beyond the control of the eligible organization and that the eligible organization has been acting and could reasonably be expected to act in good faith and with due diligence, the governing authority may extend the deadline for completion of the work for a period not to exceed 24 consecutive months."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-7.6",
+     "label": "(6)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The governing authority may enact an ordinance to provide a process for an eligible organization to appeal a decision by the governing authority that the eligible organization is not entitled to a remittance of sales and use taxes. The eligible organization may appeal a decision by the governing authority to deny a remittance of sales and use taxes in superior court under RCW 34.05.510 through 34.05.598, if the appeal is filed within 30 days of notification by the governing authority to the eligible organization."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:d988497df3ca2f2a39e10954a78b6f8b40e548904cdead94be8a289d968f7efa"
+  },
+  {
+   "id": "sec-8",
+   "num": "8",
+   "label": "NEW SECTION. Sec. 8.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:11c26f1086c18e35",
+   "blocks": [
+    {
+     "id": "sec-8.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Subject to the requirements of this section, the tax levied by RCW 82.14.030 does not apply to sales of materials incorporated into, and labor and services rendered in respect to, a qualifying project. An eligible organization claiming a remittance under this section must pay the state and local sales and use tax on such sales and apply to the duly authorized administrative official or committee of the city or county for a remittance of the local tax paid."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-8.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Beginning January 1, 2027, the exemption under this section is for taxes collected on a qualifying project under the program established in section 2 of this act. The remittance is equal to 100 percent of local sales and use taxes paid and must be remitted to the eligible organization. The remittance of local sales and use taxes is limited to taxes imposed by the city or county that has authorized the remittance program under section 2 of this act."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-8.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "To receive a remittance under this section, the eligible organization must submit the following to the duly authorized administrative official or committee of the city or county:"
+      }
+     ],
+     "children": [
+      {
+       "id": "sec-8.3.a",
+       "label": "(a)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A remittance application in a form and manner as required by the city or county;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-8.3.b",
+       "label": "(b)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A certificate of occupancy from the permitting authority of the city or county where the project is located;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-8.3.c",
+       "label": "(c)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A certificate of completion from the city or county affirming that the project meets the requirements of section 4 of this act;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-8.3.d",
+       "label": "(d)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "An information sheet, in a form and manner as required by the city or county, specifying the amount of exempted tax claimed and the qualifying purchases or acquisitions for which the remittance is claimed; and"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-8.3.e",
+       "label": "(e)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Any other documentation supporting the remittance application."
+        }
+       ],
+       "children": []
+      }
+     ]
+    },
+    {
+     "id": "sec-8.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "An eligible organization may not apply for more than one remittance in a calendar quarter for the same qualifying project."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-8.5",
+     "label": "(5)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The city or county must rule on the application within 90 days, except that the city or county may extend the time of processing such application upon notice to the eligible organization that ruling on the application cannot be completed within such time."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-8.6",
+     "label": "(6)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "This section applies to eligible organizations receiving a certificate of completion on or before December 31, 2036."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-8.7",
+     "label": "(7)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The definitions in section 1 of this act apply to this section."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:01b310d7187734c19a10b8f50206d8eb9035dfeafbc97e089237b98ed05e7339"
+  },
+  {
+   "id": "sec-9",
+   "num": "9",
+   "label": "NEW SECTION. Sec. 9.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:3f382bc92a1df825",
+   "blocks": [
+    {
+     "id": "sec-9.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Thirty days after the anniversary of the date of issuance of the certificate of occupancy and each year thereafter for 40 years, the eligible organization must file with a designated authorized representative of the city or county an annual report indicating the following:"
+      }
+     ],
+     "children": [
+      {
+       "id": "sec-9.1.a",
+       "label": "(a)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A statement of the affordable housing units constructed on the property as of the anniversary date;"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-9.1.b",
+       "label": "(b)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "A certification by the eligible organization that the property has not changed use; and"
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-9.1.c",
+       "label": "(c)",
+       "level": 2,
+       "kind": "paragraph",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Any additional information requested by the city or county."
+        }
+       ],
+       "children": []
+      }
+     ]
+    },
+    {
+     "id": "sec-9.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "If the governing authority finds that a failure to meet the requirements in this section is due to circumstances beyond the control of the eligible organization, including natural disasters such as wildfires or earthquakes, the governing authority may provide exceptions or extensions to the requirements of this section."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:0a7b755d021ba995dcadfc289e3fbc9cdbf8767bcd5dfe3cf55a00221bb804cb"
+  },
+  {
+   "id": "sec-10",
+   "num": "10",
+   "label": "NEW SECTION. Sec. 10.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:752eedb798771393",
+   "blocks": [
+    {
+     "id": "sec-10.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The taxes exempted under this chapter are immediately due and payable if a city or county finds that a portion of a qualifying project is changed or will be changed to disqualify the recipient for remittance eligibility under this chapter."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-10.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The city or county must assess interest as authorized by chapter 19.52 RCW, but not penalties, retroactively to the date of remittance. A debt for remitted taxes is not extinguished by insolvency or other failure of the recipient."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-10.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "This section does not apply after 40 years from the date of the certificate of completion."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:bfe1b24521d9e52c51fb8f602d5d29232866a379ad0b0990bb4c83103d1692e5"
+  },
+  {
+   "id": "sec-11",
+   "num": "11",
+   "label": "NEW SECTION. Sec. 11.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "new",
+   "identity": "text:2ebf3055dfd0f025",
+   "blocks": [
+    {
+     "id": "sec-11.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Transfer of qualifying project ownership does not terminate the exemption. The exemption is subject to the successor meeting the eligibility requirements under this chapter."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-11.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The transferor of a qualifying project must notify the governing authority of such transfer. The governing authority must certify that the successor meets the requirements of the exemption. The transferor must provide the information necessary for the governing authority to transfer the exemption. If the transferor fails to notify the city or county, all exempted sales and use taxes are immediately due and payable. The city or county must assess interest as authorized by chapter 19.52 RCW, but not penalties, retroactively to the date of exemption."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:3e41c1bae3be5b4b51032e9dba7b8b60adcac111718307bd5663a7e078b69d3a"
+  },
+  {
+   "id": "sec-12",
+   "num": "12",
+   "label": "NEW SECTION. Sec. 12.",
+   "isNewSection": true,
+   "kind": "new",
+   "sourceKind": "addchap",
+   "identity": "newchap:82:1",
+   "blocks": [
+    {
+     "id": "sec-12.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "Sections 1 through 11 of this act constitute a new chapter in "
+      },
+      {
+       "t": "cite",
+       "text": "Title 82 RCW",
+       "cite": {
+        "kind": "rcw-title",
+        "text": "Title 82 RCW",
+        "cite": "82",
+        "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82"
+       }
+      },
+      {
+       "t": "text",
+       "text": "."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:9463a8b304cf2608ae78ec52a36a2de2600327d4549de33e77c18366eae21604",
+   "target": {
+    "action": "add",
+    "title": "82",
+    "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82"
+   }
+  },
+  {
+   "id": "sec-13",
+   "num": "13",
+   "label": "NEW SECTION. Sec. 13.",
+   "isNewSection": true,
+   "kind": "effective-date",
+   "sourceKind": "effdate",
+   "identity": "kind:effective-date",
+   "blocks": [
+    {
+     "id": "sec-13.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "This act takes effect January 1, 2027."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:093d5de26c7622c7aad5a70ef848aaf6090595e7193d794792d9375e4c4a4311"
+  }
+ ],
+ "rcwAffected": [
+  {
+   "cite": "82",
+   "action": "add",
+   "sectionIds": [
+    "sec-12"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82"
+  }
+ ],
+ "provenance": {
+  "fetchedAt": "2026-09-01T00:00:00.000Z",
+  "parser": "wa-bill-xml",
+  "parserVersion": "1.0.0",
+  "warnings": [],
+  "hasLineNumbers": false
+ }
+}

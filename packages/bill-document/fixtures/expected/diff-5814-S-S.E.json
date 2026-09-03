@@ -1,0 +1,1394 @@
+{
+ "bill": {
+  "biennium": "2025-26",
+  "id": "SB5814"
+ },
+ "from": "S",
+ "to": "S.E",
+ "mode": "as-printed",
+ "sections": [
+  {
+   "identity": "text:3ac7e321494d0487",
+   "fromSectionId": "sec-1",
+   "toSectionId": "sec-1",
+   "fromNum": "1",
+   "toNum": "1",
+   "status": "equal",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "rcw:82.04.050",
+   "fromSectionId": "sec-101",
+   "toSectionId": "sec-101",
+   "fromNum": "101",
+   "toNum": "101",
+   "status": "equal",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "rcw:82.04.192",
+   "fromSectionId": "sec-201",
+   "toSectionId": "sec-201",
+   "fromNum": "201",
+   "toNum": "201",
+   "status": "equal",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "rcw:82.26.010",
+   "fromSectionId": "sec-301",
+   "toSectionId": "sec-301",
+   "fromNum": "301",
+   "toNum": "301",
+   "status": "changed",
+   "lines": [
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "Sec. 301. RCW 82.26.010 and 2020 c 139 s 31 are each amended to read as follows:"
+      }
+     ],
+     "blockId": "sec-301"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "The definitions in this section apply throughout this chapter unless the context clearly requires otherwise."
+      }
+     ],
+     "blockId": "sec-301.p1"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(1) \"Actual price\" means the total amount of consideration for which tobacco products are sold, valued in money, whether received in money or otherwise, including any charges by the seller necessary to complete the sale such as charges for delivery, freight, transportation, or handling."
+      }
+     ],
+     "blockId": "sec-301.1"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(2) \"Affiliated\" means related in any way by virtue of any form or amount of common ownership, control, operation, or management."
+      }
+     ],
+     "blockId": "sec-301.2"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(3) \"Board\" means the liquor and cannabis board."
+      }
+     ],
+     "blockId": "sec-301.3"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(4) \"Business\" means any trade, occupation, activity, or enterprise engaged in for the purpose of selling or distributing tobacco products in this state."
+      }
+     ],
+     "blockId": "sec-301.4"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(5) \"Cigar\" means a roll for smoking that is of any size or shape and that is made wholly or in part of tobacco, irrespective of whether the tobacco is pure or flavored, adulterated or mixed with any other ingredient, if the roll has a wrapper made wholly or in greater part of tobacco. \"Cigar\" does not include a cigarette."
+      }
+     ],
+     "blockId": "sec-301.5"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(6) \"Cigarette\" has the same meaning as in RCW 82.24.010."
+      }
+     ],
+     "blockId": "sec-301.6"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(7) \"Department\" means the department of revenue."
+      }
+     ],
+     "blockId": "sec-301.7"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(8) \"Distributor\" means (a) any person engaged in the business of selling tobacco products in this state who brings, or causes to be brought, into this state from without the state any tobacco products for sale, (b) any person who makes, manufactures, fabricates, or stores tobacco products in this state for sale in this state, (c) any person engaged in the business of selling tobacco products without this state who ships or transports tobacco products to retailers in this state, to be sold by those retailers, (d) any person engaged in the business of selling tobacco products in this state who handles for sale any tobacco products that are within this state but upon which tax has not been imposed."
+      }
+     ],
+     "blockId": "sec-301.8"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(9) \"Indian country\" means the same as defined in chapter 82.24 RCW."
+      }
+     ],
+     "blockId": "sec-301.9"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(10) \"Little cigar\" means a cigar that has a cellulose acetate integrated filter."
+      }
+     ],
+     "blockId": "sec-301.10"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(11) \"Manufacturer\" means a person who manufactures and sells tobacco products."
+      }
+     ],
+     "blockId": "sec-301.11"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(12) \"Manufacturer's representative\" means a person hired by a manufacturer to sell or distribute the manufacturer's tobacco products, and includes employees and independent contractors."
+      }
+     ],
+     "blockId": "sec-301.12"
+    },
+    {
+     "mark": "changed",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(13) \"Moist snuff\" means tobacco"
+      },
+      {
+       "mark": "delete",
+       "text": ",",
+       "billMark": "ins"
+      },
+      {
+       "mark": "delete",
+       "text": " "
+      },
+      {
+       "mark": "delete",
+       "text": "or",
+       "billMark": "ins"
+      },
+      {
+       "mark": "delete",
+       "text": " "
+      },
+      {
+       "mark": "delete",
+       "text": "a",
+       "billMark": "ins"
+      },
+      {
+       "mark": "delete",
+       "text": " "
+      },
+      {
+       "mark": "delete",
+       "text": "similar",
+       "billMark": "ins"
+      },
+      {
+       "mark": "delete",
+       "text": " "
+      },
+      {
+       "mark": "delete",
+       "text": "product",
+       "billMark": "ins"
+      },
+      {
+       "mark": "delete",
+       "text": " "
+      },
+      {
+       "mark": "delete",
+       "text": "containing",
+       "billMark": "ins"
+      },
+      {
+       "mark": "delete",
+       "text": " "
+      },
+      {
+       "mark": "delete",
+       "text": "nicotine,",
+       "billMark": "ins"
+      },
+      {
+       "mark": "equal",
+       "text": " that is finely cut, ground, or powdered; is not for smoking; and is intended to be placed in the oral, but not the nasal, cavity."
+      }
+     ],
+     "blockId": "sec-301.13"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(14) \"Person\" means any individual, receiver, administrator, executor, assignee, trustee in bankruptcy, trust, estate, firm, copartnership, joint venture, club, company, joint stock company, business trust, municipal corporation, the state and its departments and institutions, political subdivision of the state of Washington, corporation, limited liability company, association, society, any group of individuals acting as a unit, whether mutual, cooperative, fraternal, nonprofit, or otherwise. The term excludes any person immune from state taxation, including the United States or its instrumentalities, and federally recognized Indian tribes and enrolled tribal members, conducting business within Indian country."
+      }
+     ],
+     "blockId": "sec-301.14"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(15) \"Place of business\" means any place where tobacco products are sold or where tobacco products are manufactured, stored, or kept for the purpose of sale, including any vessel, vehicle, airplane, train, or vending machine."
+      }
+     ],
+     "blockId": "sec-301.15"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(16) \"Retail outlet\" means each place of business from which tobacco products are sold to consumers."
+      }
+     ],
+     "blockId": "sec-301.16"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(17) \"Retailer\" means any person engaged in the business of selling tobacco products to ultimate consumers."
+      }
+     ],
+     "blockId": "sec-301.17"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(18)"
+      }
+     ],
+     "blockId": "sec-301.18"
+    },
+    {
+     "mark": "equal",
+     "depth": 2,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(a) \"Sale\" means any transfer, exchange, or barter, in any manner or by any means whatsoever, for a consideration, and includes and means all sales made by any person."
+      }
+     ],
+     "blockId": "sec-301.18.a"
+    },
+    {
+     "mark": "equal",
+     "depth": 2,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(b) The term \"sale\" includes a gift by a person engaged in the business of selling tobacco products, for advertising, promoting, or as a means of evading the provisions of this chapter."
+      }
+     ],
+     "blockId": "sec-301.18.b"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(19)"
+      }
+     ],
+     "blockId": "sec-301.19"
+    },
+    {
+     "mark": "equal",
+     "depth": 2,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(a) \"Taxable sales price\" means:"
+      }
+     ],
+     "blockId": "sec-301.19.a"
+    },
+    {
+     "mark": "equal",
+     "depth": 3,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(i) In the case of a taxpayer that is not affiliated with the manufacturer, distributor, or other person from whom the taxpayer purchased tobacco products, the actual price for which the taxpayer purchased the tobacco products;"
+      }
+     ],
+     "blockId": "sec-301.19.a.i"
+    },
+    {
+     "mark": "equal",
+     "depth": 3,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(ii) In the case of a taxpayer that purchases tobacco products from an affiliated manufacturer, affiliated distributor, or other affiliated person, and that sells those tobacco products to unaffiliated distributors, unaffiliated retailers, or ultimate consumers, the actual price for which that taxpayer sells those tobacco products to unaffiliated distributors, unaffiliated retailers, or ultimate consumers;"
+      }
+     ],
+     "blockId": "sec-301.19.a.ii"
+    },
+    {
+     "mark": "equal",
+     "depth": 3,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(iii) In the case of a taxpayer that sells tobacco products only to affiliated distributors or affiliated retailers, the price, determined as nearly as possible according to the actual price, that other distributors sell similar tobacco products of like quality and character to unaffiliated distributors, unaffiliated retailers, or ultimate consumers;"
+      }
+     ],
+     "blockId": "sec-301.19.a.iii"
+    },
+    {
+     "mark": "equal",
+     "depth": 3,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(iv) In the case of a taxpayer that is a manufacturer selling tobacco products directly to ultimate consumers, the actual price for which the taxpayer sells those tobacco products to ultimate consumers;"
+      }
+     ],
+     "blockId": "sec-301.19.a.iv"
+    },
+    {
+     "mark": "equal",
+     "depth": 3,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(v) In the case of a taxpayer that has acquired tobacco products under a sale as defined in subsection (18)(b) of this section, the price, determined as nearly as possible according to the actual price, that the taxpayer or other distributors sell the same tobacco products or similar tobacco products of like quality and character to unaffiliated distributors, unaffiliated retailers, or ultimate consumers; or"
+      }
+     ],
+     "blockId": "sec-301.19.a.v"
+    },
+    {
+     "mark": "equal",
+     "depth": 3,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(vi) In any case where (a)(i) through (v) of this subsection do not apply, the price, determined as nearly as possible according to the actual price, that the taxpayer or other distributors sell the same tobacco products or similar tobacco products of like quality and character to unaffiliated distributors, unaffiliated retailers, or ultimate consumers."
+      }
+     ],
+     "blockId": "sec-301.19.a.vi"
+    },
+    {
+     "mark": "equal",
+     "depth": 2,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(b) For purposes of (a)(i) and (ii) of this subsection only, \"person\" includes both persons as defined in subsection (14) of this section and any person immune from state taxation, including the United States or its instrumentalities, and federally recognized Indian tribes and enrolled tribal members, conducting business within Indian country."
+      }
+     ],
+     "blockId": "sec-301.19.b"
+    },
+    {
+     "mark": "equal",
+     "depth": 2,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(c) The department may adopt rules regarding the determination of taxable sales price under this subsection."
+      }
+     ],
+     "blockId": "sec-301.19.c"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(20) \"Taxpayer\" means a person liable for the tax imposed by this chapter."
+      }
+     ],
+     "blockId": "sec-301.20"
+    },
+    {
+     "mark": "changed",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(21) \"Tobacco products\" means cigars, cheroots, stogies, periques, granulated, plug cut, crimp cut, ready rubbed, and other smoking tobacco, snuff, snuff flour, cavendish, plug and twist tobacco, fine-cut and other chewing tobaccos, shorts, refuse scraps, clippings, cuttings and sweepings of tobacco, and other kinds and forms of tobacco, prepared in such manner as to be suitable for chewing or smoking in a pipe or otherwise, or both for chewing and smoking, and any other product, regardless of form, that contains tobacco "
+      },
+      {
+       "mark": "equal",
+       "text": "or",
+       "billMark": "ins"
+      },
+      {
+       "mark": "equal",
+       "text": " "
+      },
+      {
+       "mark": "equal",
+       "text": "nicotine,",
+       "billMark": "ins"
+      },
+      {
+       "mark": "equal",
+       "text": " "
+      },
+      {
+       "mark": "equal",
+       "text": "whether",
+       "billMark": "ins"
+      },
+      {
+       "mark": "equal",
+       "text": " "
+      },
+      {
+       "mark": "equal",
+       "text": "derived",
+       "billMark": "ins"
+      },
+      {
+       "mark": "equal",
+       "text": " "
+      },
+      {
+       "mark": "equal",
+       "text": "from",
+       "billMark": "ins"
+      },
+      {
+       "mark": "equal",
+       "text": " "
+      },
+      {
+       "mark": "equal",
+       "text": "tobacco",
+       "billMark": "ins"
+      },
+      {
+       "mark": "equal",
+       "text": " "
+      },
+      {
+       "mark": "equal",
+       "text": "or",
+       "billMark": "ins"
+      },
+      {
+       "mark": "equal",
+       "text": " "
+      },
+      {
+       "mark": "equal",
+       "text": "created",
+       "billMark": "ins"
+      },
+      {
+       "mark": "equal",
+       "text": " "
+      },
+      {
+       "mark": "equal",
+       "text": "synthetically,",
+       "billMark": "ins"
+      },
+      {
+       "mark": "equal",
+       "text": " and is intended for human consumption or placement in the oral or nasal cavity or absorption into the human body by any other means, but does not include cigarettes as defined in RCW "
+      },
+      {
+       "mark": "delete",
+       "text": "82.24.010."
+      },
+      {
+       "mark": "insert",
+       "text": "82.24.010 "
+      },
+      {
+       "mark": "insert",
+       "text": "or",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "a",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "drug,",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "device,",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "or",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "combination",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "product",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "approved,",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "as",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "of",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "December",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "31,",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "2024,",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "for",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "sale",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "by",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "the",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "United",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "States",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "food",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "and",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "drug",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "administration,",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "as",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "those",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "terms",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "are",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "defined",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "in",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "the",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "federal",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "food,",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "drug,",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "and",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "cosmetic",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "act",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "(21",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "U.S.C.",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "Sec.",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "301",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "et",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "seq.)",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "as",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "it",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "exists",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "on",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "the",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "effective",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "date",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "of",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "this",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": " "
+      },
+      {
+       "mark": "insert",
+       "text": "section",
+       "billMark": "ins"
+      },
+      {
+       "mark": "insert",
+       "text": "."
+      }
+     ],
+     "blockId": "sec-301.21"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(22) \"Unaffiliated distributor\" means a distributor that is not affiliated with the manufacturer, distributor, or other person from whom the distributor has purchased tobacco products."
+      }
+     ],
+     "blockId": "sec-301.22"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(23) \"Unaffiliated retailer\" means a retailer that is not affiliated with the manufacturer, distributor, or other person from whom the retailer has purchased tobacco products."
+      }
+     ],
+     "blockId": "sec-301.23"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "note",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "2020 c 139 s 31. Prior: 2010 1st sp.s. c 22 s 4; 2005 c 180 s 2; 2002 c 325 s 1; 1995 c 278 s 16; 1975 1st ex.s. c 278 s 70; 1961 c 15 s 82.26.010; prior: 1959 ex.s. c 5 s 11."
+      }
+     ],
+     "blockId": "sec-301"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "note",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "Intent—Effective date—2010 1st sp.s. c 22: See notes following RCW 82.24.020."
+      }
+     ],
+     "blockId": "sec-301"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "note",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "Effective date—2005 c 180: See note following RCW 82.26.105."
+      }
+     ],
+     "blockId": "sec-301"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "note",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "Effective date—2002 c 325: \"This act takes effect July 1, 2002.\" [2002 c 325 s 6.]"
+      }
+     ],
+     "blockId": "sec-301"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "note",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "Effective date—1995 c 278: See note following RCW 82.24.010."
+      }
+     ],
+     "blockId": "sec-301"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "note",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "Construction—Severability—1975 1st ex.s. c 278: See notes following RCW 11.08.160."
+      }
+     ],
+     "blockId": "sec-301"
+    }
+   ],
+   "summary": {
+    "changed": 2,
+    "inserted": 0,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "rcw:82.32.045",
+   "fromSectionId": "sec-401",
+   "toSectionId": "sec-401",
+   "fromNum": "401",
+   "toNum": "401",
+   "status": "equal",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "rcw:82.32.050",
+   "fromSectionId": "sec-402",
+   "toSectionId": "sec-402",
+   "fromNum": "402",
+   "toNum": "402",
+   "status": "equal",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "new:82.24:1",
+   "fromSectionId": null,
+   "toSectionId": "sec-501",
+   "toNum": "501",
+   "status": "added",
+   "lines": [
+    {
+     "mark": "insert",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "insert",
+       "text": "NEW SECTION. Sec. 501. A new section is added to chapter 82.24 RCW to read as follows:"
+      }
+     ],
+     "blockId": "sec-501"
+    },
+    {
+     "mark": "insert",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "insert",
+       "text": "(1) In addition to the tax imposed upon the sale, use, consumption, handling, possession, or distribution of cigarettes set forth in RCW 82.24.020 and 82.24.026, there is imposed a tax in an amount equal to $0.10 per cigarette."
+      }
+     ],
+     "blockId": "sec-501.1"
+    },
+    {
+     "mark": "insert",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "insert",
+       "text": "(2) Beginning December 2028, and every three years thereafter, the department shall adjust the amount of the tax under this section by multiplying the current amount by one plus the percentage by which the most current consumer price index available on December 1st of the current year exceeds the consumer price index for the prior 36-month period. If an adjustment under this subsection (2) would reduce the applicable amounts, the department may not adjust the applicable amounts for use in the following year. The department shall publish the adjusted applicable amounts on its public website by December 31st. The adjusted applicable amounts calculated under this subsection (2) take effect for taxes due in January of the calendar year that is two years after the year of the calculation."
+      }
+     ],
+     "blockId": "sec-501.2"
+    },
+    {
+     "mark": "insert",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "insert",
+       "text": "(3) The revenue collected under this section must be deposited as follows:"
+      }
+     ],
+     "blockId": "sec-501.3"
+    },
+    {
+     "mark": "insert",
+     "depth": 2,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "insert",
+       "text": "(a) The first $10,000,000 per fiscal year must be deposited in the youth tobacco and vapor products prevention account created in RCW 70.155.120; and"
+      }
+     ],
+     "blockId": "sec-501.3.a"
+    },
+    {
+     "mark": "insert",
+     "depth": 2,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "insert",
+       "text": "(b) The remainder must be deposited into the general fund."
+      }
+     ],
+     "blockId": "sec-501.3.b"
+    },
+    {
+     "mark": "insert",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "insert",
+       "text": "(4) For purposes of this section, \"consumer price index\" means the consumer price index for all urban consumers, all items, for the Seattle area as calculated by the United States bureau of labor statistics or its successor agency."
+      }
+     ],
+     "blockId": "sec-501.4"
+    }
+   ],
+   "summary": {
+    "changed": 0,
+    "inserted": 7,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "kind:severability",
+   "fromSectionId": "sec-501",
+   "toSectionId": "sec-601",
+   "fromNum": "501",
+   "toNum": "601",
+   "status": "renumbered",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "text:0d68fe6ddc164dff",
+   "fromSectionId": "sec-502",
+   "toSectionId": "sec-602",
+   "fromNum": "502",
+   "toNum": "602",
+   "status": "renumbered",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "kind:effective-date",
+   "fromSectionId": "sec-503",
+   "toSectionId": "sec-603",
+   "fromNum": "503",
+   "toNum": "603",
+   "status": "renumbered",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "kind:effective-date#2",
+   "fromSectionId": "sec-504",
+   "toSectionId": "sec-604",
+   "fromNum": "504",
+   "toNum": "604",
+   "status": "renumbered",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "kind:effective-date#3",
+   "fromSectionId": "sec-505",
+   "toSectionId": "sec-605",
+   "fromNum": "505",
+   "toNum": "605",
+   "status": "renumbered",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  }
+ ],
+ "summary": {
+  "changed": 2,
+  "inserted": 7,
+  "deleted": 0,
+  "sectionsChanged": 7
+ }
+}

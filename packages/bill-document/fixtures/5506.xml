@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Bill type="bill" xmlns="http://leg.wa.gov/2012/document"><BillHeading><RequestNumber>S-0835.1</RequestNumber><ShortBillId>SB 5506</ShortBillId><LongBillId>SENATE BILL 5506</LongBillId><Legislature>69th Legislature</Legislature><Session>2025 Regular Session</Session><Sponsors>Senators Christian, C. Wilson, Nobles, and Wellman</Sponsors><BillHistory><ReadDate>Read first time 01/27/25.</ReadDate><ReferredCommittee>Referred to Committee on Human Services.</ReferredCommittee></BillHistory><BriefDescription>Extending the effective date of licensing living accommodations for residential private schools.</BriefDescription></BillHeading>
+
+<BillBody>
+<BillTitle>AN ACT Relating to extending the effective date of licensing living accommodations for residential private schools; amending 2023 c 441 s 8 (uncodified); and declaring an emergency.</BillTitle>
+<EnactedClause />
+<BillSection type="amendatory" action="amenduncod">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>1</Value><TextRun>.  </TextRun></BillSectionNumber><UncodCite>2023 c 441 s 8</UncodCite> (uncodified) is amended to read as follows:</BillSectionHeader>
+<P>Sections 2 and 4 of this act take effect July 1, <TextRun amendingStyle="strike">2025</TextRun> <TextRun amendingStyle="add">2026</TextRun>.</P>
+</BillSection>
+<BillSection type="new" action="emerg">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>2</Value><TextRun>.  </TextRun></BillSectionNumber><P>This act is necessary for the immediate preservation of the public peace, health, or safety, or support of the state government and its existing public institutions, and takes effect immediately.</P></BillSectionHeader>
+</BillSection>
+</BillBody>
+</Bill>

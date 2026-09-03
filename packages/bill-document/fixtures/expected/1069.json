@@ -1,0 +1,240 @@
+{
+ "schemaVersion": "1.0",
+ "bill": {
+  "biennium": "2025-26",
+  "chamber": "H",
+  "type": "B",
+  "number": 1069,
+  "id": "HB1069",
+  "billPageUrl": "https://app.leg.wa.gov/billsummary?BillNumber=1069&Year=2025&Initiative=false",
+  "shortTitle": "Allowing collective bargaining over contributions for certain supplemental retirement benefits."
+ },
+ "version": {
+  "code": "I",
+  "label": "House Bill",
+  "seq": 0,
+  "sourceHash": "sha256:cad6c2ea0b91471b804d4157dd1951acef01dfce389d80980241b22acfc403e0"
+ },
+ "header": {
+  "title": "AN ACT Relating to allowing collective bargaining over contributions for certain supplemental retirement benefits; and amending RCW 41.80.040.",
+  "relatingTo": "allowing collective bargaining over contributions for certain supplemental retirement benefits",
+  "titleActions": [
+   {
+    "kind": "amending",
+    "text": "amending RCW 41.80.040",
+    "cites": [
+     {
+      "kind": "rcw",
+      "text": "RCW 41.80.040",
+      "cite": "41.80.040",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=41.80.040"
+     }
+    ]
+   }
+  ],
+  "sponsors": [
+   "Representatives Fosse, Low, Peterson, Griffey, Bronoske, Timmons, Nance, Goodman, Cortes, Volz, Ormsby, Scott, Mena, Davis, Macri, Stonier, Alvarado, Doglio, Bernbaum, Ryu, Ramel, Berry, Reed, Callan, Obras, Farivar, Ortiz-Self, Simmons, Street, Pollet, Fey, Berg, Lekanoff, Salahuddin, Reeves, Donaghy, and Hill"
+  ],
+  "briefDescription": "Allowing collective bargaining over contributions for certain supplemental retirement benefits.",
+  "requestNumber": "H-0127.1",
+  "shortBillId": "HB 1069",
+  "longBillId": "HOUSE BILL 1069",
+  "legislature": "69th Legislature",
+  "session": "2025 Regular Session",
+  "prefiledDate": "Prefiled 12/13/24.",
+  "referredTo": "Referred to Committee on Labor & Workplace Standards.",
+  "readFirstTime": "2025-01-13"
+ },
+ "sections": [
+  {
+   "id": "sec-1",
+   "num": "1",
+   "label": "Sec. 1.",
+   "isNewSection": false,
+   "kind": "amendatory",
+   "sourceKind": "amend",
+   "identity": "rcw:41.80.040",
+   "blocks": [
+    {
+     "id": "sec-1.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "The employer shall not bargain over rights of management which, in addition to all powers, duties, and rights established by constitutional provision or statute, shall include but not be limited to the following:"
+      }
+     ],
+     "children": [],
+     "labelMark": "ins"
+    },
+    {
+     "id": "sec-1.1_2",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "ins",
+       "text": "(a)"
+      },
+      {
+       "t": "text",
+       "text": " The functions and programs of the employer, the use of technology, and the structure of the organization;"
+      }
+     ],
+     "children": [],
+     "labelMark": "del"
+    },
+    {
+     "id": "sec-1.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "ins",
+       "text": "(b)"
+      },
+      {
+       "t": "text",
+       "text": " The employer's budget, which includes for purposes of any negotiations conducted during the 2019-2021 fiscal biennium any specification of the funds or accounts that must be appropriated by the legislature to fulfill the terms of an agreement, and the size of the agency workforce, including determining the financial basis for layoffs;"
+      }
+     ],
+     "children": [],
+     "labelMark": "del"
+    },
+    {
+     "id": "sec-1.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "ins",
+       "text": "(c)"
+      },
+      {
+       "t": "text",
+       "text": " The right to direct and supervise employees;"
+      }
+     ],
+     "children": [],
+     "labelMark": "del"
+    },
+    {
+     "id": "sec-1.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "ins",
+       "text": "(d)"
+      },
+      {
+       "t": "text",
+       "text": " The right to take whatever actions are deemed necessary to carry out the mission of the state and its agencies during emergencies; and"
+      }
+     ],
+     "children": [],
+     "labelMark": "del"
+    },
+    {
+     "id": "sec-1.5",
+     "label": "(5)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "ins",
+       "text": "(e)"
+      },
+      {
+       "t": "text",
+       "text": " Retirement plans and retirement benefits "
+      },
+      {
+       "t": "ins",
+       "text": "administered by the department of retirement systems"
+      },
+      {
+       "t": "text",
+       "text": "."
+      }
+     ],
+     "children": [],
+     "labelMark": "del"
+    },
+    {
+     "id": "sec-1.2_2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "ins",
+       "text": "Subsection (1)(e) of this section does not prevent the employer from bargaining over contributions for supplemental retirement benefits administered by, or on behalf of, an employee organization, including medical plans."
+      }
+     ],
+     "children": [],
+     "labelMark": "ins"
+    }
+   ],
+   "textHash": "sha256:f505ccec77a3ca2a51d86a6f0ebeae2ee403f6266b39cf9b627e9309716cc9db",
+   "heading": "Management rights—Not subject to bargaining.",
+   "target": {
+    "action": "amend",
+    "cite": "41.80.040",
+    "chapter": "41.80",
+    "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=41.80.040",
+    "caption": "Management rights—Not subject to bargaining.",
+    "history": "2020 c 357 s 913"
+   },
+   "introText": [
+    {
+     "t": "cite",
+     "text": "RCW 41.80.040",
+     "cite": {
+      "kind": "rcw",
+      "text": "RCW 41.80.040",
+      "cite": "41.80.040",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=41.80.040"
+     }
+    },
+    {
+     "t": "text",
+     "text": " and 2020 c 357 s 913 are each amended to read as follows:"
+    }
+   ],
+   "notes": [
+    "2020 c 357 s 913; 2002 c 354 s 305.",
+    "Effective date—2020 c 357: See note following RCW 43.79.545."
+   ],
+   "changeSummary": {
+    "insWords": 42,
+    "delWords": 0
+   }
+  }
+ ],
+ "rcwAffected": [
+  {
+   "cite": "41.80.040",
+   "action": "amend",
+   "sectionIds": [
+    "sec-1"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=41.80.040",
+   "chapter": "41.80",
+   "caption": "Management rights—Not subject to bargaining."
+  }
+ ],
+ "provenance": {
+  "fetchedAt": "2026-09-01T00:00:00.000Z",
+  "parser": "wa-bill-xml",
+  "parserVersion": "1.0.0",
+  "warnings": [],
+  "hasLineNumbers": false
+ }
+}

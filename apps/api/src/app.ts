@@ -17,6 +17,7 @@ import { OutboxRelay } from './lib/outbox.js';
 import type { Logger } from 'pino';
 import { principalPlugin, identityRoutes, createOidcClient, type OidcClient } from './modules/identity/index.js';
 import { adminRoutes } from './modules/admin/index.js';
+import { billsRoutes } from './modules/bills/index.js';
 
 export type HealthProbe = () => Promise<{ ok: boolean; detail?: string }>;
 
@@ -123,6 +124,7 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
       });
       await api.register(identityRoutes);
       await api.register(adminRoutes);
+      await api.register(billsRoutes);
       for (const mod of moduleRegistrars) await api.register(mod);
     },
     { prefix: API_PREFIX },

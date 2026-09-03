@@ -1,0 +1,228 @@
+{
+ "schemaVersion": "1.0",
+ "bill": {
+  "biennium": "2025-26",
+  "chamber": "H",
+  "type": "B",
+  "number": 2009,
+  "id": "HB2009",
+  "billPageUrl": "https://app.leg.wa.gov/billsummary?BillNumber=2009&Year=2025&Initiative=false",
+  "shortTitle": "Clarifying the calculation of the real estate excise tax for the transfer of a controlling interest in an entity holding real property."
+ },
+ "version": {
+  "code": "I",
+  "label": "House Bill",
+  "seq": 0,
+  "sourceHash": "sha256:ee7b109734756f3f9ef170e1990b840992e0bfe3006fcd50c90ead067d61fef4"
+ },
+ "header": {
+  "title": "AN ACT Relating to clarifying the calculation of the real estate excise tax for the transfer of a controlling interest in an entity holding real property; amending RCW 82.45.030; and providing an effective date.",
+  "relatingTo": "clarifying the calculation of the real estate excise tax for the transfer of a controlling interest in an entity holding real property",
+  "titleActions": [
+   {
+    "kind": "amending",
+    "text": "amending RCW 82.45.030",
+    "cites": [
+     {
+      "kind": "rcw",
+      "text": "RCW 82.45.030",
+      "cite": "82.45.030",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.45.030"
+     }
+    ]
+   },
+   {
+    "kind": "effective-date",
+    "text": "providing an effective date"
+   }
+  ],
+  "sponsors": [
+   "Representatives Salahuddin, Walen, and Parshley"
+  ],
+  "briefDescription": "Clarifying the calculation of the real estate excise tax for the transfer of a controlling interest in an entity holding real property.",
+  "requestNumber": "H-1555.1",
+  "shortBillId": "HB 2009",
+  "longBillId": "HOUSE BILL 2009",
+  "legislature": "69th Legislature",
+  "session": "2025 Regular Session",
+  "referredTo": "Referred to Committee on Finance.",
+  "readFirstTime": "2025-02-20"
+ },
+ "sections": [
+  {
+   "id": "sec-1",
+   "num": "1",
+   "label": "Sec. 1.",
+   "isNewSection": false,
+   "kind": "amendatory",
+   "sourceKind": "amend",
+   "identity": "rcw:82.45.030",
+   "blocks": [
+    {
+     "id": "sec-1.1",
+     "label": "(1)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "As used in this chapter, the term \"selling price\" means the true and fair value of the property conveyed. If property has been conveyed in an arm's length transaction between unrelated persons for a valuable consideration, a rebuttable presumption exists that the selling price is equal to the total consideration paid or contracted to be paid to the transferor, or to another for the transferor's benefit."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.2",
+     "label": "(2)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "If the sale is a transfer of a controlling interest in an entity with an interest in real property located in this state, the selling price shall be the true and fair value of the real property owned by the entity and located in this state"
+      },
+      {
+       "t": "ins",
+       "text": ", multiplied by the percentage of the controlling interest being transferred"
+      },
+      {
+       "t": "text",
+       "text": ". If the true and fair value of the real property located in this state cannot reasonably be determined, the selling price shall be determined according to subsection (4) of this section."
+      }
+     ],
+     "children": []
+    },
+    {
+     "id": "sec-1.3",
+     "label": "(3)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "As used in this section, \"total consideration paid or contracted to be paid\" includes money or anything of value, paid or delivered or contracted to be paid or delivered in return for the sale, and shall include the amount of any lien, mortgage, contract indebtedness, or other incumbrance, either given to secure the purchase price, or any part thereof, or remaining unpaid on such property at the time of sale."
+      }
+     ],
+     "children": [
+      {
+       "id": "sec-1.3.p1",
+       "level": 2,
+       "kind": "unnumbered",
+       "runs": [
+        {
+         "t": "text",
+         "text": "Total consideration shall not include the amount of any outstanding lien or incumbrance in favor of the United States, the state, or a municipal corporation for taxes, special benefits, or improvements."
+        }
+       ],
+       "children": []
+      },
+      {
+       "id": "sec-1.3.p2",
+       "level": 2,
+       "kind": "unnumbered",
+       "runs": [
+        {
+         "t": "text",
+         "text": "When a transfer or conveyance is made by deed in lieu of foreclosure to satisfy a deed of trust, total consideration shall not include the amount of any relocation assistance provided to the transferor."
+        }
+       ],
+       "children": []
+      }
+     ]
+    },
+    {
+     "id": "sec-1.4",
+     "label": "(4)",
+     "level": 1,
+     "kind": "subsection",
+     "runs": [
+      {
+       "t": "text",
+       "text": "If the total consideration for the sale cannot be ascertained or the true and fair value of the property to be valued at the time of the sale cannot reasonably be determined, the market value assessment for the property maintained on the county property tax rolls at the time of the sale shall be used as the selling price."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:49fa4b990ca5576efa97334f5e0760bc0cf6009e2bb4ed75d87aceb49db82cbe",
+   "heading": "\"Selling price,\" \"total consideration paid or contracted to be paid,\" defined.",
+   "target": {
+    "action": "amend",
+    "cite": "82.45.030",
+    "chapter": "82.45",
+    "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.45.030",
+    "caption": "\"Selling price,\" \"total consideration paid or contracted to be paid,\" defined.",
+    "history": "2011 c 58 s 15"
+   },
+   "introText": [
+    {
+     "t": "cite",
+     "text": "RCW 82.45.030",
+     "cite": {
+      "kind": "rcw",
+      "text": "RCW 82.45.030",
+      "cite": "82.45.030",
+      "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.45.030"
+     }
+    },
+    {
+     "t": "text",
+     "text": " and 2011 c 58 s 15 are each amended to read as follows:"
+    }
+   ],
+   "notes": [
+    "2011 c 58 s 15; 1993 sp.s. c 25 s 503; 1969 ex.s. c 223 s 28A.45.030. Prior: 1951 2nd ex.s. c 19 s 2; 1951 1st ex.s. c 11 s 8. Formerly RCW 28A.45.030, 28.45.030.",
+    "Findings—Intent—Short title—2011 c 58: See notes following RCW 61.24.005.",
+    "Severability—Effective dates—Part headings, captions not law—1993 sp.s. c 25: See notes following RCW 82.04.230.",
+    "Findings—Intent—1993 sp.s. c 25: See note following RCW 82.45.010."
+   ],
+   "changeSummary": {
+    "insWords": 11,
+    "delWords": 0
+   }
+  },
+  {
+   "id": "sec-2",
+   "num": "2",
+   "label": "NEW SECTION. Sec. 2.",
+   "isNewSection": true,
+   "kind": "effective-date",
+   "sourceKind": "effdate",
+   "identity": "kind:effective-date",
+   "blocks": [
+    {
+     "id": "sec-2.p1",
+     "level": 1,
+     "kind": "unnumbered",
+     "runs": [
+      {
+       "t": "text",
+       "text": "This act takes effect August 1, 2025."
+      }
+     ],
+     "children": []
+    }
+   ],
+   "textHash": "sha256:7164794de148ba624f5e33a2734229863ebd716bd222d6e05ad7470a918d26e0"
+  }
+ ],
+ "rcwAffected": [
+  {
+   "cite": "82.45.030",
+   "action": "amend",
+   "sectionIds": [
+    "sec-1"
+   ],
+   "href": "https://app.leg.wa.gov/RCW/default.aspx?cite=82.45.030",
+   "chapter": "82.45",
+   "caption": "\"Selling price,\" \"total consideration paid or contracted to be paid,\" defined."
+  }
+ ],
+ "provenance": {
+  "fetchedAt": "2026-09-01T00:00:00.000Z",
+  "parser": "wa-bill-xml",
+  "parserVersion": "1.0.0",
+  "warnings": [],
+  "hasLineNumbers": false
+ }
+}

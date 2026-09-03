@@ -1,0 +1,280 @@
+{
+ "bill": {
+  "biennium": "2025-26",
+  "id": "HB2402"
+ },
+ "from": "I",
+ "to": "S",
+ "mode": "as-printed",
+ "sections": [
+  {
+   "identity": "text:13b9ad68e665fcf5",
+   "fromSectionId": "sec-1",
+   "toSectionId": "sec-1",
+   "fromNum": "1",
+   "toNum": "1",
+   "status": "equal",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "text:b75d2edffc25b5f9",
+   "fromSectionId": "sec-2",
+   "toSectionId": "sec-2",
+   "fromNum": "2",
+   "toNum": "2",
+   "status": "equal",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "text:88f3f47d9bb32006",
+   "fromSectionId": "sec-3",
+   "toSectionId": "sec-3",
+   "fromNum": "3",
+   "toNum": "3",
+   "status": "changed",
+   "lines": [
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "NEW SECTION. Sec. 3."
+      }
+     ],
+     "blockId": "sec-3"
+    },
+    {
+     "mark": "changed",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(1) Except as provided in subsections (4) "
+      },
+      {
+       "mark": "delete",
+       "text": "and"
+      },
+      {
+       "mark": "insert",
+       "text": "through"
+      },
+      {
+       "mark": "equal",
+       "text": " "
+      },
+      {
+       "mark": "delete",
+       "text": "(5)"
+      },
+      {
+       "mark": "insert",
+       "text": "(6)"
+      },
+      {
+       "mark": "equal",
+       "text": " of this section, beginning January 1, "
+      },
+      {
+       "mark": "delete",
+       "text": "2028,"
+      },
+      {
+       "mark": "insert",
+       "text": "2030,"
+      },
+      {
+       "mark": "equal",
+       "text": " it is prohibited for a person to manufacture, sell, or distribute into commerce in Washington intravenous solution containers made with intentionally added DEHP or that contain unintentionally added DEHP in a quantity that equals or exceeds 0.1 percent weight per weight."
+      }
+     ],
+     "blockId": "sec-3.1"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(2) Beginning January 1, 2035, it is prohibited for a person to manufacture, sell, or distribute into commerce in Washington intravenous tubing made with intentionally added DEHP or that contains unintentionally added DEHP in a quantity that equals or exceeds 0.1 percent weight per weight."
+      }
+     ],
+     "blockId": "sec-3.2"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(3) A person or entity shall not replace DEHP under this chapter for revised or new products with other ortho-phthalates."
+      }
+     ],
+     "blockId": "sec-3.3"
+    },
+    {
+     "mark": "equal",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(4) The following items, as described in 21 C.F.R. as it existed as of January 1, 2026, are exempt from the requirements of this section:"
+      }
+     ],
+     "blockId": "sec-3.4"
+    },
+    {
+     "mark": "equal",
+     "depth": 2,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(a) Human blood collection and storage bags; and"
+      }
+     ],
+     "blockId": "sec-3.4.a"
+    },
+    {
+     "mark": "equal",
+     "depth": 2,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "equal",
+       "text": "(b) Apheresis and cell therapy blood kits and bags, including integral tubing."
+      }
+     ],
+     "blockId": "sec-3.4.b"
+    },
+    {
+     "mark": "delete",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "delete",
+       "text": "(5) Nothing in this section limits the authority of the department of ecology with respect to DEHP, other ortho-phthalates, intravenous solution containers, or intravenous tubing under chapter 70A.350 RCW."
+      }
+     ],
+     "blockId": "sec-3.5"
+    },
+    {
+     "mark": "insert",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "insert",
+       "text": "(5) A person or entity, due to pending United States food and drug administration approval for the DEHP-free intravenous solution container or due to the manufacturer not having adequate equipment to manufacture the DEHP-free intravenous solution container, shall meet the requirement in subsection (1) of this section by January 1, 2032, if both of the following conditions are met:"
+      }
+     ],
+     "blockId": "sec-3.5"
+    },
+    {
+     "mark": "insert",
+     "depth": 2,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "insert",
+       "text": "(a) The person or entity notified its Washington customers, no later than January 1, 2027, that it has commenced development of the DEHP-free intravenous solution container to meet the requirements of this section; and"
+      }
+     ],
+     "blockId": "sec-3.5.a"
+    },
+    {
+     "mark": "insert",
+     "depth": 2,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "insert",
+       "text": "(b) The person or entity provides notice to its customers and posts to its official internet website, no later than January 1, 2028, that it will not meet the deadline imposed pursuant to subsection (1) of this section."
+      }
+     ],
+     "blockId": "sec-3.5.b"
+    },
+    {
+     "mark": "insert",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "insert",
+       "text": "(6) If the United States food and drug administration or Washington department of health determines that there is an industry shortage of federal food and drug administration approved intravenous solution containers and tubing, such federal food and drug administration approved intravenous solution containers and tubing containing DEHP may be manufactured, distributed, and sold within Washington until the federal food and drug administration or Washington department of health determines the supply chain interruption is terminated."
+      }
+     ],
+     "blockId": "sec-3.6"
+    },
+    {
+     "mark": "insert",
+     "depth": 1,
+     "kind": "text",
+     "spans": [
+      {
+       "mark": "insert",
+       "text": "(7) Nothing in this section limits the authority of the department of ecology with respect to DEHP, other ortho-phthalates, intravenous solution containers, or intravenous tubing under chapter 70A.350 RCW."
+      }
+     ],
+     "blockId": "sec-3.7"
+    }
+   ],
+   "summary": {
+    "changed": 1,
+    "inserted": 5,
+    "deleted": 1
+   }
+  },
+  {
+   "identity": "newchap:70A:1",
+   "fromSectionId": "sec-4",
+   "toSectionId": "sec-4",
+   "fromNum": "4",
+   "toNum": "4",
+   "status": "equal",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  },
+  {
+   "identity": "kind:severability",
+   "fromSectionId": "sec-5",
+   "toSectionId": "sec-5",
+   "fromNum": "5",
+   "toNum": "5",
+   "status": "equal",
+   "lines": [],
+   "summary": {
+    "changed": 0,
+    "inserted": 0,
+    "deleted": 0
+   }
+  }
+ ],
+ "summary": {
+  "changed": 1,
+  "inserted": 5,
+  "deleted": 1,
+  "sectionsChanged": 1
+ }
+}

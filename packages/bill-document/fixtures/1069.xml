@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Bill type="bill" xmlns="http://leg.wa.gov/2012/document"><BillHeading><RequestNumber>H-0127.1</RequestNumber><ShortBillId>HB 1069</ShortBillId><LongBillId>HOUSE BILL 1069</LongBillId><Legislature>69th Legislature</Legislature><Session>2025 Regular Session</Session><Sponsors>Representatives Fosse, Low, Peterson, Griffey, Bronoske, Timmons, Nance, Goodman, Cortes, Volz, Ormsby, Scott, Mena, Davis, Macri, Stonier, Alvarado, Doglio, Bernbaum, Ryu, Ramel, Berry, Reed, Callan, Obras, Farivar, Ortiz-Self, Simmons, Street, Pollet, Fey, Berg, Lekanoff, Salahuddin, Reeves, Donaghy, and Hill</Sponsors><BillHistory><PrefiledDate>Prefiled 12/13/24.</PrefiledDate><ReadDate>Read first time 01/13/25.</ReadDate><ReferredCommittee>Referred to Committee on Labor &amp; Workplace Standards.</ReferredCommittee></BillHistory><BriefDescription>Allowing collective bargaining over contributions for certain supplemental retirement benefits.</BriefDescription></BillHeading>
+
+<BillBody>
+<BillTitle>AN ACT Relating to allowing collective bargaining over contributions for certain supplemental retirement benefits; and amending RCW 41.80.040.</BillTitle>
+<EnactedClause />
+<BillSection type="amendatory" action="amend">
+<BillSectionHeader><BillSectionNumber><TextRun>Sec. </TextRun><Value>1</Value><TextRun>.  </TextRun></BillSectionNumber><SectionCite><TextRun>RCW </TextRun><TitleNumber>41</TitleNumber><TextRun>.</TextRun><ChapterNumber>80</ChapterNumber><TextRun>.</TextRun><SectionNumber>040</SectionNumber></SectionCite> and 2020 c 357 s 913 are each amended to read as follows:<Caption>Management rights<TextRun fontFamily="Times New Roman">—</TextRun>Not subject to bargaining.</Caption></BillSectionHeader>
+<P><TextRun amendingStyle="add">(1)</TextRun> The employer shall not bargain over rights of management which, in addition to all powers, duties, and rights established by constitutional provision or statute, shall include but not be limited to the following:</P>
+<P><TextRun amendingStyle="strike">(1)</TextRun> <TextRun amendingStyle="add">(a)</TextRun> The functions and programs of the employer, the use of technology, and the structure of the organization;</P>
+<P><TextRun amendingStyle="strike">(2)</TextRun> <TextRun amendingStyle="add">(b)</TextRun> The employer's budget, which includes for purposes of any negotiations conducted during the 2019-2021 fiscal biennium any specification of the funds or accounts that must be appropriated by the legislature to fulfill the terms of an agreement, and the size of the agency workforce, including determining the financial basis for layoffs;</P>
+<P><TextRun amendingStyle="strike">(3)</TextRun> <TextRun amendingStyle="add">(c)</TextRun> The right to direct and supervise employees;</P>
+<P><TextRun amendingStyle="strike">(4)</TextRun> <TextRun amendingStyle="add">(d)</TextRun> The right to take whatever actions are deemed necessary to carry out the mission of the state and its agencies during emergencies; and</P>
+<P><TextRun amendingStyle="strike">(5)</TextRun> <TextRun amendingStyle="add">(e)</TextRun> Retirement plans and retirement benefits <TextRun amendingStyle="add">administered by the department of retirement systems</TextRun>.</P>
+<P><TextRun amendingStyle="add">(2) Subsection (1)(e) of this section does not prevent the employer from bargaining over contributions for supplemental retirement benefits administered by, or on behalf of, an employee organization, including medical plans.</TextRun></P>
+<History>2020 c 357 s 913; 2002 c 354 s 305.</History>
+<RCWNoteSection>
+<AnnNote><NoteP><TextRun fontWeight="bold">Effective date<TextRun fontFamily="Times New Roman">—</TextRun>2020 c 357:</TextRun> See note following RCW 43.79.545.</NoteP></AnnNote>
+</RCWNoteSection>
+</BillSection>
+</BillBody>
+</Bill>
