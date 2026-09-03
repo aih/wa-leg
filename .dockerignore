@@ -1,0 +1,15 @@
+node_modules
+**/node_modules
+**/dist
+.git
+.cache
+data
+RFP-docs
+*.zip
+*.log
+.env
+.env.*
+apps/web/playwright-report
+apps/web/test-results
+apps/web/blob-report
+coverage

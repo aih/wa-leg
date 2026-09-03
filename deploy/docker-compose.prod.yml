@@ -1,0 +1,91 @@
+# Production stack for one box. Values come from the .env file beside this file (deploy/bootstrap-box.sh
+# writes it on first run). Bill data and the lawfiles cache are bind mounts under $DATA_ROOT.
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: wa_leg
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: wa_leg
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wa_leg"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    image: ${ECR_REGISTRY}/waleg/api:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: info
+      API_PORT: "4800"
+      DATABASE_URL: postgres://wa_leg:${POSTGRES_PASSWORD}@postgres:5432/wa_leg
+      PUBLIC_API_ORIGIN: https://${SITE_ADDRESS}
+      WEB_ORIGIN: https://${SITE_ADDRESS}
+      SESSION_SECRET: ${SESSION_SECRET}
+      SESSION_COOKIE_SECURE: "true"
+      OIDC_ISSUER: https://${SITE_ADDRESS}/oidc
+      OIDC_CLIENT_ID: wa-leg-web
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
+      OIDC_REDIRECT_URI: https://${SITE_ADDRESS}/api/v1/auth/callback
+      SEARCH_BACKEND: postgres
+      SMTP_URL: smtp://mail:1025
+      MAIL_FROM: fiscal-notes@dor.wa.gov.test
+      NOTIFY_EMAIL: "true"
+      PDF_ENABLED: "true"
+      LEGISCAN_DIR: /data/legiscan
+      LAWFILES_CACHE_DIR: /data/lawfiles
+      EXPORT_DIR: /data/exports
+    # The API reaches its own issuer through the proxy on this host, not through public DNS.
+    extra_hosts:
+      - "${SITE_ADDRESS}:host-gateway"
+    volumes:
+      - ${DATA_ROOT}/legiscan:/data/legiscan:ro
+      - ${DATA_ROOT}/lawfiles:/data/lawfiles
+      - ${DATA_ROOT}/exports:/data/exports
+
+  oidc:
+    image: ${ECR_REGISTRY}/waleg/oidc:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      ISSUER: https://${SITE_ADDRESS}/oidc
+      PORT: "4801"
+      CLIENT_ID: wa-leg-web
+      CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
+      REDIRECT_URIS: https://${SITE_ADDRESS}/api/v1/auth/callback
+
+  mail:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    environment:
+      MP_WEBROOT: /mail
+      MP_MAX_MESSAGES: "500"
+
+  proxy:
+    image: ${ECR_REGISTRY}/waleg/web:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      - api
+      - oidc
+      - mail
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS}
+      ACME_EMAIL: ${ACME_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

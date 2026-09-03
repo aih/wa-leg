@@ -1,0 +1,22 @@
+#cloud-config
+# First boot of the waleg-site box (Ubuntu 24.04 arm64). deploy/provision.sh passes this as user data.
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH5/uer2mCTMANYbYWwA0n6lktNeLNOipZrUWT3qpwgR waleg-deploy
+package_update: true
+packages:
+  - ca-certificates
+  - curl
+  - unzip
+  - rsync
+swap:
+  filename: /swapfile
+  size: 2G
+  maxsize: 2G
+runcmd:
+  - curl -fsSL https://get.docker.com | sh
+  - usermod -aG docker ubuntu
+  - curl -fsSL https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip -o /tmp/awscli.zip
+  - unzip -q /tmp/awscli.zip -d /tmp && /tmp/aws/install && rm -rf /tmp/aws /tmp/awscli.zip
+  - mkdir -p /srv/waleg/data/legiscan /srv/waleg/data/lawfiles /srv/waleg/data/exports
+  - chown -R ubuntu:ubuntu /srv/waleg
+  - touch /srv/waleg/.cloud-init-done
