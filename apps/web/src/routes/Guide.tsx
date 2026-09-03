@@ -182,7 +182,7 @@ export function Guide() {
         </li>
         <li>
           Open <Link to={billHref(hb2402)}>{hb2402.bill}</Link>. The <strong>Fiscal note</strong> panel shows the published note beside the bill text with
-          the same links. Switch the version to HB 2402: the panel says it is showing the note for a later version.
+          the same links. A version without a published note of its own shows the latest published note for an earlier version and says so; the introduced HB 2402 has none.
         </li>
         <li>
           Cam cannot open notes that are not published. <code>GET /api/v1/published</code> returns the same list for a downstream system.
