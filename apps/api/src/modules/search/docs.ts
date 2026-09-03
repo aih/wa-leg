@@ -87,7 +87,7 @@ export function buildBillDoc(b: BillSummaryLike, notes: { status: string; assign
     primary: s.sponsor_type_id === 1 || s.sponsor_order === 1,
   }));
   const status = STATUS_LABEL[b.status ?? 'unknown'] ?? b.status ?? 'unknown';
-  const noteStatus = notes.some((n) => n.status === 'approved') ? 'approved' : notes.some((n) => n.status.startsWith('review') || n.status.startsWith('exec')) ? 'in_review' : notes.length ? 'draft' : b.priorFiscalNotes.length ? 'published' : null;
+  const noteStatus = notes.some((n) => n.status === 'published') ? 'published' : notes.some((n) => n.status === 'approved') ? 'approved' : notes.some((n) => n.status === 'in_review') ? 'in_review' : notes.length ? 'draft' : b.priorFiscalNotes.length ? 'published' : null;
   const titleWords = b.title.replace(/^Concerning\s+/i, '').split(/\s+/).slice(0, 6).join(' ');
   const chapter = chapterOf(b.history);
   const doc: SearchDoc = {
@@ -363,7 +363,7 @@ export interface InternalNoteLike {
   versionLabel?: string;
   kind: string;
   state: string;
-  confidential: boolean;
+  confidential?: boolean;
   drafter?: { userId: string } | null;
   reviewer?: { userId: string } | null;
   execChain?: { userId: string }[];
@@ -374,19 +374,18 @@ export interface InternalNoteLike {
   requestId?: string;
 }
 
-/** Visibility for an internal note: drafts to assignees (and admins), reviews to reviewers, approved public unless confidential. */
+/** Visibility for an internal note: published is public; everything else goes to its participants and reviewers. */
 export function noteVisibility(n: InternalNoteLike): { visibility: 'public' | 'restricted'; allowed_roles: string[]; allowed_user_ids: string[] } {
-  const users = [n.drafter?.userId, n.reviewer?.userId, ...(n.execChain ?? []).map((e) => e.userId)].filter((u): u is string => !!u);
-  if (n.confidential) return { visibility: 'restricted', allowed_roles: ['admin', 'manager'], allowed_user_ids: users };
-  if (n.state === 'approved') return { visibility: 'public', allowed_roles: [], allowed_user_ids: [] };
-  if (n.state.startsWith('review') || n.state.startsWith('exec_review')) return { visibility: 'restricted', allowed_roles: ['reviewer', 'approver', 'manager', 'admin'], allowed_user_ids: users };
+  const users = [n.drafter?.userId, n.reviewer?.userId].filter((u): u is string => !!u);
+  if (n.state === 'published') return { visibility: 'public', allowed_roles: [], allowed_user_ids: [] };
+  if (n.state !== 'draft') return { visibility: 'restricted', allowed_roles: ['reviewer', 'admin'], allowed_user_ids: users };
   // Unsubmitted drafts never surface in another user's search (search.md); opening a note is governed by `can()`.
   return { visibility: 'restricted', allowed_roles: ['admin'], allowed_user_ids: users };
 }
 
 export function buildInternalNoteDoc(n: InternalNoteLike, bill: { biennium: string; id: string; type: string; number: number; chamber: string; title: string } | null): SearchDoc {
   const vis = noteVisibility(n);
-  const status = n.state === 'approved' ? 'approved' : n.state.startsWith('review') || n.state.startsWith('exec_review') ? 'in_review' : n.state === 'changes_requested' ? 'draft' : n.state === 'cancelled' || n.state === 'superseded' ? n.state : 'draft';
+  const status = n.state === 'published' || n.state === 'approved' || n.state === 'in_review' ? n.state : 'draft';
   const type = (bill?.type ?? 'HB') as BillType;
   const label = n.versionLabel ?? (bill ? shortLabelOf({ type, number: bill.number, versionCode: n.versionCode }) : n.versionCode);
   return {

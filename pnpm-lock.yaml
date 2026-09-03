@@ -373,10 +373,6 @@ importers:
         version: 3.2.7(@types/node@22.20.1)(happy-dom@20.12.2)(supports-color@10.2.2)(tsx@4.23.13)(yaml@2.9.0)
 
   packages/workflow-machine:
-    dependencies:
-      xstate:
-        specifier: 5.32.6
-        version: 5.32.6
     devDependencies:
       typescript:
         specifier: 5.9.3
@@ -2689,9 +2685,6 @@ packages:
   xml@1.0.1:
     resolution: {integrity: sha512-huCv9IH9Tcf95zuYCsQraZtWnJvBtLVE0QHMOs8bWyZAFZNDcYjsPq1nEx8jKA9y+Beo9v+7OBPRisQTjinQMw==}
 
-  xstate@5.32.6:
-    resolution: {integrity: sha512-WfA8WNrh6r9osuGwVm+aIPM4jmMW2LKHV1Yv9thYpOtL4HVF/kobh95K/O8v2jDCpDmP2EoY+6uvuqHXCZ6ZLw==}
-
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
@@ -4911,8 +4904,6 @@ snapshots:
       sax: 1.6.1
 
   xml@1.0.1: {}
-
-  xstate@5.32.6: {}
 
   xtend@4.0.2: {}
 

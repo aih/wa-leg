@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { inflateRawSync } from 'node:zlib';
 import type { Logger } from 'pino';
 import { findAll, type PMNode } from '@wa-leg/note-schema';
-import { createTestApp, truncate, users, type TestContext } from './helpers.js';
+import { NOTE_TABLES, createTestApp, truncate, users, type TestContext } from './helpers.js';
 import { DirectoryFetcher, ingestLegiscanBills, readDataset } from '../src/modules/bills/index.js';
 import { seedTemplates } from '../src/modules/templates/index.js';
 import { seedReference } from '../src/modules/reference/index.js';
@@ -41,14 +41,14 @@ const drain = async () => {
 
 beforeAll(async () => {
   t = await createTestApp({ SEARCH_BACKEND: 'postgres' });
-  await truncate(t.handle, ['bills', 'bill_versions', 'amendments', 'hearings', 'prior_fiscal_notes', 'outbox', 'outbox_consumptions', 'search_docs', 'notes', 'note_revisions', 'note_documents', 'note_comments', 'note_comment_messages', 'note_locks', 'note_exports', 'templates', 'reference_sets', 'audit_log', 'workflow_instances', 'workflow_transitions', 'workflow_assignments', 'workflow_deadlines', 'notifications']);
+  await truncate(t.handle, NOTE_TABLES);
   await seedUsers(t.app.db);
   await seedTemplates(t.app.db, t.config.TEMPLATES_DIR);
   await seedReference(t.app.db, t.config.REFERENCE_DIR);
   await ingestLegiscanBills({ db: t.app.db, fetcher: new DirectoryFetcher(XML_FIXTURES), log: t.app.log as unknown as Logger }, readDataset(LEGISCAN, { bills: ['HB2402'] }), {});
   await drain();
   // A note with figures, a formula, a citation and a comment.
-  const created = await t.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await t.as(users.reviewer), payload: { billKey: 'WA:2025-26:HB2402', versionCode: 'S', templateId: 'sales-use-tax-exemption', drafterId: 'dev-drafter', request: { requestId: '2402-1-1', legContact: { name: 'Jane Legislative', phone: '360-786-7100' } } } });
+  const created = await t.app.inject({ method: 'POST', url: '/api/v1/notes', headers: await t.as(users.reviewer), payload: { billKey: 'WA:2025-26:HB2402', versionCode: 'S', templateId: 'sales-use-tax-exemption', drafterId: 'dev-drafter' } });
   noteId = created.json().noteRevisionId;
   await drain();
   const head = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/document`, headers: await t.as(users.drafter) })).json();
@@ -111,7 +111,6 @@ describe('exports', () => {
     const comments = zipEntry(buf, 'word/comments.xml');
     expect(comments).toContain('Check the multiplier');
     const footer = zipEntry(buf, 'word/footer1.xml');
-    expect(footer).toContain('Request # 2402-1-1');
     expect(footer).toContain('FNS062');
     // Without comments the ranges are absent.
     const plain = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=docx`, headers: await t.as(users.drafter) });
@@ -158,9 +157,7 @@ describe('exports', () => {
     expect(res.headers['content-type']).toContain('application/xml');
     expect(res.body).toContain('<FiscalNote schemaVersion="placeholder"');
     expect(res.body).toContain('<BillNumber>SHB 2402</BillNumber>');
-    expect(res.body).toContain('<RequestNumber>2402-1-1</RequestNumber>');
     expect(res.body).toMatch(/<Field path="receipts\.gf\.fy1" type="money" value="-4310000">\(4,310,000\)<\/Field>/);
-    expect(res.body).toMatch(/<Field path="legContact\.name"[^>]*>Jane Legislative<\/Field>/);
     expect(res.body).toContain('<Fund code="001-1"');
     expect(res.body).toContain('<Biennium id="2025-27">-15110000</Biennium>');
     expect(res.body).toContain('<Section part="II.B"');
@@ -182,17 +179,19 @@ describe('exports', () => {
     expect(Number(events.n)).toBeGreaterThanOrEqual(5);
   });
 
-  it('viewers see nothing until approval, then the approved snapshot beside the bill', async () => {
+  it('viewers see nothing until publication, then the published version beside the bill', async () => {
     expect((await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=html`, headers: await t.as(users.viewer) })).statusCode).toBe(403);
-    // Drafting → review → approval.
-    const send = async (u: (typeof users)[keyof typeof users], event: string) => t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/transitions`, headers: await t.as(u), payload: { event } });
-    expect((await send(users.drafter, 'SUBMIT_FOR_REVIEW')).statusCode).toBe(201);
-    expect((await send(users.reviewer, 'CLAIM_REVIEW')).statusCode).toBe(201);
+    const send = async (u: (typeof users)[keyof typeof users], event: string) => t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/workflow`, headers: await t.as(u), payload: { event } });
+    expect((await send(users.drafter, 'SUBMIT')).statusCode).toBe(201);
     expect((await send(users.reviewer, 'APPROVE')).json().state).toBe('approved');
     await drain();
+    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}`, headers: await t.as(users.viewer) })).statusCode).toBe(403);
+    expect((await send(users.reviewer, 'PUBLISH')).json().state).toBe('published');
+    await drain();
     const summary = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}`, headers: await t.as(users.viewer) })).json();
-    expect(summary.state).toBe('approved');
+    expect(summary.state).toBe('published');
     expect(summary.approvedVersion).toBe(summary.headVersion);
+    expect(summary.publishedVersion).toBe(summary.approvedVersion);
     const versions = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/versions`, headers: await t.as(users.viewer) })).json();
     expect(versions[0].label).toBe('Approved');
     // The bill page lists it for anyone; the approved document is readable.

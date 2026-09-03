@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Fiscal Note Workbench API",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "description": "REST API for the DOR fiscal note proof of concept. All paths are served under /api/v1."
   },
   "components": {
@@ -51,10 +51,7 @@
                         "enum": [
                           "drafter",
                           "reviewer",
-                          "approver",
-                          "manager",
                           "viewer",
-                          "template_editor",
                           "admin"
                         ]
                       }
@@ -268,46 +265,11 @@
                     "ok": {
                       "type": "boolean"
                     },
-                    "checks": {
-                      "type": "object",
-                      "propertyNames": {
-                        "type": "string"
-                      },
-                      "additionalProperties": {
-                        "type": "object",
-                        "properties": {
-                          "ok": {
-                            "type": "boolean"
-                          },
-                          "detail": {
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "ok"
-                        ],
-                        "additionalProperties": false
-                      }
-                    }
-                  },
-                  "required": [
-                    "ok",
-                    "checks"
-                  ],
-                  "additionalProperties": false
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean"
+                    "version": {
+                      "type": "string"
+                    },
+                    "commit": {
+                      "type": "string"
                     },
                     "checks": {
                       "type": "object",
@@ -333,6 +295,57 @@
                   },
                   "required": [
                     "ok",
+                    "version",
+                    "commit",
+                    "checks"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "version": {
+                      "type": "string"
+                    },
+                    "commit": {
+                      "type": "string"
+                    },
+                    "checks": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "ok": {
+                            "type": "boolean"
+                          },
+                          "detail": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "ok"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "version",
+                    "commit",
                     "checks"
                   ],
                   "additionalProperties": false
@@ -2246,7 +2259,7 @@
         }
       },
       "put": {
-        "summary": "Update a template (template_editor role); creates a new template version",
+        "summary": "Update a template (admin); creates a new template version",
         "tags": [
           "templates"
         ],
@@ -2513,7 +2526,7 @@
     },
     "/notes": {
       "post": {
-        "summary": "Create a note and its first revision for a bill version (or amendment)",
+        "summary": "Create a note in draft for a bill version from a template. Reviewers name the drafter; a drafter creates for themselves.",
         "tags": [
           "notes"
         ],
@@ -2530,73 +2543,17 @@
                   "versionCode": {
                     "type": "string"
                   },
-                  "amendmentId": {
-                    "type": "string"
-                  },
-                  "kind": {
-                    "default": "note",
-                    "type": "string",
-                    "enum": [
-                      "note",
-                      "estimate"
-                    ]
-                  },
                   "templateId": {
                     "type": "string"
                   },
-                  "cloneFromRevisionId": {
-                    "type": "string",
-                    "format": "uuid",
-                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                  },
-                  "request": {
-                    "type": "object",
-                    "properties": {
-                      "requestId": {
-                        "type": "string"
-                      },
-                      "requestedAt": {
-                        "type": "string"
-                      },
-                      "requestedBy": {
-                        "type": "string"
-                      },
-                      "legContact": {
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "type": "string"
-                          },
-                          "phone": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      "tenYearRequested": {
-                        "type": "boolean"
-                      }
-                    }
-                  },
-                  "confidential": {
-                    "default": false,
-                    "type": "boolean"
-                  },
                   "drafterId": {
                     "type": "string"
-                  },
-                  "priority": {
-                    "type": "string",
-                    "enum": [
-                      "low",
-                      "normal",
-                      "high",
-                      "urgent"
-                    ]
                   }
                 },
                 "required": [
                   "billKey",
-                  "versionCode"
+                  "versionCode",
+                  "templateId"
                 ]
               }
             }
@@ -2619,49 +2576,171 @@
                     "billKey": {
                       "type": "string"
                     },
+                    "biennium": {
+                      "type": "string"
+                    },
+                    "billId": {
+                      "type": "string"
+                    },
+                    "billTitle": {
+                      "type": "string"
+                    },
                     "versionCode": {
                       "type": "string"
                     },
                     "versionLabel": {
                       "type": "string"
                     },
-                    "kind": {
+                    "state": {
                       "type": "string",
                       "enum": [
-                        "note",
-                        "estimate"
+                        "draft",
+                        "in_review",
+                        "changes_requested",
+                        "approved",
+                        "published"
                       ]
                     },
-                    "state": {
-                      "type": "string"
+                    "drafter": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "userId": {
+                              "type": "string"
+                            },
+                            "displayName": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "userId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
-                    "drafterStatus": {
-                      "type": "string"
-                    },
-                    "reviewerStatus": {
-                      "type": "string"
+                    "reviewer": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "userId": {
+                              "type": "string"
+                            },
+                            "displayName": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "userId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "headVersion": {
                       "type": "number"
                     },
+                    "approvedVersion": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "publishedAt": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "publishedBy": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "userId": {
+                              "type": "string"
+                            },
+                            "displayName": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "userId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "publishedVersion": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "templateId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "templateVersion": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "limited",
+                        "full"
+                      ]
+                    },
                     "editable": {
                       "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
                     }
                   },
                   "required": [
                     "noteRevisionId",
                     "noteId",
                     "billKey",
+                    "biennium",
+                    "billId",
                     "versionCode",
                     "versionLabel",
-                    "kind",
                     "state",
-                    "drafterStatus",
-                    "reviewerStatus",
+                    "drafter",
+                    "reviewer",
                     "headVersion",
-                    "editable"
+                    "approvedVersion",
+                    "publishedAt",
+                    "publishedBy",
+                    "publishedVersion",
+                    "templateId",
+                    "templateVersion",
+                    "mode",
+                    "editable",
+                    "createdAt",
+                    "updatedAt"
                   ],
-                  "additionalProperties": {}
+                  "additionalProperties": false
                 }
               }
             }
@@ -2669,7 +2748,7 @@
         }
       },
       "get": {
-        "summary": "List note revisions visible to the caller",
+        "summary": "Note revisions visible to the caller",
         "tags": [
           "notes"
         ],
@@ -2740,49 +2819,171 @@
                       "billKey": {
                         "type": "string"
                       },
+                      "biennium": {
+                        "type": "string"
+                      },
+                      "billId": {
+                        "type": "string"
+                      },
+                      "billTitle": {
+                        "type": "string"
+                      },
                       "versionCode": {
                         "type": "string"
                       },
                       "versionLabel": {
                         "type": "string"
                       },
-                      "kind": {
+                      "state": {
                         "type": "string",
                         "enum": [
-                          "note",
-                          "estimate"
+                          "draft",
+                          "in_review",
+                          "changes_requested",
+                          "approved",
+                          "published"
                         ]
                       },
-                      "state": {
-                        "type": "string"
+                      "drafter": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "userId": {
+                                "type": "string"
+                              },
+                              "displayName": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "userId"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
                       },
-                      "drafterStatus": {
-                        "type": "string"
-                      },
-                      "reviewerStatus": {
-                        "type": "string"
+                      "reviewer": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "userId": {
+                                "type": "string"
+                              },
+                              "displayName": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "userId"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
                       },
                       "headVersion": {
                         "type": "number"
                       },
+                      "approvedVersion": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "publishedAt": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "publishedBy": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "userId": {
+                                "type": "string"
+                              },
+                              "displayName": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "userId"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "publishedVersion": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "templateId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "templateVersion": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "mode": {
+                        "type": "string",
+                        "enum": [
+                          "limited",
+                          "full"
+                        ]
+                      },
                       "editable": {
                         "type": "boolean"
+                      },
+                      "createdAt": {
+                        "type": "string"
+                      },
+                      "updatedAt": {
+                        "type": "string"
                       }
                     },
                     "required": [
                       "noteRevisionId",
                       "noteId",
                       "billKey",
+                      "biennium",
+                      "billId",
                       "versionCode",
                       "versionLabel",
-                      "kind",
                       "state",
-                      "drafterStatus",
-                      "reviewerStatus",
+                      "drafter",
+                      "reviewer",
                       "headVersion",
-                      "editable"
+                      "approvedVersion",
+                      "publishedAt",
+                      "publishedBy",
+                      "publishedVersion",
+                      "templateId",
+                      "templateVersion",
+                      "mode",
+                      "editable",
+                      "createdAt",
+                      "updatedAt"
                     ],
-                    "additionalProperties": {}
+                    "additionalProperties": false
                   }
                 }
               }
@@ -2793,7 +2994,7 @@
     },
     "/bills/{biennium}/{id}/notes": {
       "get": {
-        "summary": "Note revisions on this bill visible to the caller, grouped by version",
+        "summary": "Note revisions on this bill visible to the caller",
         "tags": [
           "notes"
         ],
@@ -2834,49 +3035,171 @@
                       "billKey": {
                         "type": "string"
                       },
+                      "biennium": {
+                        "type": "string"
+                      },
+                      "billId": {
+                        "type": "string"
+                      },
+                      "billTitle": {
+                        "type": "string"
+                      },
                       "versionCode": {
                         "type": "string"
                       },
                       "versionLabel": {
                         "type": "string"
                       },
-                      "kind": {
+                      "state": {
                         "type": "string",
                         "enum": [
-                          "note",
-                          "estimate"
+                          "draft",
+                          "in_review",
+                          "changes_requested",
+                          "approved",
+                          "published"
                         ]
                       },
-                      "state": {
-                        "type": "string"
+                      "drafter": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "userId": {
+                                "type": "string"
+                              },
+                              "displayName": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "userId"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
                       },
-                      "drafterStatus": {
-                        "type": "string"
-                      },
-                      "reviewerStatus": {
-                        "type": "string"
+                      "reviewer": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "userId": {
+                                "type": "string"
+                              },
+                              "displayName": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "userId"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
                       },
                       "headVersion": {
                         "type": "number"
                       },
+                      "approvedVersion": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "publishedAt": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "publishedBy": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "userId": {
+                                "type": "string"
+                              },
+                              "displayName": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "userId"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "publishedVersion": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "templateId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "templateVersion": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "mode": {
+                        "type": "string",
+                        "enum": [
+                          "limited",
+                          "full"
+                        ]
+                      },
                       "editable": {
                         "type": "boolean"
+                      },
+                      "createdAt": {
+                        "type": "string"
+                      },
+                      "updatedAt": {
+                        "type": "string"
                       }
                     },
                     "required": [
                       "noteRevisionId",
                       "noteId",
                       "billKey",
+                      "biennium",
+                      "billId",
                       "versionCode",
                       "versionLabel",
-                      "kind",
                       "state",
-                      "drafterStatus",
-                      "reviewerStatus",
+                      "drafter",
+                      "reviewer",
                       "headVersion",
-                      "editable"
+                      "approvedVersion",
+                      "publishedAt",
+                      "publishedBy",
+                      "publishedVersion",
+                      "templateId",
+                      "templateVersion",
+                      "mode",
+                      "editable",
+                      "createdAt",
+                      "updatedAt"
                     ],
-                    "additionalProperties": {}
+                    "additionalProperties": false
                   }
                 }
               }
@@ -2887,7 +3210,7 @@
     },
     "/notes/{id}": {
       "get": {
-        "summary": "Note revision summary (bill, version, request, workflow state, deadlines, assignees)",
+        "summary": "Note revision summary (bill, version, state, drafter, reviewer, publication)",
         "tags": [
           "notes"
         ],
@@ -2920,327 +3243,171 @@
                     "billKey": {
                       "type": "string"
                     },
+                    "biennium": {
+                      "type": "string"
+                    },
+                    "billId": {
+                      "type": "string"
+                    },
+                    "billTitle": {
+                      "type": "string"
+                    },
                     "versionCode": {
                       "type": "string"
                     },
                     "versionLabel": {
                       "type": "string"
                     },
-                    "kind": {
+                    "state": {
                       "type": "string",
                       "enum": [
-                        "note",
-                        "estimate"
+                        "draft",
+                        "in_review",
+                        "changes_requested",
+                        "approved",
+                        "published"
                       ]
                     },
-                    "state": {
-                      "type": "string"
-                    },
-                    "drafterStatus": {
-                      "type": "string"
-                    },
-                    "reviewerStatus": {
-                      "type": "string"
-                    },
-                    "headVersion": {
-                      "type": "number"
-                    },
-                    "editable": {
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [
-                    "noteRevisionId",
-                    "noteId",
-                    "billKey",
-                    "versionCode",
-                    "versionLabel",
-                    "kind",
-                    "state",
-                    "drafterStatus",
-                    "reviewerStatus",
-                    "headVersion",
-                    "editable"
-                  ],
-                  "additionalProperties": {}
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update metadata (confidential flag, priority, request fields, identifier override per B.RFA.03)",
-        "tags": [
-          "notes"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "confidential": {
-                    "type": "boolean"
-                  },
-                  "priority": {
-                    "type": "string",
-                    "enum": [
-                      "low",
-                      "normal",
-                      "high",
-                      "urgent"
-                    ]
-                  },
-                  "identifier": {
-                    "type": "string"
-                  },
-                  "request": {
-                    "type": "object",
-                    "properties": {
-                      "requestId": {
-                        "type": "string"
-                      },
-                      "requestedAt": {
-                        "type": "string"
-                      },
-                      "requestedBy": {
-                        "type": "string"
-                      },
-                      "legContact": {
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "type": "string"
+                    "drafter": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "userId": {
+                              "type": "string"
+                            },
+                            "displayName": {
+                              "type": "string"
+                            }
                           },
-                          "phone": {
-                            "type": "string"
-                          }
+                          "required": [
+                            "userId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
                         }
-                      },
-                      "tenYearRequested": {
-                        "type": "boolean"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-            },
-            "in": "path",
-            "name": "id",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "noteRevisionId": {
-                      "type": "string"
-                    },
-                    "noteId": {
-                      "type": "string"
-                    },
-                    "billKey": {
-                      "type": "string"
-                    },
-                    "versionCode": {
-                      "type": "string"
-                    },
-                    "versionLabel": {
-                      "type": "string"
-                    },
-                    "kind": {
-                      "type": "string",
-                      "enum": [
-                        "note",
-                        "estimate"
                       ]
                     },
-                    "state": {
-                      "type": "string"
-                    },
-                    "drafterStatus": {
-                      "type": "string"
-                    },
-                    "reviewerStatus": {
-                      "type": "string"
+                    "reviewer": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "userId": {
+                              "type": "string"
+                            },
+                            "displayName": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "userId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "headVersion": {
                       "type": "number"
                     },
+                    "approvedVersion": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "publishedAt": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "publishedBy": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "userId": {
+                              "type": "string"
+                            },
+                            "displayName": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "userId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "publishedVersion": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "templateId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "templateVersion": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "limited",
+                        "full"
+                      ]
+                    },
                     "editable": {
                       "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
                     }
                   },
                   "required": [
                     "noteRevisionId",
                     "noteId",
                     "billKey",
+                    "biennium",
+                    "billId",
                     "versionCode",
                     "versionLabel",
-                    "kind",
                     "state",
-                    "drafterStatus",
-                    "reviewerStatus",
+                    "drafter",
+                    "reviewer",
                     "headVersion",
-                    "editable"
+                    "approvedVersion",
+                    "publishedAt",
+                    "publishedBy",
+                    "publishedVersion",
+                    "templateId",
+                    "templateVersion",
+                    "mode",
+                    "editable",
+                    "createdAt",
+                    "updatedAt"
                   ],
-                  "additionalProperties": {}
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/notes/{id}/context": {
-      "get": {
-        "summary": "Template token context for this note revision",
-        "tags": [
-          "notes"
-        ],
-        "parameters": [
-          {
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-            },
-            "in": "path",
-            "name": "id",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {},
-                  "additionalProperties": {}
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/notes/{id}/revisions": {
-      "post": {
-        "summary": "Create the next revision for a new bill version or amendment, cloning the document",
-        "tags": [
-          "notes"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "versionCode": {
-                    "type": "string"
-                  },
-                  "amendmentId": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "versionCode"
-                ]
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-            },
-            "in": "path",
-            "name": "id",
-            "required": true
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "noteRevisionId": {
-                      "type": "string"
-                    },
-                    "noteId": {
-                      "type": "string"
-                    },
-                    "billKey": {
-                      "type": "string"
-                    },
-                    "versionCode": {
-                      "type": "string"
-                    },
-                    "versionLabel": {
-                      "type": "string"
-                    },
-                    "kind": {
-                      "type": "string",
-                      "enum": [
-                        "note",
-                        "estimate"
-                      ]
-                    },
-                    "state": {
-                      "type": "string"
-                    },
-                    "drafterStatus": {
-                      "type": "string"
-                    },
-                    "reviewerStatus": {
-                      "type": "string"
-                    },
-                    "headVersion": {
-                      "type": "number"
-                    },
-                    "editable": {
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [
-                    "noteRevisionId",
-                    "noteId",
-                    "billKey",
-                    "versionCode",
-                    "versionLabel",
-                    "kind",
-                    "state",
-                    "drafterStatus",
-                    "reviewerStatus",
-                    "headVersion",
-                    "editable"
-                  ],
-                  "additionalProperties": {}
+                  "additionalProperties": false
                 }
               }
             }
@@ -3651,107 +3818,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/notes/{id}/lock": {
-      "post": {
-        "summary": "Acquire a soft edit lock",
-        "tags": [
-          "notes"
-        ],
-        "parameters": [
-          {
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-            },
-            "in": "path",
-            "name": "id",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {},
-                  "additionalProperties": {}
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {},
-                  "additionalProperties": {}
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "summary": "Current lock holder",
-        "tags": [
-          "notes"
-        ],
-        "parameters": [
-          {
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-            },
-            "in": "path",
-            "name": "id",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {},
-                  "additionalProperties": {}
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Release the lock",
-        "tags": [
-          "notes"
-        ],
-        "parameters": [
-          {
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-            },
-            "in": "path",
-            "name": "id",
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Default Response"
           }
         }
       }
@@ -4331,7 +4397,7 @@
     },
     "/notes/{id}/workflow": {
       "get": {
-        "summary": "Workflow state, assignees, available events for the caller, deadlines",
+        "summary": "Workflow state, drafter, reviewer, events available to the caller, open change request",
         "tags": [
           "workflow"
         ],
@@ -4354,65 +4420,154 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {},
-                  "additionalProperties": {}
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/notes/{id}/transitions": {
-      "get": {
-        "summary": "Transition history (newest first)",
-        "tags": [
-          "workflow"
-        ],
-        "parameters": [
-          {
-            "schema": {
-              "type": "integer",
-              "minimum": -9007199254740991,
-              "maximum": 9007199254740991
-            },
-            "in": "query",
-            "name": "limit",
-            "required": false
-          },
-          {
-            "schema": {
-              "type": "integer",
-              "minimum": -9007199254740991,
-              "maximum": 9007199254740991
-            },
-            "in": "query",
-            "name": "before",
-            "required": false
-          },
-          {
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-            },
-            "in": "path",
-            "name": "id",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {},
-                    "additionalProperties": {}
-                  }
+                  "properties": {
+                    "instanceId": {
+                      "type": "string"
+                    },
+                    "noteRevisionId": {
+                      "type": "string"
+                    },
+                    "state": {
+                      "type": "string",
+                      "enum": [
+                        "draft",
+                        "in_review",
+                        "changes_requested",
+                        "approved",
+                        "published"
+                      ]
+                    },
+                    "version": {
+                      "type": "number"
+                    },
+                    "drafter": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "userId": {
+                              "type": "string"
+                            },
+                            "displayName": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "userId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "reviewer": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "userId": {
+                              "type": "string"
+                            },
+                            "displayName": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "userId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "availableEvents": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "SUBMIT",
+                              "REQUEST_CHANGES",
+                              "APPROVE",
+                              "PUBLISH"
+                            ]
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "label"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "changeRequest": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "message": {
+                              "type": "string"
+                            },
+                            "by": {
+                              "type": "object",
+                              "properties": {
+                                "userId": {
+                                  "type": "string"
+                                },
+                                "displayName": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "userId"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "at": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "message",
+                            "by",
+                            "at"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "editable": {
+                      "type": "boolean"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "instanceId",
+                    "noteRevisionId",
+                    "state",
+                    "version",
+                    "drafter",
+                    "reviewer",
+                    "availableEvents",
+                    "changeRequest",
+                    "editable",
+                    "updatedAt"
+                  ],
+                  "additionalProperties": false
                 }
               }
             }
@@ -4420,7 +4575,7 @@
         }
       },
       "post": {
-        "summary": "Send an event to the machine",
+        "summary": "Send an event: SUBMIT, REQUEST_CHANGES (message required), APPROVE, PUBLISH",
         "tags": [
           "workflow"
         ],
@@ -4434,18 +4589,13 @@
                   "event": {
                     "type": "string",
                     "enum": [
-                      "START",
-                      "SUBMIT_FOR_REVIEW",
-                      "CLAIM_REVIEW",
+                      "SUBMIT",
                       "REQUEST_CHANGES",
                       "APPROVE",
-                      "EXEC_CLAIM",
-                      "EXEC_DONE",
-                      "EXEC_RETURN",
-                      "CANCEL"
+                      "PUBLISH"
                     ]
                   },
-                  "comment": {
+                  "message": {
                     "type": "string"
                   },
                   "expectedVersion": {
@@ -4520,277 +4670,13 @@
         }
       }
     },
-    "/notes/{id}/assign": {
-      "post": {
-        "summary": "Assign or reassign a role",
-        "tags": [
-          "workflow"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "role": {
-                    "type": "string",
-                    "enum": [
-                      "drafter",
-                      "reviewer",
-                      "exec"
-                    ]
-                  },
-                  "userId": {
-                    "type": "string"
-                  },
-                  "position": {
-                    "type": "integer",
-                    "minimum": -9007199254740991,
-                    "maximum": 9007199254740991
-                  },
-                  "dueAt": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "role",
-                  "userId"
-                ]
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-            },
-            "in": "path",
-            "name": "id",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {},
-                  "additionalProperties": {}
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {},
-                  "additionalProperties": {}
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/notes/{id}/exec-chain": {
-      "put": {
-        "summary": "Set the Executive Review chain",
-        "tags": [
-          "workflow"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "chain": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "userId": {
-                          "type": "string"
-                        },
-                        "division": {
-                          "type": "string"
-                        },
-                        "dueAt": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        }
-                      },
-                      "required": [
-                        "userId"
-                      ]
-                    }
-                  }
-                },
-                "required": [
-                  "chain"
-                ]
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-            },
-            "in": "path",
-            "name": "id",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {},
-                  "additionalProperties": {}
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {},
-                  "additionalProperties": {}
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/notes/{id}/workflow/duplicate": {
-      "post": {
-        "summary": "Duplicate the task for another revision (new instance in todo with the same assignments)",
-        "tags": [
-          "workflow"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "noteRevisionId": {
-                    "type": "string",
-                    "format": "uuid",
-                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                  }
-                },
-                "required": [
-                  "noteRevisionId"
-                ]
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-            },
-            "in": "path",
-            "name": "id",
-            "required": true
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {},
-                  "additionalProperties": {}
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/assignments": {
+    "/notes/{id}/transitions": {
       "get": {
-        "summary": "Work queue rows for the caller (or, for assigners, another user or everyone)",
+        "summary": "Transition history (newest first)",
         "tags": [
           "workflow"
         ],
         "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "assignee",
-            "required": false
-          },
-          {
-            "schema": {
-              "type": "string",
-              "enum": [
-                "drafter",
-                "reviewer",
-                "exec"
-              ]
-            },
-            "in": "query",
-            "name": "role",
-            "required": false
-          },
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "status",
-            "required": false
-          },
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "state",
-            "required": false
-          },
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "dueBefore",
-            "required": false
-          },
           {
             "schema": {
               "type": "integer",
@@ -4803,14 +4689,23 @@
           },
           {
             "schema": {
-              "type": [
-                "boolean",
-                "string"
-              ]
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
             },
             "in": "query",
-            "name": "all",
+            "name": "before",
             "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
           }
         ],
         "responses": {
@@ -4828,312 +4723,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/workflow/summary": {
-      "get": {
-        "summary": "Counts by state for dashboards",
-        "tags": [
-          "workflow"
-        ],
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "state",
-            "required": false
-          },
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "drafter",
-            "required": false
-          },
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "reviewer",
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "propertyNames": {
-                    "type": "string"
-                  },
-                  "additionalProperties": {
-                    "type": "number"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/workflow/unassigned-hearings": {
-      "get": {
-        "summary": "Bills with a hearing inside the window and no note",
-        "tags": [
-          "workflow"
-        ],
-        "parameters": [
-          {
-            "schema": {
-              "default": 72,
-              "type": "integer",
-              "minimum": -9007199254740991,
-              "maximum": 9007199254740991
-            },
-            "in": "query",
-            "name": "withinHours",
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {},
-                    "additionalProperties": {}
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/workflow/poll-deadlines": {
-      "post": {
-        "summary": "Run the deadline poller now (admin, tests)",
-        "tags": [
-          "workflow"
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "warned": {
-                      "type": "number"
-                    },
-                    "overdue": {
-                      "type": "number"
-                    }
-                  },
-                  "required": [
-                    "warned",
-                    "overdue"
-                  ],
-                  "additionalProperties": false
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/notifications": {
-      "get": {
-        "summary": "Inbox (unread first)",
-        "tags": [
-          "notifications"
-        ],
-        "parameters": [
-          {
-            "schema": {
-              "type": [
-                "boolean",
-                "string"
-              ]
-            },
-            "in": "query",
-            "name": "unread",
-            "required": false
-          },
-          {
-            "schema": {
-              "type": "integer",
-              "minimum": -9007199254740991,
-              "maximum": 9007199254740991
-            },
-            "in": "query",
-            "name": "limit",
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string"
-                      },
-                      "userId": {
-                        "type": "string"
-                      },
-                      "type": {
-                        "type": "string"
-                      },
-                      "title": {
-                        "type": "string"
-                      },
-                      "body": {
-                        "type": "string"
-                      },
-                      "payload": {
-                        "type": "object",
-                        "properties": {},
-                        "additionalProperties": {}
-                      },
-                      "link": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "createdAt": {
-                        "type": "string"
-                      },
-                      "readAt": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "emailedAt": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      }
-                    },
-                    "required": [
-                      "id",
-                      "userId",
-                      "type",
-                      "title",
-                      "body",
-                      "payload",
-                      "link",
-                      "createdAt",
-                      "readAt",
-                      "emailedAt"
-                    ],
-                    "additionalProperties": false
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/notifications/unread-count": {
-      "get": {
-        "summary": "Unread count for the nav badge",
-        "tags": [
-          "notifications"
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "unread": {
-                      "type": "number"
-                    }
-                  },
-                  "required": [
-                    "unread"
-                  ],
-                  "additionalProperties": false
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/notifications/read-all": {
-      "post": {
-        "summary": "Mark every notification read",
-        "tags": [
-          "notifications"
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "marked": {
-                      "type": "number"
-                    }
-                  },
-                  "required": [
-                    "marked"
-                  ],
-                  "additionalProperties": false
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/notifications/{id}/read": {
-      "post": {
-        "summary": "Mark read",
-        "tags": [
-          "notifications"
-        ],
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "path",
-            "name": "id",
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Default Response"
           }
         }
       }
@@ -5170,9 +4759,6 @@
     },
     {
       "name": "workflow"
-    },
-    {
-      "name": "notifications"
     },
     {
       "name": "reference"

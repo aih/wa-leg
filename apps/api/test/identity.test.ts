@@ -86,7 +86,7 @@ describe('identity and foundation routes', () => {
   it('audit query is refused for drafters and the denial is itself audited', async () => {
     const res = await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit', headers: await t.as(users.drafter) });
     expect(res.statusCode).toBe(403);
-    const audit = await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit?action=permission.denied', headers: await t.as(users.reviewer) });
+    const audit = await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit?action=permission.denied', headers: await t.as(users.admin) });
     expect(audit.json()[0]).toMatchObject({ actorId: 'dev-drafter', action: 'permission.denied' });
   });
 

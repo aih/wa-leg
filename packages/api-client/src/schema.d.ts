@@ -31,7 +31,7 @@ export interface paths {
                             userId: string;
                             displayName: string;
                             email?: string;
-                            roles: ("drafter" | "reviewer" | "approver" | "manager" | "viewer" | "template_editor" | "admin")[];
+                            roles: ("drafter" | "reviewer" | "viewer" | "admin")[];
                             /** @default [] */
                             divisions: string[];
                         };
@@ -252,6 +252,8 @@ export interface paths {
                     content: {
                         "application/json": {
                             ok: boolean;
+                            version: string;
+                            commit: string;
                             checks: {
                                 [key: string]: {
                                     ok: boolean;
@@ -269,6 +271,8 @@ export interface paths {
                     content: {
                         "application/json": {
                             ok: boolean;
+                            version: string;
+                            commit: string;
                             checks: {
                                 [key: string]: {
                                     ok: boolean;
@@ -1255,7 +1259,7 @@ export interface paths {
                 };
             };
         };
-        /** Update a template (template_editor role); creates a new template version */
+        /** Update a template (admin); creates a new template version */
         put: {
             parameters: {
                 query?: never;
@@ -1445,7 +1449,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List note revisions visible to the caller */
+        /** Note revisions visible to the caller */
         get: {
             parameters: {
                 query?: {
@@ -1467,28 +1471,47 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": ({
+                        "application/json": {
                             noteRevisionId: string;
                             noteId: string;
                             billKey: string;
+                            biennium: string;
+                            billId: string;
+                            billTitle?: string;
                             versionCode: string;
                             versionLabel: string;
                             /** @enum {string} */
-                            kind: "note" | "estimate";
-                            state: string;
-                            drafterStatus: string;
-                            reviewerStatus: string;
+                            state: "draft" | "in_review" | "changes_requested" | "approved" | "published";
+                            drafter: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            reviewer: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
                             headVersion: number;
+                            approvedVersion: number | null;
+                            publishedAt: string | null;
+                            publishedBy: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            publishedVersion: number | null;
+                            templateId: string | null;
+                            templateVersion: number | null;
+                            /** @enum {string} */
+                            mode: "limited" | "full";
                             editable: boolean;
-                        } & {
-                            [key: string]: unknown;
-                        })[];
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
                     };
                 };
             };
         };
         put?: never;
-        /** Create a note and its first revision for a bill version (or amendment) */
+        /** Create a note in draft for a bill version from a template. Reviewers name the drafter; a drafter creates for themselves. */
         post: {
             parameters: {
                 query?: never;
@@ -1501,30 +1524,8 @@ export interface paths {
                     "application/json": {
                         billKey: string;
                         versionCode: string;
-                        amendmentId?: string;
-                        /**
-                         * @default note
-                         * @enum {string}
-                         */
-                        kind?: "note" | "estimate";
-                        templateId?: string;
-                        /** Format: uuid */
-                        cloneFromRevisionId?: string;
-                        request?: {
-                            requestId?: string;
-                            requestedAt?: string;
-                            requestedBy?: string;
-                            legContact?: {
-                                name?: string;
-                                phone?: string;
-                            };
-                            tenYearRequested?: boolean;
-                        };
-                        /** @default false */
-                        confidential?: boolean;
+                        templateId: string;
                         drafterId?: string;
-                        /** @enum {string} */
-                        priority?: "low" | "normal" | "high" | "urgent";
                     };
                 };
             };
@@ -1539,17 +1540,36 @@ export interface paths {
                             noteRevisionId: string;
                             noteId: string;
                             billKey: string;
+                            biennium: string;
+                            billId: string;
+                            billTitle?: string;
                             versionCode: string;
                             versionLabel: string;
                             /** @enum {string} */
-                            kind: "note" | "estimate";
-                            state: string;
-                            drafterStatus: string;
-                            reviewerStatus: string;
+                            state: "draft" | "in_review" | "changes_requested" | "approved" | "published";
+                            drafter: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            reviewer: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
                             headVersion: number;
+                            approvedVersion: number | null;
+                            publishedAt: string | null;
+                            publishedBy: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            publishedVersion: number | null;
+                            templateId: string | null;
+                            templateVersion: number | null;
+                            /** @enum {string} */
+                            mode: "limited" | "full";
                             editable: boolean;
-                        } & {
-                            [key: string]: unknown;
+                            createdAt: string;
+                            updatedAt: string;
                         };
                     };
                 };
@@ -1568,7 +1588,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Note revisions on this bill visible to the caller, grouped by version */
+        /** Note revisions on this bill visible to the caller */
         get: {
             parameters: {
                 query?: never;
@@ -1587,22 +1607,41 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": ({
+                        "application/json": {
                             noteRevisionId: string;
                             noteId: string;
                             billKey: string;
+                            biennium: string;
+                            billId: string;
+                            billTitle?: string;
                             versionCode: string;
                             versionLabel: string;
                             /** @enum {string} */
-                            kind: "note" | "estimate";
-                            state: string;
-                            drafterStatus: string;
-                            reviewerStatus: string;
+                            state: "draft" | "in_review" | "changes_requested" | "approved" | "published";
+                            drafter: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            reviewer: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
                             headVersion: number;
+                            approvedVersion: number | null;
+                            publishedAt: string | null;
+                            publishedBy: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            publishedVersion: number | null;
+                            templateId: string | null;
+                            templateVersion: number | null;
+                            /** @enum {string} */
+                            mode: "limited" | "full";
                             editable: boolean;
-                        } & {
-                            [key: string]: unknown;
-                        })[];
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
                     };
                 };
             };
@@ -1622,7 +1661,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Note revision summary (bill, version, request, workflow state, deadlines, assignees) */
+        /** Note revision summary (bill, version, state, drafter, reviewer, publication) */
         get: {
             parameters: {
                 query?: never;
@@ -1644,17 +1683,36 @@ export interface paths {
                             noteRevisionId: string;
                             noteId: string;
                             billKey: string;
+                            biennium: string;
+                            billId: string;
+                            billTitle?: string;
                             versionCode: string;
                             versionLabel: string;
                             /** @enum {string} */
-                            kind: "note" | "estimate";
-                            state: string;
-                            drafterStatus: string;
-                            reviewerStatus: string;
+                            state: "draft" | "in_review" | "changes_requested" | "approved" | "published";
+                            drafter: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            reviewer: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
                             headVersion: number;
+                            approvedVersion: number | null;
+                            publishedAt: string | null;
+                            publishedBy: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            publishedVersion: number | null;
+                            templateId: string | null;
+                            templateVersion: number | null;
+                            /** @enum {string} */
+                            mode: "limited" | "full";
                             editable: boolean;
-                        } & {
-                            [key: string]: unknown;
+                            createdAt: string;
+                            updatedAt: string;
                         };
                     };
                 };
@@ -1662,162 +1720,6 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Update metadata (confidential flag, priority, request fields, identifier override per B.RFA.03) */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        confidential?: boolean;
-                        /** @enum {string} */
-                        priority?: "low" | "normal" | "high" | "urgent";
-                        identifier?: string;
-                        request?: {
-                            requestId?: string;
-                            requestedAt?: string;
-                            requestedBy?: string;
-                            legContact?: {
-                                name?: string;
-                                phone?: string;
-                            };
-                            tenYearRequested?: boolean;
-                        };
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            noteRevisionId: string;
-                            noteId: string;
-                            billKey: string;
-                            versionCode: string;
-                            versionLabel: string;
-                            /** @enum {string} */
-                            kind: "note" | "estimate";
-                            state: string;
-                            drafterStatus: string;
-                            reviewerStatus: string;
-                            headVersion: number;
-                            editable: boolean;
-                        } & {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        trace?: never;
-    };
-    "/notes/{id}/context": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Template token context for this note revision */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/revisions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create the next revision for a new bill version or amendment, cloning the document */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        versionCode: string;
-                        amendmentId?: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            noteRevisionId: string;
-                            noteId: string;
-                            billKey: string;
-                            versionCode: string;
-                            versionLabel: string;
-                            /** @enum {string} */
-                            kind: "note" | "estimate";
-                            state: string;
-                            drafterStatus: string;
-                            reviewerStatus: string;
-                            headVersion: number;
-                            editable: boolean;
-                        } & {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
         delete?: never;
         options?: never;
         head?: never;
@@ -2153,101 +2055,6 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/lock": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Current lock holder */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        /** Acquire a soft edit lock */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-                /** @description Default Response */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        /** Release the lock */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
         options?: never;
         head?: never;
         patch?: never;
@@ -2679,7 +2486,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Workflow state, assignees, available events for the caller, deadlines */
+        /** Workflow state, drafter, reviewer, events available to the caller, open change request */
         get: {
             parameters: {
                 query?: never;
@@ -2698,14 +2505,88 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            [key: string]: unknown;
+                            instanceId: string;
+                            noteRevisionId: string;
+                            /** @enum {string} */
+                            state: "draft" | "in_review" | "changes_requested" | "approved" | "published";
+                            version: number;
+                            drafter: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            reviewer: {
+                                userId: string;
+                                displayName?: string;
+                            } | null;
+                            availableEvents: {
+                                /** @enum {string} */
+                                type: "SUBMIT" | "REQUEST_CHANGES" | "APPROVE" | "PUBLISH";
+                                label: string;
+                            }[];
+                            changeRequest: {
+                                message: string;
+                                by: {
+                                    userId: string;
+                                    displayName?: string;
+                                };
+                                at: string;
+                            } | null;
+                            editable: boolean;
+                            updatedAt: string;
                         };
                     };
                 };
             };
         };
         put?: never;
-        post?: never;
+        /** Send an event: SUBMIT, REQUEST_CHANGES (message required), APPROVE, PUBLISH */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        event: "SUBMIT" | "REQUEST_CHANGES" | "APPROVE" | "PUBLISH";
+                        message?: string;
+                        expectedVersion?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            instanceId: string;
+                            state: string;
+                            version: number;
+                            seq: number;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -2748,554 +2629,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Send an event to the machine */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /** @enum {string} */
-                        event: "START" | "SUBMIT_FOR_REVIEW" | "CLAIM_REVIEW" | "REQUEST_CHANGES" | "APPROVE" | "EXEC_CLAIM" | "EXEC_DONE" | "EXEC_RETURN" | "CANCEL";
-                        comment?: string;
-                        expectedVersion?: number;
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            instanceId: string;
-                            state: string;
-                            version: number;
-                            seq: number;
-                        };
-                    };
-                };
-                /** @description Default Response */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/assign": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Assign or reassign a role */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /** @enum {string} */
-                        role: "drafter" | "reviewer" | "exec";
-                        userId: string;
-                        position?: number;
-                        dueAt?: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-                /** @description Default Response */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/exec-chain": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Set the Executive Review chain */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        chain: {
-                            userId: string;
-                            division?: string;
-                            dueAt?: string | null;
-                        }[];
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-                /** @description Default Response */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notes/{id}/workflow/duplicate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Duplicate the task for another revision (new instance in todo with the same assignments) */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        noteRevisionId: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Default Response */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/assignments": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Work queue rows for the caller (or, for assigners, another user or everyone) */
-        get: {
-            parameters: {
-                query?: {
-                    assignee?: string;
-                    role?: "drafter" | "reviewer" | "exec";
-                    status?: string;
-                    state?: string;
-                    dueBefore?: string;
-                    limit?: number;
-                    all?: boolean | string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        }[];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/workflow/summary": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Counts by state for dashboards */
-        get: {
-            parameters: {
-                query?: {
-                    state?: string;
-                    drafter?: string;
-                    reviewer?: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: number;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/workflow/unassigned-hearings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Bills with a hearing inside the window and no note */
-        get: {
-            parameters: {
-                query?: {
-                    withinHours?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            [key: string]: unknown;
-                        }[];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/workflow/poll-deadlines": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Run the deadline poller now (admin, tests) */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            warned: number;
-                            overdue: number;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notifications": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Inbox (unread first) */
-        get: {
-            parameters: {
-                query?: {
-                    unread?: boolean | string;
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            id: string;
-                            userId: string;
-                            type: string;
-                            title: string;
-                            body: string;
-                            payload: {
-                                [key: string]: unknown;
-                            };
-                            link: string | null;
-                            createdAt: string;
-                            readAt: string | null;
-                            emailedAt: string | null;
-                        }[];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notifications/unread-count": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Unread count for the nav badge */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            unread: number;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notifications/read-all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Mark every notification read */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            marked: number;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notifications/{id}/read": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Mark read */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
         delete?: never;
         options?: never;
         head?: never;

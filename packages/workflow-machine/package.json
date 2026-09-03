@@ -10,9 +10,6 @@
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run"
   },
-  "dependencies": {
-    "xstate": "5.32.6"
-  },
   "devDependencies": {
     "typescript": "5.9.3",
     "vitest": "3.2.7"

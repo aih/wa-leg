@@ -24,7 +24,6 @@ import { TemplatesService, templatesRoutes } from './modules/templates/index.js'
 import { ReferenceService, referenceRoutes } from './modules/reference/index.js';
 import { createNotes, notesRoutes } from './modules/notes/index.js';
 import { createWorkflow, workflowRoutes } from './modules/workflow/index.js';
-import { createNotifications, notificationsRoutes, type Mailer } from './modules/notifications/index.js';
 
 export type HealthProbe = () => Promise<{ ok: boolean; detail?: string }>;
 
@@ -45,8 +44,6 @@ export interface BuildOptions {
   oidc?: OidcClient;
   /** Start background workers (outbox relay, pollers) on ready. Default true. */
   workers?: boolean;
-  /** Notification delivery adapter override (tests). */
-  mailer?: Mailer;
 }
 
 export const API_PREFIX = '/api/v1';
@@ -112,7 +109,7 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
         },
       },
       security: [{ session: [] }, { bearer: [] }],
-      tags: ['identity', 'bills', 'search', 'notes', 'templates', 'workflow', 'notifications', 'reference', 'admin'].map((name) => ({ name })),
+      tags: ['identity', 'bills', 'search', 'notes', 'templates', 'workflow', 'reference', 'admin'].map((name) => ({ name })),
     },
     transform: jsonSchemaTransform,
     stripBasePath: true,
@@ -126,8 +123,7 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
   app.decorate('reference', new ReferenceService(dbHandle.db, config.CURRENT_BIENNIUM));
   const search = createSearch(app);
   const notes = createNotes(app);
-  const workflow = createWorkflow(app, { workers: opts.workers ?? true });
-  createNotifications(app, opts.mailer);
+  const workflow = createWorkflow(app);
 
   await app.register(
     async (api) => {
@@ -148,7 +144,6 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
       await api.register(referenceRoutes);
       await api.register(notesRoutes(notes));
       await api.register(workflowRoutes(workflow));
-      await api.register(notificationsRoutes(app.notificationsSvc));
       for (const mod of moduleRegistrars) await api.register(mod);
     },
     { prefix: API_PREFIX },
