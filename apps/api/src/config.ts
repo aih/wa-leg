@@ -50,6 +50,7 @@ const ConfigSchema = z.object({
   OIDC_DIVISION_CLAIM: z.string().default('divisions'),
   SEARCH_BACKEND: z.enum(['opensearch', 'postgres']).default('opensearch'),
   OPENSEARCH_URL: z.string().default('http://localhost:9201'),
+  OPENSEARCH_INDEX_PREFIX: z.string().default('waleg_'),
   SMTP_URL: z.string().default('smtp://localhost:1025'),
   MAIL_FROM: z.string().default('fiscal-notes@dor.wa.gov.test'),
   LAWFILES_CACHE_DIR: z.string().default('.cache/lawfiles').transform((p) => (isAbsolute(p) ? p : join(REPO_ROOT, p))),

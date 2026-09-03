@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
-import { BillsService } from './service.js';
+import type { BillsService } from './service.js';
 import { can } from '../identity/can.js';
 import { forbidden } from '../../lib/errors.js';
 import { writeAudit } from '../../lib/audit.js';
@@ -87,8 +87,7 @@ const AnyObject = z.looseObject({});
 
 export async function billsRoutes(app: FastifyInstance): Promise<void> {
   const r = app.withTypeProvider<ZodTypeProvider>();
-  const svc = new BillsService(app.db);
-  app.decorate('bills', svc);
+  const svc = app.bills;
   const params = z.object({ biennium, id: billId });
 
   r.get(
@@ -102,6 +101,20 @@ export async function billsRoutes(app: FastifyInstance): Promise<void> {
       if ((res as { notFound?: boolean }).notFound && !(res as { ambiguous?: boolean }).ambiguous) return reply.code(404).send(res);
       return res;
     },
+  );
+
+  r.get(
+    '/bills',
+    {
+      schema: {
+        tags: ['bills'],
+        summary: 'List bills (paged)',
+        querystring: z.object({ biennium: z.string().optional(), q: z.string().optional(), page: z.coerce.number().int().min(1).default(1), size: z.coerce.number().int().min(1).max(500).default(50) }),
+        response: { 200: z.array(z.object({ billKey: z.string(), id: z.string(), biennium: z.string(), title: z.string(), status: z.string().nullable(), currentVersionCode: z.string().nullable(), updatedAt: z.string() })) },
+      },
+      preHandler: app.requireAuth,
+    },
+    async (req) => svc.listBills(req.query),
   );
 
   r.get(

@@ -3,7 +3,7 @@ import { loginAs } from './helpers';
 
 test('anonymous visitor sees the sign-in prompt and the search box', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('searchbox', { name: /search bills/i })).toBeVisible();
+  await expect(page.getByRole('combobox', { name: /search bills/i })).toBeVisible();
   await expect(page.getByRole('banner').getByRole('link', { name: /sign in/i })).toBeVisible();
 });
 

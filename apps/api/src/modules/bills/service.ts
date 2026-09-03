@@ -126,6 +126,15 @@ export class BillsService {
     };
   }
 
+  async listBills(opts: { biennium?: string; page: number; size: number; q?: string }): Promise<{ billKey: string; id: string; biennium: string; title: string; status: string | null; currentVersionCode: string | null; updatedAt: string }[]> {
+    const conds = [sql`true`];
+    if (opts.biennium) conds.push(sql`biennium = ${opts.biennium}`);
+    if (opts.q) conds.push(sql`(id ILIKE ${'%' + opts.q + '%'} OR title ILIKE ${'%' + opts.q + '%'})`);
+    const rows = (await this.db.execute(sql`SELECT bill_key, id, biennium, title, status, current_version_code, updated_at FROM bills
+        WHERE ${sql.join(conds, sql` AND `)} ORDER BY biennium, number LIMIT ${opts.size} OFFSET ${(opts.page - 1) * opts.size}`)).rows as any[];
+    return rows.map((r) => ({ billKey: r.bill_key, id: r.id, biennium: r.biennium, title: r.title, status: r.status ?? null, currentVersionCode: r.current_version_code ?? null, updatedAt: iso(r.updated_at)! }));
+  }
+
   async listVersions(key: string): Promise<VersionRow[]> {
     const rows = (await this.db.execute(sql`SELECT v.version_code, v.label, v.short_label, v.seq, v.status, v.source_url_xml, v.source_url_pdf, v.source_url_htm,
         v.document->'header'->>'readFirstTime' AS read_first_time,

@@ -9,6 +9,7 @@ import { NotFound } from './routes/NotFound';
 import { Placeholder } from './routes/Placeholder';
 import { BillPage } from './routes/BillPage';
 import { ComparePage } from './routes/ComparePage';
+import { SearchResults } from './routes/SearchResults';
 
 export function App() {
   return (
@@ -23,7 +24,7 @@ export function App() {
           <Route path="bills/:biennium/:id/:code" element={<BillPage />} />
           <Route path="notes/:revisionId" element={<Placeholder title="Workspace" />} />
           <Route path="notes/:revisionId/versions" element={<Placeholder title="Document versions" />} />
-          <Route path="search" element={<Placeholder title="Search results" />} />
+          <Route path="search" element={<SearchResults />} />
           <Route path="inbox" element={<Inbox />} />
           <Route path="admin/templates" element={<Placeholder title="Templates" />} />
           <Route path="admin/ingest" element={<Placeholder title="Ingest" />} />

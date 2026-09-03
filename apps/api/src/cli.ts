@@ -87,6 +87,54 @@ ingest
     }
   });
 
+const search = program.command('search').description('Search index maintenance');
+search
+  .command('init')
+  .description('Create the search indices and aliases (OpenSearch) or verify the fallback table')
+  .action(async () => {
+    const { buildApp } = await import('./app.js');
+    const cfg = loadConfig();
+    const app = await buildApp({ config: cfg, workers: false });
+    await app.ready();
+    try {
+      await app.searchSvc.backend.init();
+      console.log(`search backend ${app.searchSvc.backend.name} ready`);
+    } finally {
+      await app.close();
+    }
+  });
+search
+  .command('load')
+  .description('Index every bill of the biennium from the bills API')
+  .option('--biennium <b>', 'Biennium', undefined)
+  .option('--limit <n>', 'Only the first n bills', (v) => Number(v))
+  .option('--bills <list>', 'Comma-separated bill keys or numbers')
+  .action(async (o: { biennium?: string; limit?: number; bills?: string }) => {
+    const { buildApp } = await import('./app.js');
+    const cfg = loadConfig();
+    const app = await buildApp({ config: cfg, workers: false });
+    await app.ready();
+    try {
+      await app.searchSvc.backend.init();
+      const biennium = o.biennium ?? cfg.CURRENT_BIENNIUM;
+      if (o.bills) {
+        let docs = 0;
+        for (const b of o.bills.split(',')) {
+          const key = b.includes(':') ? b : `WA:${biennium}:${b.trim().toUpperCase()}`;
+          docs += await app.searchSvc.indexer.indexBill(key);
+          console.log(`${key} indexed`);
+        }
+        await app.searchSvc.backend.refresh();
+        console.log(`${docs} documents`);
+      } else {
+        const res = await app.searchSvc.indexer.loadAll({ biennium, limit: o.limit, onProgress: (m: string) => console.log(m) });
+        console.log(JSON.stringify({ ...res, errors: res.errors.slice(0, 20) }, null, 2));
+      }
+    } finally {
+      await app.close();
+    }
+  });
+
 export { program };
 
 await program.parseAsync(process.argv);
