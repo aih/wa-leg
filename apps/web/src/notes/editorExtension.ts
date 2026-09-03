@@ -1,11 +1,12 @@
 // App-side ProseMirror behaviour for the note editor: computed cells, locked boilerplate, slot navigation,
-// slot decorations, and the active comment highlight. The schema itself comes from `@wa-leg/note-schema`.
+// slot decorations, citation remove controls, and the active comment highlight. The schema itself comes from
+// `@wa-leg/note-schema`.
 import { Extension } from '@tiptap/core';
 import type { Editor } from '@tiptap/core';
 import { Plugin, PluginKey, TextSelection, type EditorState, type Transaction } from '@tiptap/pm/state';
-import { Decoration, DecorationSet } from '@tiptap/pm/view';
+import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view';
 import type { Node as PMNodeModel } from '@tiptap/pm/model';
-import { recompute, slotFilled, type PMNode } from '@wa-leg/note-schema';
+import { citeKey, recompute, sameTarget, slotFilled, type CitationTarget, type PMNode } from '@wa-leg/note-schema';
 
 export const RECOMPUTE_META = 'note:recompute';
 export const UNLOCK_META = 'note:unlock';
@@ -13,6 +14,7 @@ export const ACTIVE_COMMENT_META = 'note:activeComment';
 
 export const activeCommentKey = new PluginKey<string | null>('note-active-comment');
 const slotDecoKey = new PluginKey<DecorationSet>('note-slot-decorations');
+const citationControlKey = new PluginKey<DecorationSet>('note-citation-controls');
 
 export interface SlotTarget {
   /** Position where the cursor goes. */
@@ -262,6 +264,66 @@ function decorationPlugin(): Plugin<DecorationSet> {
   });
 }
 
+/** The display label of a citation node: the full citation string, or the short label. */
+export function citationLabel(node: PMNodeModel): string {
+  return String(node.attrs.citation ?? node.attrs.label ?? 'citation');
+}
+
+/** Position of the first citation whose target matches, or null. */
+export function findCitation(doc: PMNodeModel, target: CitationTarget): number | null {
+  let found: number | null = null;
+  doc.descendants((node, pos) => {
+    if (found !== null) return false;
+    if (node.type.name === 'billCitation' && sameTarget(node.attrs as CitationTarget, target)) found = pos;
+    return node.type.name !== 'billCitation';
+  });
+  return found;
+}
+
+function removeControl(view: EditorView, getPos: () => number | undefined, label: string): HTMLElement {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'cite-remove';
+  btn.textContent = '×';
+  btn.setAttribute('aria-label', `Remove citation ${label}`);
+  btn.title = `Remove citation ${label}`;
+  btn.addEventListener('mousedown', (e) => e.preventDefault());
+  btn.addEventListener('click', () => {
+    const at = getPos();
+    if (at === undefined) return;
+    const node = view.state.doc.nodeAt(at - 1);
+    if (!node || node.type.name !== 'billCitation') return;
+    view.dispatch(view.state.tr.delete(at - 1, at).scrollIntoView());
+    view.focus();
+  });
+  return btn;
+}
+
+/** A remove control after every citation while the editor is editable. Decorations stay out of the document. */
+function citationControlPlugin(editor: Editor): Plugin<DecorationSet> {
+  let cache: { doc: PMNodeModel; set: DecorationSet } | null = null;
+  const build = (doc: PMNodeModel): DecorationSet => {
+    if (cache && cache.doc === doc) return cache.set;
+    const decos: Decoration[] = [];
+    doc.descendants((node, pos) => {
+      if (node.type.name !== 'billCitation') return true;
+      const label = citationLabel(node);
+      decos.push(Decoration.widget(pos + node.nodeSize, (view, getPos) => removeControl(view, getPos, label), { side: -1, key: `cite-remove:${citeKey(node.attrs as CitationTarget)}:${label}`, stopEvent: () => true, ignoreSelection: true }));
+      return false;
+    });
+    cache = { doc, set: DecorationSet.create(doc, decos) };
+    return cache.set;
+  };
+  return new Plugin<DecorationSet>({
+    key: citationControlKey,
+    props: {
+      decorations(state) {
+        return editor.isEditable ? build(state.doc) : null;
+      },
+    },
+  });
+}
+
 function activeCommentPlugin(): Plugin<string | null> {
   return new Plugin<string | null>({
     key: activeCommentKey,
@@ -296,7 +358,7 @@ export const NoteApp = Extension.create<NoteAppOptions>({
     return { onSaveRequest: undefined, onTemplateRequest: undefined };
   },
   addProseMirrorPlugins() {
-    return [lockPlugin(), recomputePlugin(), decorationPlugin(), activeCommentPlugin()];
+    return [lockPlugin(), recomputePlugin(), decorationPlugin(), citationControlPlugin(this.editor), activeCommentPlugin()];
   },
   addKeyboardShortcuts() {
     return {

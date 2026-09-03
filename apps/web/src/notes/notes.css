@@ -71,6 +71,8 @@ input:not([type='checkbox']):not([type='radio']), select, textarea { font: inher
 .note-editor-body .note-table tr[data-row='total'] td, .note-html .note-table tr[data-row='total'] td { font-weight: 600; }
 .note-editor-body .checkbox { cursor: pointer; font-size: 1.1em; }
 .note-editor-body .bill-cite, .note-html .bill-cite { color: var(--accent); text-decoration: underline; text-decoration-style: dotted; cursor: pointer; }
+.note-editor-body .cite-remove { display: inline-block; margin: 0 .1em 0 .15em; padding: 0 .3em; min-width: 1.2em; line-height: 1.2; font-size: .85em; border: 1px solid var(--line); border-radius: 3px; background: var(--surface); color: var(--muted); cursor: pointer; vertical-align: baseline; user-select: none; }
+.note-editor-body .cite-remove:hover, .note-editor-body .cite-remove:focus-visible { color: var(--fg); border-color: var(--accent); }
 .note-editor-body .ProseMirror-selectednode { outline: 2px solid var(--focus); }
 .note-editor-body mark.comment { background: #fff0b3; color: inherit; border-bottom: 2px solid #d9a400; }
 .note-editor-body mark.comment[data-resolved='true'] { background: none; border-bottom: 1px dotted var(--muted); }

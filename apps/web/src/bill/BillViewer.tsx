@@ -34,7 +34,8 @@ export interface BillViewerProps {
   readOnly?: boolean;
   urlBuilder?: BillUrlBuilder;
   options?: { showHeader?: boolean; showRcwAffected?: boolean; collapsible?: boolean; theme?: 'light' | 'dark' | 'system' };
-  onCite?: (e: CiteEvent) => void;
+  /** Returns `'duplicate'` when the host already has a citation with the same target. */
+  onCite?: (e: CiteEvent) => void | 'inserted' | 'duplicate';
   onSectionSelect?: (e: SectionSelectEvent) => void;
   onAnnotationActivate?: (a: Annotation) => void;
   onRequestVersion?: (code: string) => void;
@@ -216,8 +217,8 @@ export function BillViewer(props: BillViewerProps) {
       if (!s) return;
       const t = text ?? (blockId ? plainOfBlock(s, blockId) : sectionPlainText(s));
       const ev = makeCiteEvent(doc, s, blockId, range, t, urls, overlay?.id);
-      onCite?.(ev);
-      setStatus(`Cited ${ev.citation}.`);
+      const result = onCite?.(ev);
+      setStatus(result === 'duplicate' ? `Already cited ${ev.citation}.` : `Cited ${ev.citation}.`);
     },
     [doc, onCite, overlay?.id, sectionById, urls],
   );

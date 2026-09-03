@@ -6,7 +6,7 @@ import { UndoRedo } from '@tiptap/extensions';
 import type { Node as PMNodeModel } from '@tiptap/pm/model';
 import { extensionsFor, unfilledSlots, inventorySlots, type PMNode } from '@wa-leg/note-schema';
 import type { BillCitation } from '@wa-leg/bill-document/browser';
-import { ACTIVE_COMMENT_META, NoteApp, UNLOCK_META, commentRanges, moveToSlot, selectRange } from './editorExtension';
+import { ACTIVE_COMMENT_META, NoteApp, UNLOCK_META, commentRanges, findCitation, moveToSlot, selectRange } from './editorExtension';
 import { MathDialog } from './MathDialog';
 import type { EditorMode } from './api';
 import 'katex/dist/katex.min.css';
@@ -30,7 +30,8 @@ export interface NoteEditorProps {
 
 export interface NoteEditorHandle {
   editor: Editor | null;
-  insertCitation(c: BillCitation): void;
+  /** Inserts at the caret, or selects the existing citation with the same target and returns `'duplicate'`. */
+  insertCitation(c: BillCitation): 'inserted' | 'duplicate';
   /** Replace the whole document (template applied, version restored, conflict resolved). */
   setDocument(doc: PMNode, opts?: { addToHistory?: boolean }): void;
   insertContent(content: PMNode | PMNode[]): void;
@@ -154,13 +155,19 @@ export const NoteEditor = forwardRef<NoteEditorHandle, NoteEditorProps>(function
     (): NoteEditorHandle => ({
       editor,
       insertCitation(c) {
-        if (!editor) return;
+        if (!editor) return 'inserted';
+        const existing = findCitation(editor.state.doc, c);
+        if (existing !== null) {
+          editor.chain().focus().setNodeSelection(existing).scrollIntoView().run();
+          return 'duplicate';
+        }
         editor
           .chain()
           .focus()
           .insertContent({ type: 'billCitation', attrs: { billKey: c.billKey, versionCode: c.versionCode, versionLabel: c.versionLabel, sectionId: c.sectionId, blockId: c.blockId ?? null, label: c.label ?? null, citation: c.citation, href: c.href, amendmentId: c.amendmentId ?? null } })
           .insertContent(' ')
           .run();
+        return 'inserted';
       },
       setDocument(next, opts) {
         if (!editor) return;
