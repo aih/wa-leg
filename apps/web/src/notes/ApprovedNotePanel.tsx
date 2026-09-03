@@ -9,7 +9,7 @@ import 'katex/dist/katex.min.css';
 /** The approved fiscal note for the selected bill version, or the latest approved note for an earlier version. */
 export function ApprovedNotePanel({ bill, currentCode, notes }: { bill: BillSummary; currentCode: string; notes: NoteSummary[] }) {
   const { principal } = useSession();
-  const approved = notes.filter((n) => n.state === 'approved' && n.approvedVersion !== null && n.kind === 'note');
+  const approved = notes.filter((n) => n.state === 'approved' && n.approvedVersion !== null);
   const seq = (code: string) => bill.versions.findIndex((v) => v.code === code);
   const exact = approved.filter((n) => n.versionCode === currentCode).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0] ?? null;
   const earlier = exact ? null : approved.filter((n) => seq(n.versionCode) < seq(currentCode)).sort((a, b) => seq(b.versionCode) - seq(a.versionCode) || b.updatedAt.localeCompare(a.updatedAt))[0] ?? null;

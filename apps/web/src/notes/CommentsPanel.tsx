@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { fmtWhen, type CommentThread } from './api';
 
 export interface PendingComment {
@@ -26,6 +26,10 @@ export function CommentsPanel({ threads, activeId, pending, canComment, onSelect
   const [replyFor, setReplyFor] = useState<string | null>(null);
   const [replyBody, setReplyBody] = useState('');
   const [busy, setBusy] = useState(false);
+  // One dismiss control at a time: the New comment form closes any open reply form.
+  useEffect(() => {
+    if (pending) setReplyFor(null);
+  }, [pending]);
 
   const visible = threads.filter((t) => filter === 'all' || t.status === filter);
   const attached = visible.filter((t) => !t.detached);
@@ -71,7 +75,7 @@ export function CommentsPanel({ threads, activeId, pending, canComment, onSelect
       </ol>
       {canComment && (
         <div className="row small">
-          {replyFor === t.id ? (
+          {replyFor === t.id && !pending ? (
             <form onSubmit={(e) => void submitReply(e, t.id)} className="reply-form">
               <label className="visually-hidden" htmlFor={`reply-${t.id}`}>
                 Reply
@@ -86,7 +90,7 @@ export function CommentsPanel({ threads, activeId, pending, canComment, onSelect
             </form>
           ) : (
             <>
-              <button type="button" className="linkish" onClick={() => setReplyFor(t.id)}>
+              <button type="button" className="linkish" onClick={() => setReplyFor(t.id)} disabled={!!pending}>
                 Reply
               </button>
               <button type="button" className="linkish" onClick={() => void onResolve(t.id, t.status !== 'resolved')}>

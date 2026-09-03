@@ -3,11 +3,9 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import type { Editor } from '@tiptap/core';
 import { NodeSelection } from '@tiptap/pm/state';
 import { UndoRedo } from '@tiptap/extensions';
-import type { Node as PMNodeModel } from '@tiptap/pm/model';
 import { extensionsFor, unfilledSlots, inventorySlots, type PMNode } from '@wa-leg/note-schema';
 import type { BillCitation } from '@wa-leg/bill-document/browser';
 import { ACTIVE_COMMENT_META, NoteApp, UNLOCK_META, commentRanges, moveToSlot, selectRange } from './editorExtension';
-import { MathDialog } from './MathDialog';
 import type { EditorMode } from './api';
 import 'katex/dist/katex.min.css';
 
@@ -16,6 +14,8 @@ export interface NoteEditorProps {
   /** Initial document; later documents are applied through the handle. */
   doc: PMNode;
   readOnly?: boolean;
+  /** Show the Comment tool on a read-only note (reviewers comment without editing). */
+  canComment?: boolean;
   activeCommentId?: string | null;
   onChange?: (doc: PMNode) => void;
   onSaveRequest?: () => void;
@@ -23,7 +23,6 @@ export interface NoteEditorProps {
   onCitationActivate?: (cite: BillCitation) => void;
   onCommentRequest?: (range: { from: number; to: number }, anchorText: string) => void;
   onCommentSelect?: (commentId: string) => void;
-  onTemplateRequest?: () => void;
   onSlotStatus?: (s: { filled: number; required: number; unfilled: string[] }) => void;
   children?: ReactNode;
 }
@@ -53,25 +52,20 @@ const LIMITED_TOOLS: { id: string; label: string; icon: string; run: (e: Editor)
 ];
 
 export const NoteEditor = forwardRef<NoteEditorHandle, NoteEditorProps>(function NoteEditor(props, ref) {
-  const { mode, doc, readOnly = false, activeCommentId = null } = props;
+  const { mode, doc, readOnly = false, canComment = false, activeCommentId = null } = props;
   const propsRef = useRef(props);
   propsRef.current = props;
-  const [math, setMath] = useState<{ pos: number | null; latex: string; kind: 'inline' | 'block' } | null>(null);
   const [, setTick] = useState(0);
 
   const editor = useEditor({
     extensions: [
       ...extensionsFor(mode).map((ext) =>
         ext.name === 'mathematics'
-          ? (ext as unknown as { configure: (o: unknown) => typeof ext }).configure({
-              inlineOptions: { onClick: (node: PMNodeModel, pos: number) => setMath({ pos, latex: String(node.attrs.latex ?? ''), kind: 'inline' }) },
-              blockOptions: { onClick: (node: PMNodeModel, pos: number) => setMath({ pos, latex: String(node.attrs.latex ?? ''), kind: 'block' }) },
-              katexOptions: { throwOnError: false, output: 'htmlAndMathml' },
-            })
+          ? (ext as unknown as { configure: (o: unknown) => typeof ext }).configure({ katexOptions: { throwOnError: false, output: 'htmlAndMathml' } })
           : ext,
       ),
       UndoRedo,
-      NoteApp.configure({ onSaveRequest: () => propsRef.current.onSaveRequest?.(), onTemplateRequest: () => propsRef.current.onTemplateRequest?.() }),
+      NoteApp.configure({ onSaveRequest: () => propsRef.current.onSaveRequest?.() }),
     ],
     content: doc as never,
     editable: !readOnly,
@@ -212,19 +206,6 @@ export const NoteEditor = forwardRef<NoteEditorHandle, NoteEditorProps>(function
     props.onCommentRequest?.({ from, to }, text);
   };
 
-  const commitMath = (latex: string) => {
-    if (!editor || !math) return;
-    if (math.pos === null) {
-      if (math.kind === 'block') editor.chain().focus().insertBlockMath({ latex }).run();
-      else editor.chain().focus().insertInlineMath({ latex }).run();
-    } else {
-      const pos = math.pos;
-      if (math.kind === 'block') editor.chain().focus().setNodeSelection(pos).updateBlockMath({ latex, pos }).run();
-      else editor.chain().focus().setNodeSelection(pos).updateInlineMath({ latex, pos }).run();
-    }
-    setMath(null);
-  };
-
   return (
     <div className={`note-editor mode-${mode}${readOnly ? ' read-only' : ''}`}>
       {!readOnly && editor && (
@@ -235,20 +216,14 @@ export const NoteEditor = forwardRef<NoteEditorHandle, NoteEditorProps>(function
             </ToolButton>
           ))}
           <span className="sep" aria-hidden="true" />
-          <ToolButton label="Insert formula" onClick={() => setMath({ pos: null, latex: '', kind: 'inline' })}>
-            ∑ Formula
-          </ToolButton>
           <ToolButton label="Cite the bill section shown in the viewer" onClick={() => props.onCiteRequest?.()}>
             § Cite
           </ToolButton>
-          <ToolButton label="Open the template panel" onClick={() => props.onTemplateRequest?.()}>
-            Template
+          <ToolButton label="Comment on the selection" onClick={onCommentClick} disabled={editor.state.selection.empty}>
+            Comment
           </ToolButton>
           <ToolButton label="Go to the next slot" onClick={() => moveToSlot(editor, 'next')}>
             Next slot
-          </ToolButton>
-          <ToolButton label="Comment on the selection" onClick={onCommentClick} disabled={editor.state.selection.empty}>
-            Comment
           </ToolButton>
           <span className="sep" aria-hidden="true" />
           <ToolButton label="Undo" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>
@@ -260,8 +235,14 @@ export const NoteEditor = forwardRef<NoteEditorHandle, NoteEditorProps>(function
           {props.children}
         </Toolbar>
       )}
+      {readOnly && canComment && editor && (
+        <Toolbar>
+          <ToolButton label="Comment on the selection" onClick={onCommentClick} disabled={editor.state.selection.empty}>
+            Comment
+          </ToolButton>
+        </Toolbar>
+      )}
       <EditorContent editor={editor} className="note-editor-scroll" />
-      {math && <MathDialog initial={math.latex} kind={math.kind} onKindChange={(kind) => setMath({ ...math, kind })} onInsert={commitMath} onClose={() => setMath(null)} />}
     </div>
   );
 });
