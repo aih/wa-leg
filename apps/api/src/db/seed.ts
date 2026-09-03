@@ -13,9 +13,13 @@ interface DevUser {
   divisions: string[];
 }
 
-/** Seed development users from the dev issuer's user list so names resolve before first login. */
+/**
+ * Seed development users from the dev issuer's user list so names resolve before first login. Dev users
+ * (`dev-*`) that are no longer in the list are removed.
+ */
 export async function seedUsers(db: Db): Promise<number> {
   const users = require('@wa-leg/dev-oidc/users.json') as DevUser[];
+  await db.execute(sql`DELETE FROM users WHERE user_id LIKE 'dev-%' AND user_id <> ALL(${pgTextArray(users.map((u) => u.sub))}::text[])`);
   for (const u of users) {
     await db.execute(sql`INSERT INTO users (user_id, subject, display_name, email, roles, divisions)
       VALUES (${u.sub}, ${u.sub}, ${u.name}, ${u.email}, ${pgTextArray(u.roles)}::text[], ${pgTextArray(u.divisions)}::text[])

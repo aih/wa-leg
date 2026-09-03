@@ -39,6 +39,7 @@ export interface UserRow {
 export interface PublishedItem {
   revisionId: string;
   bill: { biennium: string; billId: string; number: string; title: string };
+  versionLabel?: string;
   versionCode: string;
   title: string;
   publishedAt: string;

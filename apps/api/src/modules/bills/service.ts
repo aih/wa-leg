@@ -214,7 +214,7 @@ export class BillsService {
     }));
   }
 
-  /** Upcoming hearings across bills inside a window, with bill facts, for the reviewer dashboard. */
+  /** Upcoming hearings across bills inside a window, with bill facts. */
   async listUpcomingHearings(opts: { from?: string; to?: string; biennium?: string; limit?: number } = {}): Promise<(HearingRow & { biennium: string; billId: string; title: string })[]> {
     const from = opts.from ?? new Date().toISOString();
     const to = opts.to ?? new Date(Date.now() + 72 * 3_600_000).toISOString();

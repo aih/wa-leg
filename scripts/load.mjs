@@ -39,13 +39,13 @@ async function run(title, opts) {
   return row;
 }
 
-const viewer = token('dev-viewer');
+const viewer = token('dev-committee');
 const drafter = token('dev-drafter');
 const reviewer = token('dev-reviewer');
 const auth = (t) => ({ authorization: `Bearer ${t}` });
 
 // A note the drafter can autosave.
-const created = await (await fetch(`${API}/api/v1/notes`, { method: 'POST', headers: { ...auth(reviewer), 'content-type': 'application/json' }, body: JSON.stringify({ billKey: 'WA:2025-26:HB2402', versionCode: 'S', templateId: 'no-fiscal-impact', drafterId: 'dev-drafter', request: { requestId: 'load-test' } }) })).json();
+const created = await (await fetch(`${API}/api/v1/notes`, { method: 'POST', headers: { ...auth(reviewer), 'content-type': 'application/json' }, body: JSON.stringify({ billKey: 'WA:2025-26:HB2402', versionCode: 'S', templateId: 'no-fiscal-impact', drafterId: 'dev-drafter' }) })).json();
 const noteId = created.noteRevisionId;
 const head = await json(`/notes/${noteId}/document`, drafter);
 
@@ -56,18 +56,18 @@ const QUERIES = ['phthalates', 'sales tax exemption', 'property tax', 'retail sa
 rows.push(await run('GET search (8 rotating queries)', { requests: QUERIES.map((q) => ({ path: `/api/v1/search?q=${encodeURIComponent(q)}`, headers: auth(viewer) })) }));
 rows.push(await run('GET search suggest (sales)', { requests: [{ path: '/api/v1/search/suggest?q=sales', headers: auth(viewer) }] }));
 rows.push(await run('GET note summary + workflow', { requests: [{ path: `/api/v1/notes/${noteId}`, headers: auth(drafter) }] }));
-rows.push(await run('GET drafter queue', { requests: [{ path: '/api/v1/assignments?role=drafter', headers: auth(drafter) }] }));
+rows.push(await run('GET notes list', { requests: [{ path: '/api/v1/notes', headers: auth(drafter) }] }));
 // Autosave: each request carries If-Match with the current version; concurrent saves of the same note conflict
-// by design, so the save path runs on one connection at a time per note with force=true to measure the write cost.
+// by design, so the save path runs on one connection at a time per note to measure the write cost.
 let version = head.version;
 rows.push(
-  await run('PUT autosave (force, 1 connection)', {
+  await run('PUT autosave (1 connection)', {
     connections: 1,
     duration: Math.min(DURATION, 10),
     requests: [
       {
         method: 'PUT',
-        path: `/api/v1/notes/${noteId}/document?force=true`,
+        path: `/api/v1/notes/${noteId}/document`,
         headers: { ...auth(drafter), 'content-type': 'application/json', 'if-match': `"${version}"` },
         body: JSON.stringify({ doc: head.doc, mode: head.mode, clientId: 'load' }),
         onResponse: (status, body) => {

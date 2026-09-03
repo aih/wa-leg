@@ -17,7 +17,7 @@ import { HttpError } from './lib/errors.js';
 import { OutboxRelay } from './lib/outbox.js';
 import type { Logger } from 'pino';
 import { principalPlugin, identityRoutes, createOidcClient, type OidcClient } from './modules/identity/index.js';
-import { adminRoutes } from './modules/admin/index.js';
+import { healthRoutes } from './modules/health/index.js';
 import { billsRoutes, BillsService } from './modules/bills/index.js';
 import { createSearch, searchRoutes } from './modules/search/index.js';
 import { TemplatesService, templatesRoutes } from './modules/templates/index.js';
@@ -110,7 +110,7 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
         },
       },
       security: [{ session: [] }, { bearer: [] }],
-      tags: ['identity', 'bills', 'search', 'notes', 'templates', 'workflow', 'reference', 'admin'].map((name) => ({ name })),
+      tags: ['identity', 'bills', 'search', 'notes', 'templates', 'workflow', 'reference', 'published', 'health'].map((name) => ({ name })),
     },
     transform: jsonSchemaTransform,
     stripBasePath: true,
@@ -138,7 +138,7 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
         return { ...doc, paths };
       });
       await api.register(identityRoutes);
-      await api.register(adminRoutes);
+      await api.register(healthRoutes);
       await api.register(billsRoutes);
       await api.register(searchRoutes(search));
       await api.register(templatesRoutes);

@@ -12,6 +12,8 @@ let noteUrl: string;
 
 const state = (page: Page) => page.locator('.workflow-bar .status').first();
 const bar = (page: Page) => page.locator('.workflow-bar');
+/** The value beside a label in the workflow bar's definition list. */
+const field = (page: Page, label: string) => bar(page).locator('dt', { hasText: label }).locator('xpath=following-sibling::dd[1]');
 const cancelButtons = (page: Page) => page.getByRole('button', { name: 'Cancel' });
 
 async function waitSaved(page: Page) {
@@ -34,7 +36,7 @@ test.describe.serial('workflow', () => {
   test('Rae creates a note on SHB 2402 for Dana; both see it as Draft', async ({ page }) => {
     await loginAs(page, 'dev-reviewer', '/bills/2025-26/HB2402/S');
     await page.getByText('New fiscal note').click();
-    const form = page.getByRole('form', { name: 'New note' });
+    const form = page.getByRole('form', { name: 'New fiscal note' });
     await form.getByRole('combobox', { name: 'Template' }).selectOption('sales-use-tax-exemption');
     await form.getByRole('combobox', { name: 'Drafter' }).selectOption('dev-drafter');
     await form.getByRole('button', { name: 'Create and open' }).click();
@@ -42,8 +44,8 @@ test.describe.serial('workflow', () => {
     noteUrl = new URL(page.url()).pathname;
     await expect(bar(page).locator('h1')).toContainText('SHB 2402');
     await expect(state(page)).toHaveText('Draft');
-    await expect(bar(page)).toContainText('Drafter: Dana Drafter');
-    await expect(bar(page)).toContainText('Reviewer: not yet');
+    await expect(field(page, 'Drafter')).toHaveText('Dana Drafter');
+    await expect(field(page, 'Reviewer')).toHaveText('not yet');
     // Rae is not the drafter: read-only, no workflow action.
     await expect(page.locator('.save-state')).toHaveText('Read-only');
     await expect(page.getByRole('group', { name: 'Workflow actions' }).getByRole('button', { name: /Submit|Approve|Publish|Request/ })).toHaveCount(0);
@@ -80,7 +82,7 @@ test.describe.serial('workflow', () => {
   test('Rae comments on two sentences and requests changes', async ({ page }) => {
     await loginAs(page, 'dev-reviewer', noteUrl);
     await expect(state(page)).toHaveText('In review');
-    await expect(bar(page)).toContainText('Reviewer: not yet');
+    await expect(field(page, 'Reviewer')).toHaveText('not yet');
     await expect(page.locator('.save-state')).toHaveText('Read-only');
     await commentOn(page, 'First draft text', 'Say which fiscal years this covers.');
     await page.getByRole('tab', { name: 'Note' }).click();
@@ -96,7 +98,7 @@ test.describe.serial('workflow', () => {
     await dialog.getByLabel(/Message \(required\)/).fill('Please fill Part II and answer the two comments.');
     await dialog.getByRole('button', { name: 'Request changes' }).click();
     await expect(state(page)).toHaveText('Changes requested');
-    await expect(bar(page)).toContainText('Reviewer: Rae Reviewer');
+    await expect(field(page, 'Reviewer')).toHaveText('Rae Reviewer');
     await expect(cancelButtons(page)).toHaveCount(0);
     await axeClean(page);
   });

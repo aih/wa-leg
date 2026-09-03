@@ -119,8 +119,8 @@ describe('exports', () => {
     expect(res.rawPayload.length).toBeGreaterThan(10_000);
   }, 60_000);
 
-  it('FNS XML emits slot values and table cells, and refuses while required slots are empty', async () => {
-    const refused = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=xml`, headers: await t.as(users.drafter) });
+  it('FNS XML emits slot values and table cells; strict=true refuses while required slots are empty', async () => {
+    const refused = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=xml&strict=true`, headers: await t.as(users.drafter) });
     expect(refused.statusCode).toBe(422);
     expect(refused.json().details.unfilledSlots.length).toBeGreaterThan(0);
     // Fill every required slot, then export.

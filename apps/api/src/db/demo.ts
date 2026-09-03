@@ -3,6 +3,7 @@
 // the notes tables first; `docs/DEMO.md` walks through the result.
 import type { FastifyInstance } from 'fastify';
 import { sql } from 'drizzle-orm';
+import { seedUsers } from './seed.js';
 import { unfilledSlots, walk, type PMNode } from '@wa-leg/note-schema';
 import { internalCall } from '../lib/internal.js';
 import type { Principal } from '../modules/identity/index.js';
@@ -177,6 +178,7 @@ async function principals(app: FastifyInstance): Promise<Record<string, Principa
 
 export async function seedDemo(app: FastifyInstance, opts: DemoOptions = {}): Promise<DemoResult> {
   const log = opts.log ?? (() => undefined);
+  await seedUsers(app.db);
   const users = await principals(app);
   const biennium = app.config.CURRENT_BIENNIUM;
   const existing = (await app.db.execute(sql`SELECT count(*)::int AS n FROM notes`)).rows[0] as { n: number };

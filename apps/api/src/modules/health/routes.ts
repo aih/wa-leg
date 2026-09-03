@@ -6,14 +6,14 @@ import { APP_VERSION, GIT_SHA } from '../../lib/version.js';
 
 const HealthSchema = z.object({ ok: z.boolean(), version: z.string(), commit: z.string(), checks: z.record(z.string(), z.object({ ok: z.boolean(), detail: z.string().optional() })) });
 
-export async function adminRoutes(app: FastifyInstance): Promise<void> {
+export async function healthRoutes(app: FastifyInstance): Promise<void> {
   const r = app.withTypeProvider<ZodTypeProvider>();
 
   r.get(
     '/health',
     {
       schema: {
-        tags: ['admin'],
+        tags: ['health'],
         summary: 'Liveness and dependency health',
         security: [],
         response: {

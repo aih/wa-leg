@@ -76,7 +76,7 @@ export function Published() {
                 {items.map((it, i) => {
                   const bill = it.bill ?? ({} as Partial<PublishedItem['bill']>);
                   const billHref = bill.biennium && bill.billId ? `/bills/${bill.biennium}/${bill.billId}${it.versionCode ? `/${it.versionCode}` : ''}` : null;
-                  const billLabel = bill.number ?? bill.billId ?? '—';
+                  const billLabel = it.versionLabel ?? bill.number ?? bill.billId ?? '—';
                   return (
                     <tr key={it.revisionId ?? i}>
                       <td>

@@ -82,7 +82,7 @@ test.describe('Published page', () => {
     await expect(page.getByRole('heading', { name: 'Published fiscal notes' })).toBeVisible();
     const row = page.locator('.published-table tbody tr').filter({ hasText: 'SHB 2402' }).first();
     await expect(row).toBeVisible();
-    await expect(row.getByRole('link', { name: 'SHB 2402' })).toHaveAttribute('href', '/bills/2025-26/HB2402/S');
+    await expect(row.getByRole('link', { name: 'SHB 2402', exact: true })).toHaveAttribute('href', '/bills/2025-26/HB2402/S');
     const links = row.getByRole('group', { name: /^Export/ });
     for (const format of ['pdf', 'docx', 'html', 'xml']) {
       await expect(links.getByRole('link', { name: format.toUpperCase() })).toHaveAttribute('href', new RegExp(`format=${format}`));

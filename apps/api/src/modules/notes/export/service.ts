@@ -74,7 +74,7 @@ export class ExportService {
     const stored = await this.notes.getDocument(noteRevisionId, version);
     const doc = recompute(stored.doc as PMNode).doc;
     const missing = unfilledSlots(doc);
-    if ((opts.strict || opts.format === 'xml') && missing.length) throw unprocessable('unfilled_slots', `${missing.length} required slot(s) are empty`, { unfilledSlots: missing });
+    if (opts.strict && missing.length) throw unprocessable('unfilled_slots', `${missing.length} required slot(s) are empty`, { unfilledSlots: missing });
     const facts = await this.notes.billFacts(summary.billKey, p ?? undefined);
     const title = `${summary.versionLabel} Fiscal Note`;
     const published = summary.state === 'published' && summary.publishedAt ? `Published ${publishedDate(summary.publishedAt)}` : null;

@@ -179,7 +179,7 @@ program
 program
   .command('token')
   .description('Print a bearer token for a seeded user (load tests, scripts)')
-  .requiredOption('--user <id>', 'User id, e.g. dev-viewer')
+  .requiredOption('--user <id>', 'User id, e.g. dev-committee')
   .option('--ttl <seconds>', 'Lifetime', (v) => Number(v), 3600)
   .action(async (opts: { user: string; ttl: number }) => {
     const { signSession } = await import('./modules/identity/index.js');

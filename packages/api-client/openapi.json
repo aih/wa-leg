@@ -251,7 +251,7 @@
       "get": {
         "summary": "Liveness and dependency health",
         "tags": [
-          "admin"
+          "health"
         ],
         "security": [],
         "responses": {
@@ -4108,7 +4108,10 @@
       "name": "reference"
     },
     {
-      "name": "admin"
+      "name": "published"
+    },
+    {
+      "name": "health"
     }
   ]
 }

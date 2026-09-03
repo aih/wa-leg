@@ -300,12 +300,13 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
             {slots.required > 0 ? `${slots.filled} of ${slots.required} required slots filled` : 'No required slots'}
           </span>
           <span aria-live="polite" className={`save-state save-${save.kind}`}>
-            {save.kind === 'idle' && (editing ? 'All changes saved' : 'Read-only')}
-            {save.kind === 'dirty' && 'Unsaved changes'}
-            {save.kind === 'saving' && 'Saving…'}
-            {save.kind === 'saved' && `Saved at ${fmtTime(save.at)} · v${save.version}`}
-            {save.kind === 'error' && `Save failed: ${save.message}`}
-            {save.kind === 'conflict' && 'Not saved'}
+            {!editing && 'Read-only'}
+            {editing && save.kind === 'idle' && 'All changes saved'}
+            {editing && save.kind === 'dirty' && 'Unsaved changes'}
+            {editing && save.kind === 'saving' && 'Saving…'}
+            {editing && save.kind === 'saved' && `Saved at ${fmtTime(save.at)} · v${save.version}`}
+            {editing && save.kind === 'error' && `Save failed: ${save.message}`}
+            {editing && save.kind === 'conflict' && 'Not saved'}
           </span>
           {editing && (
             <button type="button" className="linkish" onClick={() => void doSave()} disabled={!dirtyRef.current}>
