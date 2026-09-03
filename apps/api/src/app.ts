@@ -19,6 +19,9 @@ import { principalPlugin, identityRoutes, createOidcClient, type OidcClient } fr
 import { adminRoutes } from './modules/admin/index.js';
 import { billsRoutes, BillsService } from './modules/bills/index.js';
 import { createSearch, searchRoutes } from './modules/search/index.js';
+import { TemplatesService, templatesRoutes } from './modules/templates/index.js';
+import { ReferenceService, referenceRoutes } from './modules/reference/index.js';
+import { createNotes, notesRoutes } from './modules/notes/index.js';
 
 export type HealthProbe = () => Promise<{ ok: boolean; detail?: string }>;
 
@@ -114,7 +117,10 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
 
   // Module services live on the root instance; routes register under the API prefix.
   app.decorate('bills', new BillsService(dbHandle.db));
+  app.decorate('templates', new TemplatesService(dbHandle.db));
+  app.decorate('reference', new ReferenceService(dbHandle.db, config.CURRENT_BIENNIUM));
   const search = createSearch(app);
+  const notes = createNotes(app);
 
   await app.register(
     async (api) => {
@@ -131,6 +137,9 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
       await api.register(adminRoutes);
       await api.register(billsRoutes);
       await api.register(searchRoutes(search));
+      await api.register(templatesRoutes);
+      await api.register(referenceRoutes);
+      await api.register(notesRoutes(notes));
       for (const mod of moduleRegistrars) await api.register(mod);
     },
     { prefix: API_PREFIX },

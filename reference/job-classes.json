@@ -1,0 +1,30 @@
+{
+  "session": "2025-26",
+  "classes": [
+    { "key": "CUSTOMER_SERV_SP2", "title": "CUSTOMER SERV SP2", "salary": 44736 },
+    { "key": "FORMS_RECORDS_ANALYST_1", "title": "FORMS AND RECORDS ANALYST 1", "salary": 43716 },
+    { "key": "TAX_INFO_SPEC_1", "title": "TAX INFO SPEC 1", "salary": 47988 },
+    { "key": "EXCISE_TAX_EX_2", "title": "EXCISE TAX EX 2", "salary": 59844 },
+    { "key": "REVENUE_AGENT_2", "title": "REVENUE AGENT 2", "salary": 61404 },
+    { "key": "ADM_ASST_5", "title": "ADM ASST 5", "salary": 63246 },
+    { "key": "EXCISE_TAX_EX_3", "title": "EXCISE TAX EX 3", "salary": 66012 },
+    { "key": "EXCISE_TAX_EX_4", "title": "EXCISE TAX EX 4", "salary": 72924 },
+    { "key": "REVENUE_AUDITOR_3", "title": "REVENUE AUDITOR 3", "salary": 72924 },
+    { "key": "MGMT_ANALYST_4", "title": "MGMT ANALYST4", "salary": 78468 },
+    { "key": "PROPERTY_ACQ_SP_5", "title": "PROPERTY AND ACQUISITION SP 5", "salary": 78468 },
+    { "key": "TAX_POLICY_SP_2", "title": "TAX POLICY SP 2", "salary": 80460 },
+    { "key": "WEB_DESIGNER_3", "title": "WEB DESIGNER & UI/UX SPECIALIST 3", "salary": 82512 },
+    { "key": "TAX_POLICY_SP_3", "title": "TAX POLICY SP 3", "salary": 91068 },
+    { "key": "REVENUE_AUDITOR_4", "title": "REVENUE AUDITOR 4", "salary": 91068 },
+    { "key": "IT_BA_JOURNEY", "title": "IT B A-JOURNEY", "salary": 94728 },
+    { "key": "IT_QA_JOURNEY", "title": "IT QA-JOURNEY", "salary": 94728 },
+    { "key": "TAX_POLICY_SP_4", "title": "TAX POLICY SP 4", "salary": 98040 },
+    { "key": "IT_SYS_ADM_JOURNEY", "title": "IT SYS ADM-JOURNEY", "salary": 99444 },
+    { "key": "WMS_BAND_2", "title": "WMS BAND 2", "salary": 101410 },
+    { "key": "IT_BA_SR_SPEC", "title": "IT B A-SR/SPEC", "salary": 104412 },
+    { "key": "IT_QA_SR_SPEC", "title": "IT QA-SR/SPEC", "salary": 104412 },
+    { "key": "WMS_BAND_3", "title": "WMS BAND 3", "salary": 115352 },
+    { "key": "EMS_BAND_4", "title": "EMS BAND 4", "salary": 135635 },
+    { "key": "EMS_BAND_5", "title": "EMS BAND 5", "salary": 158451 }
+  ]
+}

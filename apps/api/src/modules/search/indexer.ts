@@ -48,8 +48,9 @@ export class SearchIndexer {
     docs.push(...buildOfmNoteDocs(bill));
     docs.push(...buildRcwDocs(bill));
     for (const n of notes) docs.push(buildInternalNoteDoc(n, { biennium: bill.biennium, id: bill.id, type: bill.type, number: bill.number, chamber: bill.chamber, title: bill.title }));
-    await this.backend.removeWhere({ bill_key: billKey });
+    // Write the new documents first, then drop the stale ones, so a concurrent search never sees the bill missing.
     await this.backend.index(docs);
+    await this.backend.removeWhere({ bill_key: billKey, exceptIds: docs.map((d) => d.id) });
     return docs.length;
   }
 

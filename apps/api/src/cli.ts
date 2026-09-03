@@ -137,4 +137,23 @@ search
 
 export { program };
 
+program
+  .command('openapi')
+  .description('Write the OpenAPI document (used to generate packages/api-client)')
+  .requiredOption('--out <file>', 'Output file')
+  .action(async (opts: { out: string }) => {
+    const { buildApp } = await import('./app.js');
+    const { writeFileSync } = await import('node:fs');
+    const cfg = loadConfig({ LOG_LEVEL: 'silent' });
+    const app = await buildApp({ config: cfg, workers: false });
+    await app.ready();
+    try {
+      const res = await app.inject({ method: 'GET', url: '/api/v1/openapi.json' });
+      writeFileSync(resolve(process.env.INIT_CWD ?? process.cwd(), opts.out), JSON.stringify(res.json(), null, 2) + '\n');
+      console.log(`wrote ${opts.out}`);
+    } finally {
+      await app.close();
+    }
+  });
+
 await program.parseAsync(process.argv);

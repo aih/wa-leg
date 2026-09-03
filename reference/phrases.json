@@ -1,0 +1,106 @@
+{
+  "effective-date-sentences": [
+    "The bill takes effect 90 days after the final adjournment of the session.",
+    "This bill takes effect on {{bill.effectiveDate}}.",
+    "This bill takes effect beginning with property taxes due for calendar year {{fy.1.year}}.",
+    "The bill takes effect 90 days after the final adjournment of the session. However, due to the time it will take to program this bill's changes, the Department of Revenue (department) cannot implement the bill until {{impl.date}}."
+  ],
+  "tax-preference-statements": [
+    "The new tax preference performance provisions do not apply to this bill (see section {{bill.prefExemptSection}} of the bill).",
+    "This exemption expires {{pref.expirationDate}}.",
+    "The tax preference performance statement in section {{bill.prefExemptSection}} categorizes the preference as one intended to provide tax relief for certain businesses or individuals (RCW 82.32.808(2)(e))."
+  ],
+  "no-revenue-sentences": [
+    "This legislation has no revenue impact.",
+    "This legislation results in no revenue impact on taxes administered by the department.",
+    "This bill results in no revenue impact on taxes administered by the department.",
+    "This legislation has no revenue impact on taxes or licenses administered by the Department of Revenue (department)."
+  ],
+  "receipt-assumptions": [
+    "The department receives the taxes from monthly taxpayers the month after the business collects the sales tax from the consumer. Most local tax distributions occur the month after the department receives sales and use taxes that businesses collect. This leads to a one-month delay in revenues for the state and a two-month delay in revenues for local jurisdictions.",
+    "The statewide average local sales and use tax rate is {{ref.localRate}}%.",
+    "The annual growth rate reflects the Economic and Revenue Forecast Council's {{ref.forecast.vintage}} forecast.",
+    "The Performance Audits of Government Account receives {{ref.performanceAuditsShare}}% of state sales and use tax collections.",
+    "Currently, tribes with compacts receive a share of state sales and use taxes and certain business and occupation taxes (RCW 43.06.523). Under this legislation the amount of revenue shared with tribes and local governments may decrease.",
+    "Currently, tribes with compacts receive a share of state sales and use taxes and certain business and occupation taxes (RCW 43.06.523). Under this legislation the amount of revenue shared with tribes and local governments may increase.",
+    "Currently, tribes with compacts receive a share of state sales and use taxes and certain business and occupation taxes (RCW 43.06.523). Under this legislation the amount of revenue shared with tribes and local governments does not change.",
+    "The bill takes effect {{bill.effectiveDate}}, resulting in {{impact.months.state}} months of state collections and {{impact.months.local}} months of local collections in fiscal year {{fy.1.year}}.",
+    "A new exemption results in a shift and no loss to the state levy because the state levy is below the $3.60 rate limit.",
+    "Property taxes are collected {{ref.aprilShare}}% in April and {{ref.octoberShare}}% in October.",
+    "Compliance is assumed at 100 percent.",
+    "The data needed to calculate such impact is unavailable."
+  ],
+  "data-sources": [
+    "Department of Revenue, Excise tax data",
+    "Economic and Revenue Forecast Council, {{ref.forecast.vintage}} forecast",
+    "S&P Global Market Intelligence, {{ref.forecast.vintage}} forecast",
+    "County assessor data",
+    "Department of Revenue, State Property Tax Model",
+    "Bureau of Labor Statistics, CPI for all urban consumers",
+    "Department of Revenue, {{ref.tes.year}} Tax Exemption Study",
+    "Department of Revenue, Real estate excise tax administration system data",
+    "Department of Revenue, Estate tax data"
+  ],
+  "expenditure-activities": [
+    "Process tax return work items, assist taxpayers with reporting questions and respond to inquiries via email, web message and paper correspondence.",
+    "Examine accounts and make corrections as necessary.",
+    "Gathering requirements, attending implementation meetings, and documenting and testing system changes.",
+    "Respond to data requests and questions, compile statistics, and manage data.",
+    "Create a special notice and update relevant information on the department's website.",
+    "Answer additional phone calls and counter inquiries from businesses, individuals, and accountants regarding tax questions and tax return preparation.",
+    "Amend one administrative rule.",
+    "Amend one excise tax advisory.",
+    "Adopt one excise tax advisory (ETA).",
+    "Create a new administrative rule.",
+    "Set up, program, and test computer system changes.",
+    "Hear additional administrative reviews that provide taxpayers with an informal, non-adversarial dispute resolution process for the review of a disputed action by the department, such as an assessment of taxes, notice of taxes due, denial of a refund request, or tax ruling.",
+    "Meet with tribes with revenue-sharing compact agreements to discuss changes that would be appropriate to preserve the intended benefits of the negotiated compact.",
+    "Investigate, assess, and collect additional taxes.",
+    "Continued computer system testing, monitoring, and maintenance.",
+    "Update paper tax forms and publications.",
+    "Revise property tax manuals, update forms and training materials, and work with county assessor's offices to implement this legislation.",
+    "Calculate limit factors for all taxing districts.",
+    "Provide training and policy support for county staff."
+  ],
+  "expenditure-objects": [
+    "Computer system changes, including contract programming.",
+    "Printing and postage.",
+    "Purchase one additional agent seat license for the Telephone Information Center.",
+    "Filing fees.",
+    "Print and mail a special notice to affected taxpayers who do not file electronically.",
+    "Travel expenses for meetings with compacting tribes."
+  ],
+  "ongoing-cost-sentences": [
+    "Ongoing costs for the {{bien.2}} biennium equal $X and include similar activities described in the second-year costs. Time and effort equate to N FTE per year.",
+    "There are no ongoing costs.",
+    "The department will not incur ongoing costs.",
+    "The department will not incur any costs for the {{bien.2}} biennium."
+  ],
+  "no-cost-sentences": [
+    "The department will not incur any costs with the implementation of this legislation.",
+    "The department will have minimal costs associated with answering additional phone calls and those costs will be absorbed within current funding."
+  ],
+  "property-tax-shift-sentences": [
+    "This legislation results in no state or local property tax levy shifts.",
+    "This legislation results in a state levy shift to other taxpayers of an estimated $X for fiscal year {{fy.2.year}}."
+  ],
+  "property-tax-revenue-sentences": [
+    "This legislation results in no revenue impact to the state property tax levy.",
+    "A new exemption results in a shift and no loss to the state levy."
+  ],
+  "fee-revenue-sentences": [
+    "This bill increases local revenues by an estimated $X in fiscal year {{fy.1.year}}.",
+    "This bill has no impact on state revenues; the fee is deposited locally."
+  ],
+  "version-note-sentences": [
+    "Note: This fiscal note reflects language in {{bill.version}} {{bill.numberOnly}}, {{session.year}} Legislative Session.",
+    "Note: This fiscal note reflects language in {{bill.version}} {{bill.numberOnly}} as passed in the {{session.year}} Legislative Session.",
+    "Note: This fiscal note reflects a revision to the expenditures and replaces fiscal note number {{prior.requestId}}.",
+    "Note: This fiscal note reflects a revision to the revenue impacts, and replaces fiscal note number {{prior.requestId}}."
+  ],
+  "comparison-headings": [
+    "COMPARISON OF SUBSTITUTE BILL WITH ORIGINAL BILL:",
+    "COMPARISON OF THE ENGROSSED BILL WITH THE ORIGINAL BILL:",
+    "COMPARISON OF THE BILL AS PASSED THE LEGISLATURE WITH THE ORIGINAL BILL:"
+  ]
+}

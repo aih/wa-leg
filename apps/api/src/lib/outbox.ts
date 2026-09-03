@@ -33,6 +33,7 @@ export class OutboxRelay {
   private timer: NodeJS.Timeout | null = null;
   private running = false;
   private pending = false;
+  private inflight: Promise<void> | null = null;
   private lastPublished = 0;
 
   constructor(
@@ -67,23 +68,34 @@ export class OutboxRelay {
   async drain(): Promise<void> {
     if (this.running) {
       this.pending = true;
+      // Wait for the in-flight run, which re-enters once it sees `pending`, so callers observe an empty queue.
+      await this.inflight;
       return;
     }
     this.running = true;
+    this.inflight = this.run();
+    try {
+      await this.inflight;
+    } finally {
+      this.inflight = null;
+    }
+  }
+
+  private async run(): Promise<void> {
     try {
       for (;;) {
         this.pending = false;
         const batch = await this.fetchBatch();
-        if (batch.length === 0) break;
+        if (batch.length === 0) {
+          // A kick that arrived during the fetch may have committed a row after the query ran.
+          if (this.pending) continue;
+          break;
+        }
         for (const ev of batch) {
           await this.deliver(ev);
           await this.db.execute(sql`UPDATE outbox SET published_at = now() WHERE event_id = ${ev.eventId}`);
           this.lastPublished = ev.eventId;
         }
-      }
-      if (this.pending) {
-        this.running = false;
-        return this.drain();
       }
     } catch (err) {
       this.log.error({ err }, 'outbox relay failed');

@@ -56,8 +56,9 @@ export class PostgresBackend implements SearchBackend {
     await this.db.execute(sql`DELETE FROM search_docs WHERE id = ANY(${pgTextArray(ids)}::text[])`);
   }
 
-  async removeWhere(filter: { bill_key?: string; doc_type?: DocType; note_id?: string }): Promise<void> {
+  async removeWhere(filter: { bill_key?: string; doc_type?: DocType; note_id?: string; exceptIds?: string[] }): Promise<void> {
     const conds: SQL[] = [];
+    if (filter.exceptIds?.length) conds.push(sql`NOT (id = ANY(${pgTextArray(filter.exceptIds)}::text[]))`);
     if (filter.bill_key) conds.push(sql`bill_key = ${filter.bill_key}`);
     if (filter.doc_type) conds.push(sql`doc_type = ${filter.doc_type}`);
     if (filter.note_id) conds.push(sql`payload->>'note_id' = ${filter.note_id}`);

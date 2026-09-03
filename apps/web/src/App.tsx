@@ -1,4 +1,6 @@
 import { Route, Routes } from 'react-router';
+import { NoteWorkspace } from './routes/NoteWorkspace';
+import { NoteVersionsPage } from './routes/NoteVersionsPage';
 import { SessionProvider } from './lib/session';
 import { Shell } from './components/Shell';
 import { Home } from './routes/Home';
@@ -22,8 +24,8 @@ export function App() {
           <Route path="bills/:biennium/:id" element={<BillPage />} />
           <Route path="bills/:biennium/:id/compare" element={<ComparePage />} />
           <Route path="bills/:biennium/:id/:code" element={<BillPage />} />
-          <Route path="notes/:revisionId" element={<Placeholder title="Workspace" />} />
-          <Route path="notes/:revisionId/versions" element={<Placeholder title="Document versions" />} />
+          <Route path="notes/:revisionId" element={<NoteWorkspace />} />
+          <Route path="notes/:revisionId/versions" element={<NoteVersionsPage />} />
           <Route path="search" element={<SearchResults />} />
           <Route path="inbox" element={<Inbox />} />
           <Route path="admin/templates" element={<Placeholder title="Templates" />} />

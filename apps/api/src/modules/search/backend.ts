@@ -169,7 +169,8 @@ export interface SearchBackend {
   listByBill(billKey: string, docTypes: DocType[], principal: Principal, size?: number): Promise<SearchDoc[]>;
   index(docs: SearchDoc[]): Promise<void>;
   remove(ids: string[]): Promise<void>;
-  removeWhere(filter: { bill_key?: string; doc_type?: DocType; note_id?: string }): Promise<void>;
+  /** Delete matching documents; `exceptIds` keeps the ones just written so a reindex never leaves a gap. */
+  removeWhere(filter: { bill_key?: string; doc_type?: DocType; note_id?: string; exceptIds?: string[] }): Promise<void>;
   refresh(): Promise<void>;
   health(): Promise<{ ok: boolean; detail?: string }>;
 }

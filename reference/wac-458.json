@@ -1,0 +1,24 @@
+{
+  "rules": [
+    { "wac": "458-20-100", "title": "Informal administrative reviews." },
+    { "wac": "458-20-101", "title": "Tax registration and tax reporting." },
+    { "wac": "458-20-102", "title": "Reseller permits." },
+    { "wac": "458-20-104", "title": "Small business tax relief based on income of business." },
+    { "wac": "458-20-135", "title": "Extracting natural products." },
+    { "wac": "458-20-167", "title": "Educational institutions, school districts, student organizations, and private schools." },
+    { "wac": "458-20-168", "title": "Hospitals, nursing homes, assisted living facilities, adult family homes and similar health care facilities." },
+    { "wac": "458-20-178", "title": "Use tax and the use of tangible personal property." },
+    { "wac": "458-20-18801", "title": "Medical substances, devices, and supplies for humans—Drugs prescribed for human use—Medically prescribed oxygen—Prosthetic devices—Mobility enhancing equipment—Durable medical equipment—Sales to hospitals." },
+    { "wac": "458-20-19401", "title": "Minimum nexus thresholds for apportionable activities and selling activities." },
+    { "wac": "458-20-19402", "title": "Single factor receipts apportionment—Generally." },
+    { "wac": "458-20-224", "title": "Service and other business activities." },
+    { "wac": "458-20-229", "title": "Refunds." },
+    { "wac": "458-20-24001", "title": "Sales and use tax deferral—Manufacturing and research/development activities in high unemployment counties—Applications filed after June 30, 2010." },
+    { "wac": "458-20-267", "title": "Annual tax performance reports for certain tax preferences." },
+    { "wac": "458-16-115", "title": "Personal property exemptions for household goods, furnishings, and personal effects, and for the head of a family." },
+    { "wac": "458-16A-100", "title": "Senior citizen, disabled person, and one hundred percent disabled veteran exemption—Definitions." },
+    { "wac": "458-19-020", "title": "Levy limit—Method of calculation." },
+    { "wac": "458-61A-101", "title": "Taxability of the transfer or acquisition of the controlling interest of an entity with an interest in real property located in this state." },
+    { "wac": "458-61A-201", "title": "Gifts." }
+  ]
+}

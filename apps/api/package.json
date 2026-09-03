@@ -21,6 +21,7 @@
     "@opensearch-project/opensearch": "3.6.0",
     "@wa-leg/bill-document": "workspace:*",
     "@wa-leg/billref": "workspace:*",
+    "@wa-leg/note-schema": "workspace:*",
     "@wa-leg/workflow-machine": "workspace:*",
     "commander": "15.0.0",
     "drizzle-orm": "0.45.2",

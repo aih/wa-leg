@@ -380,6 +380,7 @@ export function noteVisibility(n: InternalNoteLike): { visibility: 'public' | 'r
   if (n.confidential) return { visibility: 'restricted', allowed_roles: ['admin', 'manager'], allowed_user_ids: users };
   if (n.state === 'approved') return { visibility: 'public', allowed_roles: [], allowed_user_ids: [] };
   if (n.state.startsWith('review') || n.state.startsWith('exec_review')) return { visibility: 'restricted', allowed_roles: ['reviewer', 'approver', 'manager', 'admin'], allowed_user_ids: users };
+  // Unsubmitted drafts never surface in another user's search (search.md); opening a note is governed by `can()`.
   return { visibility: 'restricted', allowed_roles: ['admin'], allowed_user_ids: users };
 }
 

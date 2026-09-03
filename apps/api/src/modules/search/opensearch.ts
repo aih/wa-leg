@@ -198,13 +198,14 @@ export class OpenSearchBackend implements SearchBackend {
     await this.client.deleteByQuery({ index: this.all, body: { query: { ids: { values: ids } } }, refresh: true, conflicts: 'proceed' });
   }
 
-  async removeWhere(filter: { bill_key?: string; doc_type?: DocType; note_id?: string }): Promise<void> {
+  async removeWhere(filter: { bill_key?: string; doc_type?: DocType; note_id?: string; exceptIds?: string[] }): Promise<void> {
     const must: unknown[] = [];
+    const must_not: unknown[] = filter.exceptIds?.length ? [{ ids: { values: filter.exceptIds } }] : [];
     if (filter.bill_key) must.push({ term: { bill_key: filter.bill_key } });
     if (filter.doc_type) must.push({ term: { doc_type: filter.doc_type } });
     if (filter.note_id) must.push({ term: { note_id: filter.note_id } });
     if (!must.length) return;
-    await this.client.deleteByQuery({ index: this.all, body: { query: { bool: { must } } } as any, refresh: true, conflicts: 'proceed' });
+    await this.client.deleteByQuery({ index: this.all, body: { query: { bool: { must, must_not } } } as any, refresh: true, conflicts: 'proceed' });
   }
 
   async refresh(): Promise<void> {
@@ -368,6 +369,8 @@ export class OpenSearchBackend implements SearchBackend {
         { index: `${this.alias('bill')},${this.alias('fiscal_note')}` },
         {
           query: { bool: { must: [{ multi_match: { query: q, type: 'bool_prefix', fields: ['title.sayt', 'title.sayt._2gram', 'title.sayt._3gram'] } }], filter: [{ term: { biennium } }, permissionClause(principal)] } },
+          // Deterministic order for equal scores (companion bills share a title): most recent action first, then bill number.
+          sort: ['_score', { last_action_date: { order: 'desc', missing: '_last' } }, { bill_number: 'asc' }],
           size,
           _source: ['doc_type', 'bill_key', 'display', 'title', 'status', 'note_id', 'url', 'version_label', 'latest_version_code'],
         },
@@ -382,14 +385,26 @@ export class OpenSearchBackend implements SearchBackend {
       seen.add(key);
       out.push(s);
     };
-    for (const opt of comp?.suggest?.billnum?.[0]?.options ?? []) {
-      const s = opt._source ?? {};
-      push({ kind: 'bill', bill_key: s.bill_key, display: s.display, label: s.version_label ?? s.display, title: s.title, status: s.status, url: s.url });
-    }
-    for (const h of sayt?.hits?.hits ?? []) {
-      const s = h._source ?? {};
-      if (s.doc_type === 'bill') push({ kind: 'bill', bill_key: s.bill_key, display: s.display, label: s.version_label ?? s.display, title: s.title, status: s.status, url: s.url });
-      else push({ kind: 'fiscal_note', note_id: s.note_id, bill_key: s.bill_key, display: s.display, title: s.title, status: s.status, url: s.url });
+    const fromCompletion = () => {
+      for (const opt of comp?.suggest?.billnum?.[0]?.options ?? []) {
+        const s = opt._source ?? {};
+        push({ kind: 'bill', bill_key: s.bill_key, display: s.display, label: s.version_label ?? s.display, title: s.title, status: s.status, url: s.url });
+      }
+    };
+    const fromTitles = () => {
+      for (const h of sayt?.hits?.hits ?? []) {
+        const s = h._source ?? {};
+        if (s.doc_type === 'bill') push({ kind: 'bill', bill_key: s.bill_key, display: s.display, label: s.version_label ?? s.display, title: s.title, status: s.status, url: s.url });
+        else push({ kind: 'fiscal_note', note_id: s.note_id, bill_key: s.bill_key, display: s.display, title: s.title, status: s.status, url: s.url });
+      }
+    };
+    // A query with digits is a bill number being typed: number completions first. Words: title matches first.
+    if (/\d/.test(q)) {
+      fromCompletion();
+      fromTitles();
+    } else {
+      fromTitles();
+      fromCompletion();
     }
     return out.slice(0, size);
   }

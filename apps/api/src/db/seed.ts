@@ -25,5 +25,12 @@ export async function seedUsers(db: Db): Promise<number> {
   return users.length;
 }
 
-/** Seed steps registered by later milestones (templates, reference data). */
-export const seeders: Array<{ name: string; run: (db: Db) => Promise<string> }> = [];
+import { seedTemplates } from '../modules/templates/service.js';
+import { seedReference } from '../modules/reference/index.js';
+import { loadConfig } from '../config.js';
+
+/** Seed steps: templates from design/templates, reference sets from reference/. */
+export const seeders: Array<{ name: string; run: (db: Db) => Promise<string> }> = [
+  { name: 'templates', run: async (db) => `${await seedTemplates(db, loadConfig().TEMPLATES_DIR)} new version(s)` },
+  { name: 'reference', run: async (db) => `${await seedReference(db, loadConfig().REFERENCE_DIR)} set(s)` },
+];

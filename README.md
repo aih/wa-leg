@@ -47,6 +47,24 @@ Open http://localhost:5173 and sign in. The dev issuer lists the test users:
 
 `?login_hint=dev-drafter` on `/api/v1/auth/login` skips the picker.
 
+## Drafting a note
+
+1. Sign in as Rae Reviewer, open a bill (`/bills/2025-26/HB2402/S`), and use **New fiscal note** beside the text:
+   choose the bill version, a template, and the drafter.
+2. Sign in as Dana Drafter and open the note from the drafter dashboard. The workspace shows the bill on the
+   left and the editor on the right. Unfilled slots carry a dashed outline and their hint; `Tab` moves to the
+   next slot (inside a table, to the next cell) and `Ctrl+]` to the next unfilled one. Computed cells and
+   biennium totals update as figures are typed; numbers format as currency when the cursor leaves the cell.
+3. **Cite** in the bill's section bar, or the floating Cite control on a selection, inserts a citation node at
+   the caret. Clicking a citation scrolls the bill pane to the section.
+4. **Formula** opens the MathLive field (with a LaTeX source view); the result renders with KaTeX.
+5. Autosave runs 1.5 s after the last change with `If-Match`. A `412` shows a banner with the other saver's
+   name and offers **Reload theirs** or **Keep mine** (a forced save that keeps the server head as a snapshot).
+6. **Comment** on a selection opens a thread in the Comments tab; threads follow the text through edits and
+   are listed as detached if the text is deleted.
+7. **Versions** lists autosaves and named snapshots, renders any version, compares two as a redline with a
+   table-cell diff, and restores a version as a new head.
+
 ## Checks
 
 ```sh
@@ -55,6 +73,7 @@ pnpm typecheck
 pnpm test                       # unit and route tests; needs Postgres (creates wa_leg_test)
 pnpm test:e2e                   # Playwright; starts the dev issuer, API, and web app
 pnpm third-party                # writes THIRD_PARTY.md and fails on a non-permissive license
+pnpm --filter @wa-leg/api-client generate   # regenerates packages/api-client from the OpenAPI document
 ```
 
 ## Data

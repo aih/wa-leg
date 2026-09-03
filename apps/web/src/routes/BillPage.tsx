@@ -8,6 +8,10 @@ import { RequireRole } from '../components/RequireRole';
 import { defaultUrlBuilder } from '../bill/cite';
 import { BillSidebar } from '../components/BillSidebar';
 import { ApiError } from '../lib/api';
+import { NewNoteForm } from '../notes/NewNoteForm';
+import { NoteList } from '../notes/NoteList';
+import { notesApi, useResource } from '../notes/api';
+import { useSession } from '../lib/session';
 
 /** Bill page: viewer on the left, the approved-note panel (milestone 7) on the right. Until then the
  *  right pane lists emitted citations. */
@@ -20,6 +24,8 @@ export function BillPage() {
   const version = useVersion(biennium, id?.toUpperCase(), code ?? 'current');
   const [collapsed, setCollapsed] = useState(false);
   const [cites, setCites] = useState<CiteEvent[]>([]);
+  const { principal } = useSession();
+  const notes = useResource(principal && biennium && id ? () => notesApi.forBill(biennium, id.toUpperCase()) : null, [principal?.userId, biennium, id]);
 
   // /bills/{b}/{id} → the current version, keeping the fragment.
   useEffect(() => {
@@ -86,11 +92,14 @@ export function BillPage() {
           right={
             <div className="note-pane pad">
               {bill.data && <BillSidebar bill={bill.data} currentCode={version.data?.version.code ?? code ?? bill.data.currentVersionCode} />}
-              <section aria-labelledby="cites-h" className="cite-list">
-                <h2 id="cites-h">Citations emitted</h2>
-                {cites.length === 0 ? (
-                  <p className="muted">Select text in the bill and press Cite, or press Cite in the section bar. The fiscal note editor arrives in a later milestone; this list shows what the viewer emits.</p>
-                ) : (
+              <section aria-labelledby="notes-h" className="bill-notes">
+                <h2 id="notes-h">Fiscal notes</h2>
+                <NoteList notes={notes.data ?? []} showBill={false} empty="No fiscal notes you can see on this bill." />
+                {bill.data && <NewNoteForm bill={bill.data} currentCode={version.data?.version.code ?? code ?? bill.data.currentVersionCode} />}
+              </section>
+              {cites.length > 0 && (
+                <section aria-labelledby="cites-h" className="cite-list">
+                  <h2 id="cites-h">Citations emitted</h2>
                   <ol>
                     {cites.map((c, i) => (
                       <li key={i}>
@@ -99,8 +108,8 @@ export function BillPage() {
                       </li>
                     ))}
                   </ol>
-                )}
-              </section>
+                </section>
+              )}
               {search.get('amendment') && <p className="muted">Amendment overlay is built but switched off in this build.</p>}
             </div>
           }

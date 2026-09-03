@@ -28,6 +28,28 @@ export async function identityRoutes(app: FastifyInstance): Promise<void> {
   );
 
   r.get(
+    '/users',
+    {
+      schema: {
+        tags: ['identity'],
+        summary: 'Known users (for assignment pickers), optionally filtered by role',
+        querystring: z.object({ role: z.string().optional(), q: z.string().optional() }),
+        response: { 200: z.array(z.object({ userId: z.string(), displayName: z.string(), email: z.string().nullable(), roles: z.array(z.string()), divisions: z.array(z.string()) })) },
+      },
+      preHandler: app.requireAuth,
+    },
+    async (req) => {
+      const { sql } = await import('drizzle-orm');
+      const rows = (await app.db.execute(sql`SELECT user_id, display_name, email, roles, divisions FROM users ORDER BY display_name`)).rows as { user_id: string; display_name: string; email: string | null; roles: string[]; divisions: string[] }[];
+      const q = req.query.q?.toLowerCase();
+      return rows
+        .filter((u) => !req.query.role || u.roles.includes(req.query.role))
+        .filter((u) => !q || u.display_name.toLowerCase().includes(q) || u.user_id.toLowerCase().includes(q))
+        .map((u) => ({ userId: u.user_id, displayName: u.display_name, email: u.email, roles: u.roles, divisions: u.divisions }));
+    },
+  );
+
+  r.get(
     '/auth/login',
     {
       schema: {
