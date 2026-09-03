@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { api, ApiError } from './api';
 
-export type Role = 'drafter' | 'reviewer' | 'approver' | 'manager' | 'viewer' | 'template_editor' | 'admin';
+export type Role = 'drafter' | 'reviewer' | 'viewer' | 'admin';
 export interface Principal {
   userId: string;
   displayName: string;

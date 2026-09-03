@@ -6,10 +6,10 @@ import { useSession } from '../lib/session';
 import { fmtWhen, notesApi, useResource, type NoteSummary } from './api';
 import 'katex/dist/katex.min.css';
 
-/** The approved fiscal note for the selected bill version, or the latest approved note for an earlier version. */
-export function ApprovedNotePanel({ bill, currentCode, notes }: { bill: BillSummary; currentCode: string; notes: NoteSummary[] }) {
+/** The published fiscal note for the selected bill version, or the latest published note for an earlier version. */
+export function PublishedNotePanel({ bill, currentCode, notes }: { bill: BillSummary; currentCode: string; notes: NoteSummary[] }) {
   const { principal } = useSession();
-  const approved = notes.filter((n) => n.state === 'approved' && n.approvedVersion !== null && n.kind === 'note');
+  const approved = notes.filter((n) => n.state === 'published' && n.approvedVersion !== null);
   const seq = (code: string) => bill.versions.findIndex((v) => v.code === code);
   const exact = approved.filter((n) => n.versionCode === currentCode).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0] ?? null;
   const earlier = exact ? null : approved.filter((n) => seq(n.versionCode) < seq(currentCode)).sort((a, b) => seq(b.versionCode) - seq(a.versionCode) || b.updatedAt.localeCompare(a.updatedAt))[0] ?? null;
@@ -23,15 +23,15 @@ export function ApprovedNotePanel({ bill, currentCode, notes }: { bill: BillSumm
       <h2 id="approved-note-h">Fiscal note</h2>
       {!chosen && (
         <p className="muted">
-          No approved fiscal note for {bill.versions.find((v) => v.code === currentCode)?.shortLabel ?? currentCode} yet.
+          No published fiscal note for {bill.versions.find((v) => v.code === currentCode)?.shortLabel ?? currentCode} yet.
           {ofm.length > 0 && ' OFM has published a package for this bill; see the links below.'}
         </p>
       )}
       {chosen && (
         <>
           <p className={earlier ? 'notice' : 'muted small'} role={earlier ? 'status' : undefined}>
-            {earlier ? `No approved note for this version. Showing the approved note for ${chosen.versionLabel} (an earlier version).` : `Approved note for ${chosen.versionLabel}`} · approved version {chosen.approvedVersion} · {fmtWhen(chosen.updatedAt)}
-            {principal && (chosen.drafter?.userId === principal.userId || principal.roles.some((r) => ['reviewer', 'manager', 'admin', 'approver'].includes(r))) && (
+            {earlier ? `No published note for this version. Showing the published note for ${chosen.versionLabel} (an earlier version).` : `Published note for ${chosen.versionLabel}`} · approved version {chosen.approvedVersion} · {fmtWhen(chosen.updatedAt)}
+            {principal && (chosen.drafter?.userId === principal.userId || principal.roles.some((r) => ['reviewer', 'admin'].includes(r))) && (
               <>
                 {' '}
                 · <Link to={`/notes/${chosen.noteRevisionId}`}>Open in the workspace</Link>
@@ -47,6 +47,9 @@ export function ApprovedNotePanel({ bill, currentCode, notes }: { bill: BillSumm
             </a>
             <a className="button secondary" href={`/api/v1/notes/${chosen.noteRevisionId}/export?format=html`} target="_blank" rel="noreferrer">
               HTML
+            </a>
+            <a className="button secondary" href={`/api/v1/notes/${chosen.noteRevisionId}/export?format=xml`} target="_blank" rel="noreferrer">
+              XML
             </a>
           </div>
           {doc.error && <p role="alert">{doc.error.message}</p>}

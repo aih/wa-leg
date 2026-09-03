@@ -10,7 +10,6 @@ import { RequireRole } from '../components/RequireRole';
 import { useSession } from '../lib/session';
 import { ApiError } from '../lib/api';
 import { NoteEditor, type NoteEditorHandle } from '../notes/NoteEditor';
-import { TemplatePanel } from '../notes/TemplatePanel';
 import { CommentsPanel, type PendingComment } from '../notes/CommentsPanel';
 import { ChangeRequestsPanel } from '../notes/ChangeRequestsPanel';
 import { fmtTime, fmtWhen, isConflict, notesApi, useResource, type ChangeRequest, type CommentThread, type ConflictDetails, type LockInfo, type NoteDocument, type NoteSummary } from '../notes/api';
@@ -81,7 +80,7 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
   const version = useVersion(summary.biennium, summary.billId, summary.versionCode);
 
   const isDrafter = !!principal && summary.drafter?.userId === principal.userId;
-  const isReviewerOrManager = !!principal && (principal.roles.includes('reviewer') || principal.roles.includes('manager') || principal.roles.includes('admin'));
+  const isReviewerOrManager = !!principal && (principal.roles.includes('reviewer') || principal.roles.includes('admin'));
   const mayEdit = summary.editable && (isDrafter || (summary.state === 'review.active' && summary.reviewer?.userId === principal?.userId) || (summary.state === 'exec_review.active' && summary.execChain.some((e) => e.userId === principal?.userId)));
   const editing = mayEdit && lock.status !== 'other';
   const canComment = !!principal && (isDrafter || isReviewerOrManager || summary.reviewer?.userId === principal.userId);
@@ -318,13 +317,6 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
     void doSave({ force: true });
   };
 
-  const applyTemplate = (doc: PMNode, how: 'document' | 'snippet') => {
-    if (how === 'document') editorRef.current?.setDocument(doc);
-    else editorRef.current?.insertContent(doc.content ?? []);
-    setTab('editor');
-    window.setTimeout(() => editorRef.current?.focusSlot('next'), 0);
-  };
-
   const billLabel = summary.billId.replace(/^([A-Z]+)(\d+)$/, '$1 $2');
 
   const right = (
@@ -467,21 +459,6 @@ function Workspace({ revisionId, summary, initialDocument, reloadSummary }: { re
         />
       </div>
       <div role="tabpanel" id="panel-templates" aria-labelledby="tab-templates" hidden={tab !== 'templates'} className="tabpanel">
-        {tab === 'templates' && (
-          <TemplatePanel
-            mode={initialDocument.mode}
-            noteRevisionId={revisionId}
-            documentIsEmpty={editorRef.current?.isEmpty() ?? false}
-            onApply={(doc, how) => {
-              if (!editing) {
-                setNotice('This note is read-only; templates cannot be applied.');
-                return;
-              }
-              applyTemplate(doc, how);
-            }}
-            onClose={() => setTab('editor')}
-          />
-        )}
       </div>
     </div>
   );

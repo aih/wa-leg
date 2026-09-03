@@ -107,3 +107,21 @@ test.describe.serial('publish and export', () => {
     await expect(page.getByRole('group', { name: 'Export formats' }).getByRole('link', { name: 'DOCX with comments' })).toBeVisible();
   });
 });
+
+test.describe('Published page', () => {
+  test('Cam sees the published SHB 2402 note on /published with four export links', async ({ page }) => {
+    await loginAs(page, 'dev-committee', '/published');
+    await expect(page.getByRole('heading', { name: 'Published fiscal notes' })).toBeVisible();
+    const row = page.locator('.published-table tbody tr').filter({ hasText: 'SHB 2402' }).first();
+    await expect(row).toBeVisible();
+    await expect(row.getByRole('link', { name: 'SHB 2402' })).toHaveAttribute('href', '/bills/2025-26/HB2402/S');
+    const links = row.getByRole('group', { name: /^Export/ });
+    for (const format of ['pdf', 'docx', 'html', 'xml']) {
+      await expect(links.getByRole('link', { name: format.toUpperCase() })).toHaveAttribute('href', new RegExp(`format=${format}`));
+    }
+    const pdf = await page.request.get(await links.getByRole('link', { name: 'PDF' }).getAttribute('href') as string);
+    expect(pdf.status()).toBe(200);
+    expect(pdf.headers()['content-type']).toBe('application/pdf');
+    await axeClean(page);
+  });
+});

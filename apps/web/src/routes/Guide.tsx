@@ -1,126 +1,39 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router';
+import { STATE_HINTS, STATE_LABELS, WORKFLOW_STATES } from '@wa-leg/workflow-machine';
 import { loginUrl } from '../lib/api';
+import { DEMO_NOTES, TEST_USERS } from '../lib/demo';
 
-/** Test users the dev sign-in page offers, with the role each one demonstrates. */
-export const TEST_USERS: { name: string; sub: string; roles: string; does: string }[] = [
-  { name: 'Dana Drafter', sub: 'dev-drafter', roles: 'drafter', does: 'Writes notes; has one note in most states' },
-  { name: 'Rae Reviewer', sub: 'dev-reviewer', roles: 'reviewer', does: 'Assigns work, reviews, requests changes, approves' },
-  { name: 'Avery Approver', sub: 'dev-approver', roles: 'reviewer, approver', does: 'Reviews and sits first in the executive review chain' },
-  { name: 'Blake Budget', sub: 'dev-exec-budget', roles: 'reviewer, approver (Budget)', does: 'Second step of the executive review chain' },
-  { name: 'Jordan Both', sub: 'dev-both', roles: 'drafter, reviewer', does: 'Drafts some notes and reviews others' },
-  { name: 'Terry Templates', sub: 'dev-template-editor', roles: 'template editor, drafter', does: 'Edits templates; drafts the HB 1047 note' },
-  { name: 'Morgan Manager', sub: 'dev-manager', roles: 'manager', does: 'Sees the team queue and the audit log; can cancel a request' },
-  { name: 'Val Viewer', sub: 'dev-viewer', roles: 'viewer', does: 'Reads approved notes beside the bill text' },
-  { name: 'Ada Admin', sub: 'dev-admin', roles: 'admin', does: 'Ingest runs, audit log, templates' },
-];
+const billHref = (n: (typeof DEMO_NOTES)[number]) => `/bills/${n.biennium}/${n.billId}/${n.versionCode}`;
 
-/** The seeded scenario (`wa-leg demo seed`), one note per workflow state. */
-export const DEMO_NOTES: { bill: string; title: string; drafter: string; state: string; shows: string }[] = [
-  { bill: 'HB 1004', title: 'Personal property tax exemption', drafter: 'Dana Drafter', state: 'To do', shows: 'A fresh assignment with the 72-hour clock running' },
-  { bill: 'SHB 1043', title: 'Commute trip reduction tax credit', drafter: 'Dana Drafter', state: 'In progress', shows: 'A revision for the substitute; the note on HB 1043 is superseded' },
-  { bill: 'ESSB 5814', title: 'Sales tax on services', drafter: 'Dana Drafter', state: 'Changes requested', shows: 'An itemised change request with a comment thread; one item already addressed' },
-  { bill: 'HB 2081', title: 'B&O surcharges', drafter: 'Dana Drafter', state: 'Ready for review', shows: 'Submitted, unclaimed, and past its deadline' },
-  { bill: 'SB 6137', title: 'Sports wagering', drafter: 'Jordan Both', state: 'In review', shows: 'Claimed by Rae Reviewer; no fiscal impact template' },
-  { bill: 'HB 1047', title: 'Fire district equipment exemption', drafter: 'Terry Templates', state: 'Waiting for executive review', shows: 'Approved by the reviewer; chain Avery Approver then Blake Budget' },
-  { bill: 'SHB 2402', title: 'Phthalates in intravenous equipment', drafter: 'Dana Drafter', state: 'Approved', shows: 'The published note every user sees beside the bill' },
-  { bill: 'HB 1019', title: 'Farm equipment tax credit', drafter: 'Jordan Both', state: 'Approved', shows: 'Approved after one closed change request' },
-  { bill: 'HB 1044', title: 'County REET administration fee', drafter: 'Dana Drafter', state: 'Cancelled', shows: 'Cancelled by the manager' },
-  { bill: 'HB 1016', title: 'Veteran hiring credit', drafter: 'Jordan Both', state: 'To do', shows: 'Assigned an hour ago by Avery Approver' },
-];
-
+/** The walkthrough: one section per stage of the path, with the test users and the seeded notes. */
 export function Guide() {
   useEffect(() => {
     document.title = 'Guide · Fiscal Note Workbench';
   }, []);
+  const note = (billId: string) => DEMO_NOTES.find((n) => n.billId === billId)!;
+  const hb1004 = note('HB1004');
+  const hb2081 = note('HB2081');
+  const sb5814 = note('SB5814');
+  const hb1019 = note('HB1019');
+  const hb2402 = note('HB2402');
   return (
     <article className="guide">
-      <h1>Guide and walkthrough</h1>
+      <h1>Guide</h1>
       <p>
-        This page explains what the workbench does, who uses it, and how to try each part with the test users and the seeded notes. It takes about
-        twenty minutes to walk through end to end.
+        A fiscal note goes from draft to the Committee along one path: create, draft, submit, review, resolve, approve, publish. This page walks the path
+        with the four test users and the five seeded notes.
       </p>
       <nav aria-label="On this page" className="guide-toc">
-        <a href="#purpose">Purpose</a> · <a href="#people">People and roles</a> · <a href="#users">Test users</a> · <a href="#setup">Setup and seed data</a> ·{' '}
-        <a href="#walkthrough">Walkthrough</a> · <a href="#changes">Change requests</a> · <a href="#checks">What to check</a> · <a href="#statuses">Status vocabulary</a>
+        <a href="#users">Test users</a> · <a href="#seed">Seeded notes</a> · <a href="#create">Create</a> · <a href="#draft">Draft</a> · <a href="#submit">Submit</a> ·{' '}
+        <a href="#review">Review and request changes</a> · <a href="#resolve">Resolve and resubmit</a> · <a href="#approve">Approve</a> · <a href="#publish">Publish</a> ·{' '}
+        <a href="#committee">Read as the Committee</a> · <a href="#statuses">Statuses</a>
       </nav>
-
-      <h2 id="purpose">Purpose</h2>
-      <p>
-        A fiscal note states what a bill would do to an agency’s revenue and costs. The Department of Revenue writes several hundred of them each
-        session, each against a specific version of a bill, on a 72-hour clock. The workbench keeps the bill text and the note side by side, records who
-        asked for what and when, and publishes the approved note next to the bill for everyone who needs to read it.
-      </p>
-      <ul>
-        <li>
-          <strong>Bills.</strong> Every bill of the biennium with its versions, amendments, hearings and prior published notes. The viewer shows an
-          outline, the sections affected, a version switcher and a redline between versions.
-        </li>
-        <li>
-          <strong>Notes.</strong> A note is drafted from a template into a structured document: header fields, the Part I estimate tables that add
-          themselves up, narrative parts, citations into the bill, formulas and comments. Every save is a version.
-        </li>
-        <li>
-          <strong>Workflow.</strong> One state per note revision, from <em>To do</em> to <em>Approved</em>, with a drafter, a reviewer, an optional
-          executive review chain and three deadlines: the statutory 72 hours, the hearing cutoff and any due time an assigner sets.
-        </li>
-        <li>
-          <strong>Publishing.</strong> Approval freezes the document. It appears beside the bill for every signed-in user and exports to PDF, DOCX, HTML
-          and a placeholder of the OFM fiscal note system XML.
-        </li>
-      </ul>
-
-      <h2 id="people">People and roles</h2>
-      <table className="guide-table">
-        <thead>
-          <tr>
-            <th scope="col">Persona</th>
-            <th scope="col">Starts at</th>
-            <th scope="col">What they do</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Drafter</td>
-            <td>
-              <Link to="/dashboard/drafter">Drafting dashboard</Link>
-            </td>
-            <td>Reads the bill, writes the note against one version, answers review comments, addresses change requests, resubmits.</td>
-          </tr>
-          <tr>
-            <td>Reviewer / assigner</td>
-            <td>
-              <Link to="/dashboard/reviewer">Review dashboard</Link>
-            </td>
-            <td>Creates the request from a bill, assigns the drafter, claims the review, comments, requests changes or approves, sets the executive chain.</td>
-          </tr>
-          <tr>
-            <td>Executive reviewer</td>
-            <td>Inbox link</td>
-            <td>Completes or returns their step of the executive review chain, in order.</td>
-          </tr>
-          <tr>
-            <td>Manager</td>
-            <td>Review dashboard</td>
-            <td>Sees the whole team queue, reassigns, cancels, reads the audit log.</td>
-          </tr>
-          <tr>
-            <td>Reader</td>
-            <td>Search, then the bill page</td>
-            <td>Reads the approved note beside the bill text and exports it. Nothing to edit.</td>
-          </tr>
-          <tr>
-            <td>Admin and template editor</td>
-            <td>Ingest, Audit, Templates</td>
-            <td>Loads bill data, reviews the audit log, edits the templates a note starts from.</td>
-          </tr>
-        </tbody>
-      </table>
 
       <h2 id="users">Test users</h2>
       <p>
-        Sign-in goes through a development identity provider that lists these users. Each has a fixed set of roles. Pick one from the list, or
-        open <code>/api/v1/auth/login?login_hint=dev-drafter</code> to skip the picker.
+        Sign-in goes through a development identity provider that lists these users. Pick one from the list, or open{' '}
+        <code>/api/v1/auth/login?login_hint=dev-drafter</code> to skip the picker.
       </p>
       <table className="guide-table">
         <thead>
@@ -143,8 +56,10 @@ export function Guide() {
         </tbody>
       </table>
 
-      <h2 id="setup">Setup and seed data</h2>
-      <p>The seeded scenario puts one note in every workflow state, each on a different bill, so every dashboard section has something in it:</p>
+      <h2 id="seed">Seeded notes</h2>
+      <p>
+        <code>pnpm wa-leg demo seed --reset</code> creates five notes on five bills, one in each status:
+      </p>
       <table className="guide-table">
         <thead>
           <tr>
@@ -156,129 +71,125 @@ export function Guide() {
         </thead>
         <tbody>
           {DEMO_NOTES.map((n) => (
-            <tr key={n.bill + n.state}>
+            <tr key={n.billId}>
               <td>
-                {n.bill}
+                <Link to={billHref(n)}>{n.bill}</Link>
                 <div className="muted small">{n.title}</div>
               </td>
               <td>{n.drafter}</td>
-              <td>{n.state}</td>
+              <td>{STATE_LABELS[n.state]}</td>
               <td>{n.shows}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p>To rebuild it from a clean database:</p>
-      <pre tabIndex={0} aria-label="Setup commands">
-        {`docker compose up -d
-pnpm wa-leg db migrate && pnpm wa-leg db seed
-pnpm wa-leg ingest legiscan data/WA/2025-2026_Regular_Session
-pnpm wa-leg search init && pnpm wa-leg search load
-pnpm wa-leg demo seed --reset
-pnpm dev`}
-      </pre>
       <p>
-        The ingest loads every bill of the session; the demo needs HB 1004, HB 1016, HB 1019, HB 1043, HB 1044, HB 1047, HB 2081, HB 2402, SB 5814 and SB
-        6137 and skips any that are missing. The seed refuses to run on top of existing notes unless <code>--reset</code> is given. Email copies of
-        every notification land in the mail sink at <code>http://localhost:8026</code>.
+        The seed needs the bills HB 1004, HB 1019, HB 2081, HB 2402 and SB 5814 loaded by <code>pnpm wa-leg ingest</code>; it skips any that are missing.
       </p>
 
-      <h2 id="walkthrough">Walkthrough</h2>
-      <h3>1. Reviewer: the queue and a new request (Rae Reviewer)</h3>
+      <h2 id="create">1. Create (Rae Reviewer)</h2>
       <ol>
         <li>
-          Open the <Link to="/dashboard/reviewer">Review dashboard</Link>. <em>Pending my review</em> lists HB 2081 (unclaimed, overdue) and SB 6137 (claimed).{' '}
-          <em>Changes requested</em> lists ESSB 5814. The team queue groups every note by status.
+          Sign in as Rae. <Link to="/notes">Notes</Link> lists every note grouped by status.
         </li>
         <li>
-          Search for <code>hb 1483</code> or any other bill and open it. In the right pane, <strong>New fiscal note</strong> asks for the version, a
-          template, the drafter, the request id and the legislative contact. <strong>Create and open</strong> lands in the workspace at <em>To do</em>.
+          Search <code>hb 1483</code> and open the bill. In the right pane, <strong>New fiscal note</strong> asks for the bill version, a template and the
+          drafter. Choose Dana. <strong>Create and open</strong> lands in the workspace with the note in <em>Draft</em>.
         </li>
-        <li>
-          In the bill viewer on the left: the outline names each section by its RCW caption, or a bracketed paraphrase for new sections; the version
-          switcher and <strong>Compare</strong> show a redline; <kbd>j</kbd> and <kbd>k</kbd> move between sections.
-        </li>
+        <li>A drafter can also create a note on a bill; the form has no drafter field and the note is theirs.</li>
       </ol>
-      <h3>2. Drafter: write a note (Dana Drafter)</h3>
+
+      <h2 id="draft">2. Draft (Dana Drafter)</h2>
       <ol>
         <li>
-          The <Link to="/dashboard/drafter">Drafting dashboard</Link> lists HB 1004 (To do), SHB 1043 (In progress) and ESSB 5814 (Changes requested) under{' '}
-          <em>needing action</em>, HB 2081 under <em>waiting on others</em>, and SHB 2402 under <em>recently approved</em>. The inbox holds the
-          assignments and the change request.
+          Sign in as Dana. <Link to="/notes">Notes</Link> lists {hb1004.bill}, {hb2081.bill}, {sb5814.bill} and {hb2402.bill}. Open {hb1004.bill} ({STATE_LABELS[hb1004.state]}).
         </li>
         <li>
-          Open HB 1004. Unfilled slots carry a dashed outline and a hint; <kbd>Tab</kbd> moves to the next one. Type <code>-4310000</code> into a cash
-          receipts cell: totals recompute and the cell formats as <code>(4,310,000)</code> when you leave it. The first save moves the note to{' '}
-          <em>In progress</em>.
+          The bill is on the left, the note on the right. Unfilled slots carry a dashed outline and a hint; <kbd>Tab</kbd> moves to the next one. Type{' '}
+          <code>-4310000</code> into a cash receipts cell: totals recompute and the cell formats as <code>(4,310,000)</code>.
         </li>
         <li>
-          <strong>Cite</strong> in the bill’s section bar drops a citation at the caret; clicking a citation scrolls the bill to that section.{' '}
-          <strong>Formula</strong> inserts LaTeX rendered with KaTeX. <strong>Versions</strong> compares any two saves as a redline with a cell diff.
+          <strong>Cite</strong> in the bill pane inserts a citation at the caret. A second <strong>Cite</strong> on the same section selects the existing
+          citation and shows <em>Already cited</em>. The <code>×</code> on a citation removes it.
         </li>
         <li>
-          <strong>Submit for review</strong> with a comment. The editor turns read-only and the reviewer is notified.
+          Select a sentence and press <strong>Comment</strong> to start a thread on it. The <em>Comments</em> tab lists the threads.
         </li>
+        <li>The note saves itself as you type.</li>
       </ol>
-      <h3 id="changes">3. Change requests (Rae Reviewer, then Dana Drafter)</h3>
+
+      <h2 id="submit">3. Submit (Dana Drafter)</h2>
       <ol>
         <li>
-          As Rae, open SB 6137 (In review). Select a sentence in the note and press <strong>Comment</strong> to start a thread on it. Then press{' '}
-          <strong>Request changes</strong>: write a summary and one line per item starting with <code>-</code>. Open comment threads are attached as
-          items too.
+          <strong>Submit for review</strong> in the workflow bar; the message is optional. Status: <em>{STATE_LABELS.in_review}</em>.
         </li>
-        <li>
-          As Dana, open ESSB 5814. A banner names the reviewer, the date and the count of open items; the <strong>Changes</strong> tab lists the request:
-          the summary, each item, and for thread items a link to the commented text. One item is already addressed.
-        </li>
-        <li>
-          Edit the note, then <strong>Mark addressed</strong> on each item and say what changed and where. The linked comment thread gets that answer
-          and is resolved. <strong>Submit for review</strong> is blocked until every item is addressed.
-        </li>
-        <li>
-          <strong>Close request</strong> with a note to the reviewer, then submit. The closed request keeps every resolution, the document version each
-          one cites, and a link that compares the version the reviewer saw with the version that answered it.
-        </li>
-        <li>
-          As Rae, claim the review again. The Changes tab shows the resolutions; <strong>Reopen</strong> on an item sends it back. Approve, or set an
-          executive review chain under <strong>Assign</strong> first.
-        </li>
+        <li>The editor is read-only until a reviewer acts. {hb2081.bill} is seeded in this status.</li>
       </ol>
-      <h3>4. Executive review and publishing (Avery Approver, Blake Budget, Val Viewer)</h3>
+
+      <h2 id="review">4. Review and request changes (Rae Reviewer)</h2>
       <ol>
         <li>
-          As Avery, the inbox links to HB 1047 at step 1 of 2. <strong>Start executive review</strong>, then <strong>Executive review done</strong>. As Blake,
-          complete step 2: the note is <em>Approved</em>.
+          Sign in as Rae and open {hb2081.bill} from <Link to="/notes">Notes</Link>. The drafter and the status are in the workflow bar.
         </li>
+        <li>Comment on two sentences.</li>
         <li>
-          As Val, open SHB 2402. The <strong>Fiscal note</strong> panel shows the approved note beside the text with PDF, DOCX and HTML links. Switch the
-          version to HB 2402: the panel explains it is showing the note for the later version. Narrow the window: the panes stack behind tabs.
+          <strong>Request changes</strong> and write a message; the message is required. The dialog has one <strong>Cancel</strong> button. Status:{' '}
+          <em>{STATE_LABELS.changes_requested}</em>. Rae is now the note's reviewer.
         </li>
+        <li>{sb5814.bill} is seeded in this status with Rae's message and two open threads.</li>
       </ol>
-      <h3>5. Administration (Ada Admin, Morgan Manager, Terry Templates)</h3>
+
+      <h2 id="resolve">5. Resolve and resubmit (Dana Drafter)</h2>
       <ol>
         <li>
-          <Link to="/admin/audit">Audit</Link> filters by note id and shows creation, saves, transitions, change requests, exports and denied actions.
+          Sign in as Dana and open {sb5814.bill}. A banner shows who requested changes, when, the message, and <em>2 open comment threads</em> with a
+          link to the Comments tab.
         </li>
+        <li>Resolve both threads, edit the note, then <strong>Submit for review</strong> with a reply.</li>
         <li>
-          <Link to="/admin/ingest">Ingest</Link> lists runs and refreshes bills against the legislature’s file service.
-        </li>
-        <li>
-          <Link to="/admin/templates">Templates</Link> previews the twelve note templates; an edit creates a new template version.
+          Status: <em>{STATE_LABELS.in_review}</em>. <strong>History</strong> lists the request and the reply.
         </li>
       </ol>
 
-      <h2 id="checks">What to check</h2>
-      <ul>
-        <li>The same note shows the same status on every dashboard and in the workspace bar; the hover text explains what the status means.</li>
-        <li>Deadlines: each row names its band (Due later, Due within 24 hours, Due within 4 hours, Overdue). HB 2081 is overdue; ESSB 5814 is inside 24 hours.</li>
-        <li>Two windows as the same drafter: edit in both, save in one, then edit in the other. The banner offers <strong>Reload theirs</strong> or <strong>Keep mine</strong>.</li>
-        <li>A viewer cannot open a note that is not approved, and cannot comment.</li>
-        <li>Every page passes axe at phone and desktop widths; the outline, the section bar and the editor work from the keyboard.</li>
-        <li>Exports: the PDF has Letter pages and the request number in the footer; the DOCX with comments carries the threads as Word comments.</li>
-      </ul>
+      <h2 id="approve">6. Approve (Rae Reviewer)</h2>
+      <ol>
+        <li>
+          Sign in as Rae and open the note. <strong>Approve</strong>. Status: <em>{STATE_LABELS.approved}</em>; the document is frozen at the approved
+          version.
+        </li>
+        <li>
+          <strong>Export</strong> in the workflow bar produces PDF, DOCX, HTML and XML of the approved version. {hb1019.bill} is seeded in this status
+          after one round of changes.
+        </li>
+      </ol>
 
-      <h2 id="statuses">Status vocabulary</h2>
-      <p>One word per workflow state, used everywhere:</p>
+      <h2 id="publish">7. Publish (Rae Reviewer)</h2>
+      <ol>
+        <li>
+          <strong>Publish</strong>. Status: <em>{STATE_LABELS.published}</em>. A published note never changes; a correction is a new note on the same bill
+          version.
+        </li>
+        <li>
+          <Link to="/published">Published</Link> lists it newest first with the four export links. {hb2402.bill} is seeded in this status.
+        </li>
+      </ol>
+
+      <h2 id="committee">8. Read as the Committee (Cam Committee)</h2>
+      <ol>
+        <li>
+          Sign in as Cam. The landing page goes to <Link to="/published">Published</Link>: bill, version, title, published date, and PDF, DOCX, HTML and XML
+          links for each note.
+        </li>
+        <li>
+          Open <Link to={billHref(hb2402)}>{hb2402.bill}</Link>. The <strong>Fiscal note</strong> panel shows the published note beside the bill text with
+          the same links. Switch the version to HB 2402: the panel says it is showing the note for a later version.
+        </li>
+        <li>
+          Cam cannot open notes that are not published. <code>GET /api/v1/published</code> returns the same list for a downstream system.
+        </li>
+      </ol>
+
+      <h2 id="statuses">Statuses</h2>
       <table className="guide-table">
         <thead>
           <tr>
@@ -288,48 +199,23 @@ pnpm dev`}
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>To do</td>
-            <td>Assigned; the drafter has not started</td>
-            <td>Drafter</td>
-          </tr>
-          <tr>
-            <td>In progress</td>
-            <td>The drafter is writing</td>
-            <td>Drafter</td>
-          </tr>
-          <tr>
-            <td>Ready for review</td>
-            <td>Submitted; waiting for a reviewer to claim it</td>
-            <td>Any reviewer</td>
-          </tr>
-          <tr>
-            <td>In review</td>
-            <td>A reviewer has claimed it</td>
-            <td>That reviewer</td>
-          </tr>
-          <tr>
-            <td>Changes requested</td>
-            <td>Back with the drafter, with an itemised request in the Changes tab</td>
-            <td>Drafter</td>
-          </tr>
-          <tr>
-            <td>Waiting for executive review / In executive review</td>
-            <td>Approved by the reviewer; moving through the executive chain</td>
-            <td>The current chain member</td>
-          </tr>
-          <tr>
-            <td>Approved</td>
-            <td>Published beside the bill</td>
-            <td>Nobody (an approver may reopen)</td>
-          </tr>
-          <tr>
-            <td>Cancelled, Superseded</td>
-            <td>Withdrawn, or replaced by a revision for a newer bill version</td>
-            <td>Nobody</td>
-          </tr>
+          {WORKFLOW_STATES.map((s) => (
+            <tr key={s}>
+              <td>{STATE_LABELS[s]}</td>
+              <td>{STATE_HINTS[s]}</td>
+              <td>{WHO_ACTS[s]}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </article>
   );
 }
+
+const WHO_ACTS: Record<(typeof WORKFLOW_STATES)[number], string> = {
+  draft: 'Drafter: Submit for review',
+  in_review: 'Reviewer: Request changes or Approve',
+  changes_requested: 'Drafter: Submit for review',
+  approved: 'Reviewer: Publish',
+  published: 'Nobody',
+};

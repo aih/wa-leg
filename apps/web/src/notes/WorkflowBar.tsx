@@ -39,7 +39,7 @@ export function WorkflowBar({ revisionId, summary, bill, onChanged, openThreads 
   }, []);
 
   const view = wf.data;
-  const isAssigner = hasRole('reviewer', 'approver', 'manager', 'admin');
+  const isAssigner = hasRole('reviewer', 'admin');
   const state = view?.state ?? summary.state;
   const stateLabel = STATE_LABELS[state] ?? state;
   const due = view?.effectiveDueAt ?? summary.effectiveDueAt ?? null;
