@@ -82,7 +82,7 @@ export async function buildIssuer() {
       const rows = users
         .map((u) => {
           params.set('login_hint', u.sub);
-          return `<li><a class="user" href="/authorize?${escapeHtml(params.toString())}" data-user="${escapeHtml(u.sub)}">
+          return `<li><a class="user" href="${ISSUER}/authorize?${escapeHtml(params.toString())}" data-user="${escapeHtml(u.sub)}">
             <strong>${escapeHtml(u.name)}</strong> <span>${escapeHtml(u.roles.join(', '))}</span></a></li>`;
         })
         .join('\n');

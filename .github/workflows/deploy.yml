@@ -1,0 +1,44 @@
+name: Deploy
+
+# Deploys waleg.linkedlegislation.org after CI passes on main (docs/DEPLOY.md). Builds the arm64 images on
+# GitHub's arm64 runner, pushes them to ECR, then runs deploy/bootstrap-box.sh on the box through SSM.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+    env:
+      AWS_REGION: us-east-1
+      SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SHA }}
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Build and push images
+        id: build
+        run: |
+          TAG=$(bash deploy/build-push.sh | tail -1)
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+      - name: Deploy to the box
+        run: bash deploy/deploy-remote.sh "${{ steps.build.outputs.tag }}" "$SHA"
+      - name: Smoke test
+        run: |
+          curl -fsS --retry 6 --retry-delay 10 --retry-all-errors https://waleg.linkedlegislation.org/api/v1/health
+          echo
