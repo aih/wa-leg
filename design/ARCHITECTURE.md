@@ -1,5 +1,10 @@
 # Fiscal Note Workbench: architecture
 
+> This is the original design (v0.1.0). The 0.2 release reduced the system to one path from draft to
+> Committee; `docs/SIMPLIFY-0.2.md` is the current design and `docs/ARCHITECTURE-AS-BUILT.md` records what
+> exists. Sections here on the ten-state workflow, executive review, deadlines, notifications, locks,
+> snapshots, itemised change requests, formulas and the admin pages describe features that were removed.
+
 A proof-of-concept tool for the Washington Department of Revenue (DOR) that covers the core of RFP DOR-RFP-2026-02: reading a bill, drafting a fiscal note against a specific bill version, reviewing and approving it, and publishing it to end users. It leaves out the tracking-system surround (packages, data requests, bill descriptions, legislative implementation, reporting, legacy migration), which are listed as adapter interfaces in `research/rfp-summary.md`.
 
 Research behind each decision is in `research/`. This document fixes the decisions and the contracts between modules.

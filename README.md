@@ -1,8 +1,9 @@
 # Fiscal Note Workbench
 
-Proof-of-concept fiscal note drafting tool for the Washington Department of Revenue. A drafter reads a bill,
-writes the fiscal note against a specific bill version, a reviewer approves it, and end users read the approved
-note beside the bill text. The design is in `design/`; `design/ARCHITECTURE.md` is the specification.
+Proof-of-concept fiscal note drafting tool for the Washington Department of Revenue. A drafter writes the note
+against a specific bill version, a reviewer requests changes or approves it, and the published note is
+available beside the bill, on the Published page and through an API in PDF, DOCX, HTML and XML.
+`docs/SIMPLIFY-0.2.md` is the current design; `design/` holds the original research and specification.
 
 ## Layout
 
@@ -10,13 +11,13 @@ note beside the bill text. The design is in `design/`; `design/ARCHITECTURE.md` 
 |---|---|
 | `apps/api` | Fastify service under `/api/v1`; OpenAPI at `/api/v1/openapi.json`; the `wa-leg` CLI |
 | `apps/web` | React 19 + Vite + React Router web app |
-| `apps/dev-oidc` | Development OpenID Connect issuer with one test user per role |
-| `packages/workflow-machine` | XState v5 review workflow, shared by server and client |
+| `apps/dev-oidc` | Development OpenID Connect issuer with the four test users |
+| `packages/workflow-machine` | Transition table for the review workflow, shared by server and client |
 | `packages/billref` | Bill reference parser |
 | `packages/bill-document` | Bill Document schema, XML parser, section diff |
 | `packages/note-schema` | Tiptap extensions, template loader, estimate validator |
 | `packages/api-client` | Client generated from the OpenAPI document |
-| `docs/` | `ARCHITECTURE-AS-BUILT.md`, `DEMO.md`, `LOAD-TEST.md`, `OPEN-ITEMS.md` |
+| `docs/` | `ARCHITECTURE-AS-BUILT.md`, `DEMO.md`, `PUBLISHED-API.md`, `DEPLOY.md`, `RELEASE.md`, `LOAD-TEST.md`, `OPEN-ITEMS.md`, `SIMPLIFY-0.2.md` |
 
 ## Development
 
@@ -31,97 +32,86 @@ pnpm wa-leg db seed
 pnpm dev                        # API on 4800, web on 5173, dev OIDC on 4801
 ```
 
-Open http://localhost:5173. The landing page explains the tool, the personas and how to test it; `/guide` is the
-walkthrough. The dev issuer lists the test users:
+Open http://localhost:5173. The landing page describes the path and lists the test users; `/guide` is the
+walkthrough. The dev issuer offers four users:
 
-| User | Roles |
-|---|---|
-| Dana Drafter | drafter |
-| Rae Reviewer | reviewer |
-| Avery Approver | reviewer, approver |
-| Morgan Manager | manager |
-| Val Viewer | viewer |
-| Terry Templates | template_editor, drafter |
-| Ada Admin | admin |
-| Jordan Both | drafter, reviewer |
-| Blake Budget | reviewer, approver (Budget division) |
+| User | Sign-in id | Roles |
+|---|---|---|
+| Dana Drafter | `dev-drafter` | drafter |
+| Rae Reviewer | `dev-reviewer` | reviewer |
+| Cam Committee | `dev-committee` | viewer |
+| Jordan Both | `dev-both` | drafter, reviewer |
 
-`?login_hint=dev-drafter` on `/api/v1/auth/login` skips the picker.
+`?login_hint=dev-drafter` on `/api/v1/auth/login` skips the picker. `pnpm wa-leg token --user dev-committee`
+prints a bearer token for scripts.
 
 ## Demo data
 
-`pnpm wa-leg demo seed` creates ten notes on ten different bills, one in each workflow state, as the test users
-(`--reset` deletes existing notes first). The bills it needs are HB 1004, HB 1016, HB 1019, HB 1043, HB 1044,
-HB 1047, HB 2081, HB 2402, SB 5814 and SB 6137; `docs/DEMO.md` lists what each note shows. The seed drives the
-HTTP API, so every note carries its transitions, notifications, audit rows and, where a reviewer returned it, a
-change request.
+`pnpm wa-leg demo seed --reset` creates five notes on five bills, one in each status, as the test users
+(`--reset` deletes existing notes first): HB 1004 (Draft), HB 2081 (In review), ESSB 5814 (Changes requested),
+HB 1019 (Approved) and SHB 2402 (Published). The seed drives the HTTP API, so every note carries its
+transitions, comments, audit rows and, for ESSB 5814, the reviewer's change request. `docs/DEMO.md` lists what
+each note shows.
 
-## Drafting a note
+## The path
 
-1. Sign in as Rae Reviewer, open a bill (`/bills/2025-26/HB2402/S`), and use **New fiscal note** beside the text:
-   choose the bill version, a template, and the drafter. The outline on the left names each section: the RCW
-   caption for amendatory and repealing sections, a bracketed paraphrase of the first sentence for new sections
-   (`packages/bill-document` `sectionSubject`), with *NEW SECTION* before the number.
-2. Sign in as Dana Drafter and open the note from the drafter dashboard. The workspace shows the bill on the
-   left and the editor on the right. Unfilled slots carry a dashed outline and their hint; `Tab` moves to the
-   next slot (inside a table, to the next cell) and `Ctrl+]` to the next unfilled one. Computed cells and
-   biennium totals update as figures are typed; numbers format as currency when the cursor leaves the cell.
-3. **Cite** in the bill's section bar, or the floating Cite control on a selection, inserts a citation node at
-   the caret. Clicking a citation scrolls the bill pane to the section.
-4. **Formula** opens the MathLive field (with a LaTeX source view); the result renders with KaTeX.
-5. Autosave runs 1.5 s after the last change with `If-Match`. A `412` shows a banner with the other saver's
-   name and offers **Reload theirs** or **Keep mine** (a forced save that keeps the server head as a snapshot).
-6. **Comment** on a selection opens a thread in the Comments tab; threads follow the text through edits and
+A note has one of five statuses: Draft, In review, Changes requested, Approved, Published. Four events move it
+along: `SUBMIT` (drafter), `REQUEST_CHANGES` (reviewer, message required), `APPROVE` (reviewer), `PUBLISH`
+(reviewer). A published note never changes; a correction is a new note on the same bill version.
+
+1. A reviewer opens a bill (`/bills/2025-26/HB2402/S`) and uses **New fiscal note** beside the text: bill
+   version, template, drafter. A drafter can create a note on a bill for themselves. The note starts in Draft.
+2. The drafter opens it from `/notes`. The workspace shows the bill on the left and the note on the right, with
+   the tabs *Note* and *Comments*. Unfilled slots carry a dashed outline and their hint; `Tab` moves to the next
+   slot. Computed cells and biennium totals update as figures are typed.
+3. **Cite** in the bill's section bar inserts a citation node at the caret. A citation shows a `×` control
+   while the note is editable. Citing a section that is already cited selects the existing citation and shows
+   *Already cited*.
+4. Autosave runs 1.5 s after the last change with `If-Match`. A `412` shows the banner *This note was saved
+   elsewhere* with one button, **Reload**.
+5. **Comment** on a selection opens a thread in the Comments tab; threads follow the text through edits and
    are listed as detached if the text is deleted.
-7. **Versions** lists autosaves and named snapshots, renders any version, compares two as a redline with a
-   table-cell diff, and restores a version as a new head.
+6. **Submit for review** (message optional). The editor is read-only while the note is In review.
+7. The reviewer comments and presses **Request changes** with a message, or **Approve**. A change request
+   shows the drafter a banner with the reviewer, the date, the message and the count of open comment threads.
+   The drafter resolves the threads, edits and submits again with a reply; History lists the request and the
+   reply.
+8. Approval freezes the head document as the approved version. **Publish** records the publication on the
+   revision (`publishedAt`, `publishedBy`, `publishedVersion`).
 
-## Review workflow
+## Screens
 
-Each note revision has one workflow instance (`todo`, `in_progress`, `review.pending`, `review.active`,
-`changes_requested`, `exec_review.pending`, `exec_review.active`, `approved`, `cancelled`, `superseded`). Every
-screen labels a state with the same word (To do, In progress, Ready for review, In review, Changes requested,
-Waiting for executive review, In executive review, Approved, Cancelled, Superseded); hovering the status shows
-what it means. The workspace bar shows the state, the due countdown with its band as text, the assignees, and
-the buttons the signed-in user may press: the drafter starts and submits; a reviewer claims, requests changes
-(a comment is required) or approves; an approver in the Executive Review chain claims, completes or returns
-each step in order. Assigners (reviewer, manager, admin) use **Assign** to set the drafter, reassign, or set
-the chain.
-
-### Change requests
-
-**Request changes** (and **Return to drafter** from executive review) records a change request. Lines of the
-comment that start with `-`, `*` or `1.` become items; each open comment thread on the text becomes an item
-linked to that thread; a comment with neither becomes a single item. The workspace shows a banner naming the
-reviewer, the date and the count of open items, and a **Changes** tab with the request. The drafter marks each
-item addressed with a note on what changed (the linked thread receives that note and is resolved), then closes
-the request with a message to the reviewer. **Submit for review** is refused (`409 change_request_open`)
-while items are open; a request left open with no open items is closed with the submit comment. Closed
-requests keep every resolution, the document version each cites, and a link to the version comparison. A
-reviewer or the drafter can reopen an item, which reopens its thread and the request. Endpoints:
-`GET /notes/{id}/change-requests`, `POST .../items/{itemId}/address`, `POST .../items/{itemId}/reopen`,
-`POST .../{crId}/close`.
-
-When the bills ingest adds a new version of a bill with an open note, the drafter is notified and the
-workspace offers **Create revision**; the new revision starts in `todo` with the same drafter and chain, and
-the old one becomes `superseded`.
+| Route | Who | Content |
+|---|---|---|
+| `/` | Everyone | Landing page; signed-in drafters and reviewers go to `/notes`, viewers to `/published` |
+| `/guide` | Everyone | The walkthrough |
+| `/notes` | Drafter, reviewer | The notes the user can see, grouped by status in path order |
+| `/published` | Everyone signed in | Published notes newest first with PDF, DOCX, HTML and XML links |
+| `/bills/:biennium/:id[/:code]`, `/compare` | Everyone | Bill viewer; the right pane holds **New fiscal note** and the published note panel |
+| `/notes/:revisionId` | Participants and reviewers; viewers once published | The workspace |
+| `/search` | Everyone | Bill search |
 
 ## Publishing and export
 
-Approval freezes the head document as the approved version. The bill page shows that version beside the text
-for every signed-in user; when the selected bill version has no approved note, the panel shows the latest
-approved note for an earlier version and says so. Exports (`GET` or `POST /notes/{id}/export?format=`):
+The bill page shows the published note beside the text for every signed-in user; when the selected bill
+version has no published note, the panel shows the latest published note for an earlier version and says so.
+`/published` lists every published note, and `GET /api/v1/published` returns the same list for a downstream
+system (`docs/PUBLISHED-API.md`). `PUBLISHED_PUBLIC=true` allows anonymous access to the feed and to the
+exports of published notes.
+
+Exports (`GET` or `POST /notes/{id}/export?format=`):
 
 | Format | Renderer | Notes |
 |---|---|---|
-| `html` | note-schema HTML with KaTeX | Citation links point at the workbench; `comments=true` keeps comment marks and lists the threads |
-| `pdf` | Playwright Chromium from the HTML | Letter, 1-inch margins, footer with the request and bill numbers |
-| `docx` | `docx` mapper from ProseMirror JSON | Tables with repeated header rows, bold totals, formulas as Office Math (a LaTeX subset), `comments=true` emits Word comments |
-| `xml` | placeholder FNS mapper | Slot values, Part I tables from the estimate data, narrative parts as HTML; refuses (422) while required slots are empty |
+| `html` | note-schema HTML with KaTeX | Citation links point at the workbench |
+| `pdf` | Playwright Chromium from the HTML | Letter, 1-inch margins; footer with the bill number and *Published <date>* |
+| `docx` | `docx` mapper from ProseMirror JSON | Tables with repeated header rows, bold totals |
+| `xml` | FNS mapper with provisional element names (`FnsXmlMapper`) | Slot values, Part I tables from the estimate data, narrative parts as HTML; `strict=true` refuses (422) while required slots are empty |
 
-Viewers get the approved version; participants get the head unless `version=` names another. Every export
-writes a `note_exports` row, an audit row, and a `note.exported` event. `/admin/audit` in the web app lists
-the audit log for admins and managers. Set `PDF_ENABLED=false` where Chromium is unavailable.
+Drafters and reviewers get the head version, the approved version of an approved note, or the published
+version of a published note; `version=` names another. Viewers and anonymous callers get the published
+version only. File names are `{billId}-{versionCode}-fiscal-note.{ext}` (`HB2402-S-fiscal-note.pdf`;
+`HB1004-fiscal-note.pdf` for an introduced bill). Set `PDF_ENABLED=false` where Chromium is unavailable.
 
 ## Checks
 
@@ -134,11 +124,6 @@ pnpm third-party                # writes THIRD_PARTY.md and fails on a non-permi
 pnpm --filter @wa-leg/api-client generate   # regenerates packages/api-client from the OpenAPI document
 pnpm load                       # autocannon against the running API; writes docs/LOAD-TEST.md
 ```
-
-`docs/` holds the as-built architecture notes, the demo script, the load-test results, and the open items.
-`pnpm wa-leg demo seed --reset` rebuilds the demo notes.
-The admin pages are `/admin/audit` (admin, manager), `/admin/ingest` (admin) and `/admin/templates`
-(template_editor). `pnpm wa-leg token --user dev-viewer` prints a bearer token for scripts.
 
 ## Releases
 
@@ -156,3 +141,7 @@ pnpm wa-leg ingest legiscan data/WA/2025-2026_Regular_Session --limit 20
 pnpm wa-leg search init
 pnpm wa-leg search load
 ```
+
+`pnpm wa-leg ingest refresh [--bills HB2402,SB5814]` re-checks stored documents against lawfilesext and
+reparses the changed ones. Search indexes bills, sections, amendments, the OFM prior fiscal notes listed in
+the bill data and the RCW sections a bill affects; workbench notes are found from `/notes` and `/published`.

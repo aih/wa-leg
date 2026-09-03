@@ -135,7 +135,8 @@ version returns `403`. A note that is not published returns `404` to viewers and
 signed-in drafter or reviewer with access to the note gets its head version (the approved version of an
 approved note).
 
-`format=xml` returns `422` with `details.unfilledSlots` when a required slot of the note is empty.
+`format=xml&strict=true` returns `422` with `details.unfilledSlots` when a required slot of the note is
+empty; without `strict` the XML is rendered with the empty slots.
 
 ### File names
 

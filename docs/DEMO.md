@@ -1,7 +1,8 @@
 # Demo script
 
-Ten notes on ten bills, one in each workflow state. About twenty minutes. The in-app guide at `/guide` carries
-the same walkthrough with links.
+Five notes on five bills, one in each status. About ten minutes. The in-app guide at `/guide` carries the
+same walkthrough with links; `apps/web/src/lib/demo.ts` is the source of the user and note lists shown there
+and on the landing page.
 
 ## Setup
 
@@ -15,81 +16,113 @@ pnpm dev
 ```
 
 The ingest loads every bill of the session (about twenty minutes against lawfilesext; `--bills
-HB1004,HB1016,HB1019,HB1043,HB1044,HB1047,HB2081,HB2402,SB5814,SB6137` loads only the demo bills). The seed
+HB1004,HB1019,HB2081,HB2402,SB5814` loads only the demo bills; the seed skips any that are missing). The seed
 refuses to run on top of existing notes without `--reset`.
 
 Open http://localhost:5173. The landing page lists the test users; `?login_hint=dev-drafter` on
-`/api/v1/auth/login` skips the picker. The mail sink is at http://localhost:8026.
+`/api/v1/auth/login` skips the picker.
+
+## Test users
+
+| User | Sign-in id | Roles | In the demo |
+|---|---|---|---|
+| Dana Drafter | `dev-drafter` | drafter | Writes the notes on HB 1004, HB 2081, ESSB 5814 and SHB 2402 |
+| Rae Reviewer | `dev-reviewer` | reviewer | Creates notes, reviews, requests changes, approves, publishes |
+| Cam Committee | `dev-committee` | viewer | Reads published notes and their exports |
+| Jordan Both | `dev-both` | drafter, reviewer | Drafts the HB 1019 note; reviews as Rae does |
 
 ## The seeded notes
 
 | Bill | Drafter | Status | Shows |
 |---|---|---|---|
-| HB 1004, personal property tax exemption | Dana Drafter | To do | Assigned three hours ago; 72-hour clock running |
-| SHB 1043, commute trip reduction credit | Dana Drafter | In progress | Revision for the substitute; the HB 1043 note is superseded |
-| ESSB 5814, sales tax on services | Dana Drafter | Changes requested | Two bullet items and a comment thread; one item addressed; due within 24 hours |
-| HB 2081, B&O surcharges | Dana Drafter | Ready for review | Submitted, unclaimed, overdue, priority urgent |
-| SB 6137, sports wagering | Jordan Both | In review | Claimed by Rae Reviewer; no fiscal impact |
-| HB 1047, fire district equipment exemption | Terry Templates | Waiting for executive review | Chain Avery Approver, then Blake Budget |
-| SHB 2402, phthalates in intravenous equipment | Dana Drafter | Approved | The published note beside the bill |
-| HB 1019, farm equipment credit | Jordan Both | Approved | Approved by Avery after one closed change request |
-| HB 1044, county REET fee | Dana Drafter | Cancelled | Cancelled by Morgan Manager |
-| HB 1016, veteran hiring credit | Jordan Both | To do | Assigned an hour ago by Avery Approver |
+| HB 1004, personal property tax exemption | Dana Drafter | Draft | Created by Rae for Dana; Dana has started the narrative |
+| HB 2081, B&O surcharges | Dana Drafter | In review | Submitted by Dana with a message; no reviewer has acted yet |
+| ESSB 5814, sales tax on services | Dana Drafter | Changes requested | Rae requested changes with a message; two open comment threads for Dana to resolve |
+| HB 1019, farm equipment tax credit | Jordan Both | Approved | Approved by Rae after one round of changes; History holds the request and the reply |
+| SHB 2402, phthalates in intravenous equipment | Dana Drafter | Published | Published by Rae; beside the bill and on the Published page with four export links |
 
-## 1. Reviewer: the queue and a new request (Rae Reviewer)
+## 1. Create (Rae Reviewer)
 
-1. The **Review dashboard** opens. *Pending my review* holds HB 2081 (unclaimed, overdue) and SB 6137
-   (claimed). *Changes requested, waiting on the drafter* holds ESSB 5814. The team queue groups every note by
-   status with a reassign control.
-2. Search `hb 1483` and open the bill. Show the viewer: the outline names every section (RCW caption, or a
-   bracketed paraphrase for a new section, with *NEW SECTION* before the number), RCW affected, the sticky
-   section bar with the subject, `j`/`k`, the version switcher and **Compare**.
-3. **New fiscal note** in the right pane: version, template, drafter Dana, request id, contact. **Create and
-   open** lands in the workspace at *To do* with the due countdown. **Assign** sets a due time or an executive
-   chain; **History** lists transitions and the audit trail.
+1. Sign in as Rae. **Notes** lists every note grouped by status: bill, title, status, drafter, reviewer,
+   updated.
+2. Search `hb 1483` and open the bill. The outline names every section (RCW caption, or a bracketed paraphrase
+   for a new section, with *NEW SECTION* before the number); the sticky section bar shows the subject; `j`/`k`
+   move between sections; the version switcher and **Compare** are in the header.
+3. **New fiscal note** in the right pane asks for the bill version, a template and the drafter
+   ([screenshot](acceptance/0.2/01-rae-new-note-form.png)). Choose Dana. **Create and open** lands in the
+   workspace with the note in *Draft*. A drafter can also create a note on a bill; the form then has no drafter
+   field and the note is theirs.
 
-## 2. Drafter: write a note (Dana Drafter)
+## 2. Draft (Dana Drafter)
 
-1. The **Drafting dashboard**: HB 1004 (To do), SHB 1043 (In progress) and ESSB 5814 (Changes requested) under
-   *needing action*, HB 2081 under *waiting on others*, SHB 2402 under *recently approved*. The inbox holds the
-   assignments and the change request; each also went to the mail sink.
-2. Open HB 1004. Unfilled slots carry dashed outlines and hints; the status bar counts required slots. Type
-   `-4310000` in a cash receipts cell, `Tab`, `-10800000`: totals recompute and cells format as `(4,310,000)`.
-   The first save moves the note to *In progress*.
-3. **Cite** in the bill's section bar inserts a citation; clicking it scrolls the bill. **Formula** inserts
-   LaTeX rendered with KaTeX. **Versions** compares two saves as a redline with a cell diff.
-4. Conflict: in a second window (same user) edit and save, then edit in the first: **Reload theirs** or **Keep
-   mine**.
-5. **Submit for review** with a comment. The editor turns read-only.
+1. Sign in as Dana. **Notes** lists HB 1004, HB 2081, ESSB 5814 and SHB 2402. Open HB 1004 (Draft).
+2. The bill is on the left, the note on the right. Unfilled slots carry a dashed outline and a hint; `Tab`
+   moves to the next one. Type `-4310000` into a cash receipts cell: totals recompute and the cell formats as
+   `(4,310,000)`.
+3. **Cite** in the bill's section bar inserts a citation at the caret; clicking it scrolls the bill pane to
+   the section. A second **Cite** on the same section selects the existing citation and shows *Already cited*
+   ([screenshot](acceptance/0.2/05-dana-already-cited.png)). The `×` on a citation removes it.
+4. Select a sentence and press **Comment** to start a thread on it. The *Comments* tab lists the threads.
+5. The note saves itself 1.5 s after the last change.
 
-## 3. Change requests (Rae Reviewer, then Dana Drafter)
+## 3. Submit (Dana Drafter)
 
-1. As Rae, open SB 6137 (*In review*). Select a sentence, **Comment**, write the note. **Request changes**: a
-   summary line plus one line per item starting with `-`. Open threads are attached as items. The state becomes
-   *Changes requested* on every dashboard.
-2. As Dana, open ESSB 5814. The banner names the reviewer, the date and *2 of 3 still open*; **Review and
-   address** opens the **Changes** tab: the summary, three items (two from the comment, one linked to the
-   thread on "The impact of the temporary staffing provision is indeterminate"), one already addressed with its
-   resolution and document version.
-3. Press **Submit for review**: refused while items are open. Edit the note, then **Mark addressed** on each
-   item with what changed and where. The thread item's answer appears in the comment thread, which is resolved.
-4. **Close request** with a message to the reviewer, then **Submit for review**. The closed request keeps every
-   resolution and links to the version comparison between the version the reviewer saw and the one that
-   answered it.
-5. As Rae, **Claim review**. The Changes tab shows the resolutions; **Reopen** on an item sends it back with a
-   reason. **Approve**, or set an executive chain under **Assign** first.
+1. **Submit for review** in the workflow bar; the message is optional. Status: *In review*.
+2. The editor is read-only until a reviewer acts. HB 2081 is seeded in this status.
 
-## 4. Executive review and publishing (Avery Approver, Blake Budget, Val Viewer)
+## 4. Review and request changes (Rae Reviewer)
 
-1. As Avery, the inbox links to HB 1047 at step 1 of 2. **Start executive review**, **Executive review done**.
-   As Blake, complete step 2: *Approved*.
-2. As Val, open SHB 2402. The **Fiscal note** panel shows the approved note beside the text with **PDF**,
-   **DOCX** and **HTML**. Switch to HB 2402: the panel says it is showing the note for the later version. Narrow
-   the window: the panes stack behind *Bill* and *Fiscal note* tabs.
+1. Sign in as Rae and open HB 2081 from **Notes**. The workflow bar shows the bill, the status with its hint,
+   the drafter and the reviewer.
+2. Comment on two sentences.
+3. **Request changes** and write a message; the message is required. The dialog has one **Cancel** button
+   and no workflow action is labelled Cancel
+   ([screenshot](acceptance/0.2/10-rae-request-changes-dialog-one-cancel.png)). Status: *Changes requested*.
+   Rae is now the note's reviewer.
+4. ESSB 5814 is seeded in this status with Rae's message and two open threads.
 
-## 5. Administration (Ada Admin, Morgan Manager, Terry Templates)
+## 5. Resolve and resubmit (Dana Drafter)
 
-1. **Audit**: filter by note id to see creation, saves, transitions, change requests, exports and denied
-   actions.
-2. **Ingest**: run history and a refresh against lawfilesext.
-3. **Templates**: the twelve templates with preview; an edit creates a new version.
+1. Sign in as Dana and open ESSB 5814. A banner shows who requested changes, when, the message, and *2 open
+   comment threads* with a link to the Comments tab
+   ([screenshot](acceptance/0.2/12-dana-change-request-banner.png)).
+2. Resolve both threads, edit the note, then **Submit for review** with a reply.
+3. Status: *In review*. **History** lists the request and the reply.
+
+## 6. Approve (Rae Reviewer)
+
+1. Sign in as Rae and open the note. **Approve**. Status: *Approved*; the document is frozen at the approved
+   version.
+2. **Export** in the workflow bar produces PDF, DOCX, HTML and XML of the approved version
+   ([screenshot](acceptance/0.2/14-rae-approved-export-menu.png)). HB 1019 is seeded in this status after one
+   round of changes.
+
+## 7. Publish (Rae Reviewer)
+
+1. **Publish**. Status: *Published*. A published note never changes; a correction is a new note on the same
+   bill version.
+2. **Published** lists it newest first with the four export links. SHB 2402 is seeded in this status.
+
+## 8. Read as the Committee (Cam Committee)
+
+1. Sign in as Cam. The landing page goes to **Published**: bill, version, title, published date, and PDF,
+   DOCX, HTML and XML links for each note ([screenshot](acceptance/0.2/16-cam-published-list.png)).
+2. Open SHB 2402 (`/bills/2025-26/HB2402/S`). The **Fiscal note** panel shows the published note beside the
+   bill text with the same links ([screenshot](acceptance/0.2/17-cam-bill-page-published-panel.png)). Switch
+   the version to HB 2402: the panel says it is showing the SHB 2402 note. Narrow the window: the panes stack
+   behind *Bill* and *Fiscal note* tabs.
+3. Cam cannot open notes that are not published. `GET /api/v1/published` returns the same list for a
+   downstream system (`PUBLISHED-API.md`); the PDF downloads as `HB2402-S-fiscal-note.pdf`.
+
+## Statuses
+
+| Status | Meaning | Who acts |
+|---|---|---|
+| Draft | The drafter is writing | Drafter: Submit for review |
+| In review | A reviewer is reading it | Reviewer: Request changes or Approve |
+| Changes requested | Back with the drafter, with the reviewer's message and the open comment threads | Drafter: Submit for review |
+| Approved | Frozen at the approved version | Reviewer: Publish |
+| Published | Available to the Committee beside the bill and on the Published page, in every export format | Nobody |
+
+The acceptance run of this script is in `acceptance/0.2/` (17 screenshots, `01-rae-new-note-form.png` to
+`17-cam-bill-page-published-panel.png`).
