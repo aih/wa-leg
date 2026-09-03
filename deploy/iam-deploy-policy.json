@@ -8,10 +8,12 @@
         "route53:ListResourceRecordSets",
         "route53:ChangeResourceRecordSets"
       ],
-      "Resource": "arn:aws:route53:::hostedzone/ZONE_ID",
+      "Resource": "arn:aws:route53:::hostedzone/Z007577931KDAIYFR232H",
       "Condition": {
         "ForAllValues:StringEquals": {
-          "route53:ChangeResourceRecordSetsNormalizedRecordNames": ["waleg.linkedlegislation.org"]
+          "route53:ChangeResourceRecordSetsNormalizedRecordNames": [
+            "waleg.linkedlegislation.org"
+          ]
         }
       }
     },
@@ -49,6 +51,33 @@
         "ecr:DeleteRepository"
       ],
       "Resource": "arn:aws:ecr:us-east-1:739065237548:repository/waleg/*"
+    },
+    {
+      "Sid": "SsmRunOnWalegBox",
+      "Effect": "Allow",
+      "Action": "ssm:SendCommand",
+      "Resource": "arn:aws:ec2:us-east-1:739065237548:instance/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/Name": "waleg-site"
+        }
+      }
+    },
+    {
+      "Sid": "SsmRunShellScriptDocument",
+      "Effect": "Allow",
+      "Action": "ssm:SendCommand",
+      "Resource": "arn:aws:ssm:us-east-1::document/AWS-RunShellScript"
+    },
+    {
+      "Sid": "SsmReadCommandResult",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetCommandInvocation",
+        "ssm:ListCommandInvocations",
+        "ssm:DescribeInstanceInformation"
+      ],
+      "Resource": "*"
     }
   ]
 }
