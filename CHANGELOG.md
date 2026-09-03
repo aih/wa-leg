@@ -5,6 +5,8 @@ Entries go under **Unreleased** as work lands. `pnpm release <version>` moves th
 
 ## Unreleased
 
+## 0.1.0 (2026-09-03)
+
 Proof of concept of the Fiscal Note Workbench for the Washington Department of Revenue.
 
 - Bill ingest from the Legiscan dataset and lawfilesext XML; bill viewer with outline, version switcher and redline.
