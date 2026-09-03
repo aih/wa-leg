@@ -91,7 +91,7 @@ export function NoteVersionsPage() {
         <nav aria-label="Breadcrumb" className="crumbs">
           <Link to={`/notes/${revisionId}`}>← Back to the note</Link>
         </nav>
-        <h1>{summary.data ? `${summary.data.versionLabel} ${summary.data.kind === 'estimate' ? 'estimate' : 'fiscal note'}: versions` : 'Versions'}</h1>
+        <h1>{summary.data ? `${summary.data.versionLabel} fiscal note: versions` : 'Versions'}</h1>
         {error && (
           <p role="alert" className="error">
             {error}
