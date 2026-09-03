@@ -10,7 +10,7 @@ export * from './backend.js';
 export { OpenSearchBackend } from './opensearch.js';
 export { PostgresBackend } from './postgres.js';
 export { SearchPipeline } from './pipeline.js';
-export { SearchIndexer, plainTextOfProseMirror } from './indexer.js';
+export { SearchIndexer } from './indexer.js';
 export * from './docs.js';
 
 declare module 'fastify' {

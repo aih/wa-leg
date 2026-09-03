@@ -14,10 +14,6 @@ export type Action =
   | 'note.review'
   | 'note.publish'
   | 'note.export'
-  | 'audit.read'
-  | 'audit.read_all'
-  | 'template.edit'
-  | 'ingest.run'
   | 'search.reindex';
 
 export interface NoteResource {
@@ -55,9 +51,6 @@ export function can(p: Principal, action: Action, resource: Resource = { type: '
     case 'bill.read':
     case 'template.read':
       return true;
-    case 'audit.read_all':
-    case 'template.edit':
-    case 'ingest.run':
     case 'search.reindex':
       return admin;
     case 'note.create': {
@@ -85,8 +78,6 @@ export function can(p: Principal, action: Action, resource: Resource = { type: '
       return n.state === 'in_review' && hasRole(p, 'reviewer') && n.drafterId !== p.userId;
     case 'note.publish':
       return n.state === 'approved' && hasRole(p, 'reviewer') && n.drafterId !== p.userId;
-    case 'audit.read':
-      return admin || hasRole(p, 'reviewer') || isParticipant(p, n);
     default:
       return false;
   }

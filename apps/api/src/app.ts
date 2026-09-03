@@ -42,7 +42,7 @@ export interface BuildOptions {
   /** Reuse an existing pool (tests). */
   dbHandle?: DbHandle;
   oidc?: OidcClient;
-  /** Start background workers (outbox relay, pollers) on ready. Default true. */
+  /** Start the outbox relay on ready. Default true. */
   workers?: boolean;
 }
 

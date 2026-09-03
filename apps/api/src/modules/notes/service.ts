@@ -1,10 +1,10 @@
-// Notes module: notes, revisions, documents (autosave heads and named snapshots), comments.
+// Notes module: notes, revisions, documents (autosave heads), comments.
 import type { ExportService } from './export/service.js';
 import { randomUUID } from 'node:crypto';
 import { sql } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import { label as shortLabel, type BillType } from '@wa-leg/billref';
-import { diffNotes, docToHtml, docToText, extractEstimateData, loadTemplate, recompute, validateNote, type EstimateData, type PMNode, type ValidationResult } from '@wa-leg/note-schema';
+import { docToHtml, docToText, extractEstimateData, loadTemplate, recompute, validateNote, type EstimateData, type PMNode, type ValidationResult } from '@wa-leg/note-schema';
 import { isEditable, type WorkflowState } from '@wa-leg/workflow-machine';
 import type { Db, DbOrTx } from '../../db/client.js';
 import { badRequest, forbidden, notFound, preconditionFailed } from '../../lib/errors.js';
@@ -225,23 +225,20 @@ export class NotesService {
     return { noteId: noteRevisionId, version: d.version, mode: d.mode, doc: d.doc_json, templateId: row.template_id ?? null, templateVersion: row.template_version ?? null, label: d.label ?? null, updatedAt: iso(d.updated_at), updatedBy: d.updated_by };
   }
 
-  async saveDocument(p: Principal, noteRevisionId: string, ifMatch: string, body: { doc: PMNode; mode: 'limited' | 'full'; clientId?: string }, force: boolean, requestId: string): Promise<{ version: number; savedAt: string; estimateData: EstimateData; validation: ValidationResult }> {
+  async saveDocument(p: Principal, noteRevisionId: string, ifMatch: string, body: { doc: PMNode; mode: 'limited' | 'full'; clientId?: string }, requestId: string): Promise<{ version: number; savedAt: string; estimateData: EstimateData; validation: ValidationResult }> {
     await this.assertCan(p, 'note.edit', noteRevisionId, requestId);
     const expected = Number(ifMatch.replace(/^W\//, '').replace(/"/g, ''));
     if (!Number.isFinite(expected)) throw badRequest('bad_if_match', 'If-Match must carry the current document version');
     return this.db.transaction(async (tx) => {
       const locked = (await tx.execute(sql`SELECT head_version FROM note_revisions WHERE note_revision_id = ${noteRevisionId} FOR UPDATE`)).rows[0] as any;
       const head = Number(locked.head_version);
-      if (head !== expected && !force) {
+      if (head !== expected) {
         const current = (await tx.execute(sql`SELECT version, doc_json, updated_by, updated_at FROM note_documents WHERE note_revision_id = ${noteRevisionId} AND version = ${head}`)).rows[0] as any;
         throw preconditionFailed({ version: head, doc: current?.doc_json, updatedBy: current?.updated_by, updatedByName: await this.userName(current?.updated_by ?? null), updatedAt: current ? iso(current.updated_at) : null });
       }
       const next = head + 1;
-      if (head !== expected && force) {
-        await tx.execute(sql`UPDATE note_documents SET label = COALESCE(label, 'Superseded by a forced save') WHERE note_revision_id = ${noteRevisionId} AND version = ${head}`);
-      }
       const { estimate, validation } = await this.storeDocument(tx, noteRevisionId, next, body.doc, body.mode, p.userId, { clientId: body.clientId ?? null });
-      await writeAudit(tx, { actorId: p.userId, action: 'note.document_save', objectType: 'note_revision', objectId: noteRevisionId, before: { version: head }, after: { version: next, forced: head !== expected }, requestId });
+      await writeAudit(tx, { actorId: p.userId, action: 'note.document_save', objectType: 'note_revision', objectId: noteRevisionId, before: { version: head }, after: { version: next }, requestId });
       await emitEvent(tx, 'note.document_saved', { noteRevisionId, version: next, actorId: p.userId });
       return { version: next, savedAt: new Date().toISOString(), estimateData: estimate, validation };
     });
@@ -252,36 +249,6 @@ export class NotesService {
     const names = new Map<string, string | undefined>();
     for (const r of rows) if (!names.has(r.updated_by)) names.set(r.updated_by, await this.userName(r.updated_by));
     return rows.map((r) => ({ version: r.version, label: r.label ?? null, createdBy: r.updated_by, createdByName: names.get(r.updated_by) ?? null, createdAt: iso(r.updated_at), summary: r.summary ?? (r.validation?.ok === false ? `${r.validation.errors.length} validation error(s)` : null) }));
-  }
-
-  async snapshot(p: Principal, noteRevisionId: string, label: string | undefined, requestId: string): Promise<{ version: number }> {
-    const { row } = await this.assertCan(p, 'note.read', noteRevisionId, requestId);
-    await this.db.execute(sql`UPDATE note_documents SET label = ${label ?? 'Snapshot'} WHERE note_revision_id = ${noteRevisionId} AND version = ${row.head_version}`);
-    await writeAudit(this.db, { actorId: p.userId, action: 'note.snapshot', objectType: 'note_revision', objectId: noteRevisionId, after: { version: row.head_version, label }, requestId });
-    return { version: row.head_version };
-  }
-
-  async restore(p: Principal, noteRevisionId: string, version: number, requestId: string): Promise<{ version: number }> {
-    const { row } = await this.assertCan(p, 'note.edit', noteRevisionId, requestId);
-    const old = await this.getDocument(noteRevisionId, version);
-    return this.db.transaction(async (tx) => {
-      const next = Number(row.head_version) + 1;
-      await this.storeDocument(tx, noteRevisionId, next, old.doc, old.mode, p.userId, { label: `Restored from version ${version}` });
-      await writeAudit(tx, { actorId: p.userId, action: 'note.restore', objectType: 'note_revision', objectId: noteRevisionId, before: { version: row.head_version }, after: { version: next, restoredFrom: version }, requestId });
-      await emitEvent(tx, 'note.document_saved', { noteRevisionId, version: next, actorId: p.userId });
-      return { version: next };
-    });
-  }
-
-  async diff(noteRevisionId: string, from: number, to: number) {
-    const a = await this.getDocument(noteRevisionId, from);
-    const b = await this.getDocument(noteRevisionId, to);
-    return diffNotes(a.doc, b.doc);
-  }
-
-  async validate(noteRevisionId: string): Promise<ValidationResult> {
-    const d = await this.getDocument(noteRevisionId);
-    return validateNote(recompute(d.doc).doc);
   }
 
   // ---------- comments ----------

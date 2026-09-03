@@ -21,8 +21,8 @@ describe('can(): permission matrix', () => {
     }
   });
 
-  it('template editing, ingest, reindex and the audit query are admin only', () => {
-    for (const a of ['template.edit', 'ingest.run', 'search.reindex', 'audit.read_all'] as const) {
+  it('reindex is admin only', () => {
+    for (const a of ['search.reindex'] as const) {
       expect(can(admin, a)).toBe(true);
       for (const p of [drafter, reviewer, viewer, both]) expect(can(p, a)).toBe(false);
     }
@@ -110,17 +110,6 @@ describe('can(): permission matrix', () => {
       expect(can(p, 'note.edit', published)).toBe(false);
     }
     expect(can(viewer, 'note.comment', published)).toBe(false);
-  });
-
-  it('audit: participants and reviewers see a note history; the audit query is admin only', () => {
-    const n = note();
-    expect(can(drafter, 'audit.read', n)).toBe(true);
-    expect(can(reviewer, 'audit.read', n)).toBe(true);
-    expect(can(both, 'audit.read', n)).toBe(true);
-    expect(can(viewer, 'audit.read', n)).toBe(false);
-    expect(can(drafter, 'audit.read', note({ drafterId: 'dev-both' }))).toBe(false);
-    expect(can(admin, 'audit.read_all')).toBe(true);
-    expect(can(reviewer, 'audit.read_all')).toBe(false);
   });
 
   it('a user holding drafter and reviewer gets both sets of permissions', () => {

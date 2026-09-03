@@ -89,13 +89,10 @@ describe('exports', () => {
     expect(res.body).toMatch(/href="http:\/\/localhost:5173\/bills\/2025-26\/HB2402\/S#sec-2"/);
     expect(res.body).toContain('Form FN (Rev 1/00)');
     expect(res.body).not.toContain('mark class="comment"');
-    const withComments = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=html&comments=true`, headers: await t.as(users.drafter) });
-    expect(withComments.body).toContain('Check the multiplier');
-    expect(withComments.body).toContain('mark class="comment"');
   });
 
-  it('DOCX is a Word package with the table, bold totals, OMML math and optional comments', async () => {
-    const res = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=docx&comments=true`, headers: await t.as(users.drafter) });
+  it('DOCX is a Word package with the table, bold totals and OMML math; comment marks are dropped', async () => {
+    const res = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=docx`, headers: await t.as(users.drafter) });
     expect(res.statusCode).toBe(200);
     expect(res.headers['content-type']).toContain('wordprocessingml');
     const buf = res.rawPayload;
@@ -107,14 +104,9 @@ describe('exports', () => {
     expect(xml).toContain('<m:f>'); // fraction
     expect(xml).toContain('<m:sSup>'); // superscript
     expect(xml).toContain('Sec. 2');
-    expect(xml).toContain('<w:commentRangeStart');
-    const comments = zipEntry(buf, 'word/comments.xml');
-    expect(comments).toContain('Check the multiplier');
+    expect(xml).not.toContain('commentRangeStart');
     const footer = zipEntry(buf, 'word/footer1.xml');
     expect(footer).toContain('FNS062');
-    // Without comments the ranges are absent.
-    const plain = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${noteId}/export?format=docx`, headers: await t.as(users.drafter) });
-    expect(zipEntry(plain.rawPayload, 'word/document.xml')).not.toContain('commentRangeStart');
   });
 
   it('PDF renders through Chromium', async () => {
@@ -163,20 +155,15 @@ describe('exports', () => {
     expect(res.body).toContain('<Section part="II.B"');
   });
 
-  it('exports are recorded, audited, listed, re-downloadable and visible in the admin audit', async () => {
-    const list = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/exports`, headers: await t.as(users.drafter) })).json();
-    expect(list.length).toBeGreaterThanOrEqual(5);
-    const first = list.find((e: any) => e.format === 'html');
-    const job = await t.app.inject({ method: 'GET', url: `/api/v1/export-jobs/${first.exportId}`, headers: await t.as(users.drafter) });
-    expect(job.json()).toMatchObject({ status: 'done', format: 'html' });
-    const again = await t.app.inject({ method: 'GET', url: job.json().url, headers: await t.as(users.drafter) });
-    expect(again.statusCode).toBe(200);
-    expect(again.body).toContain('<table class="note-table"');
-    const audit = (await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit?action=note.export', headers: await t.as(users.admin) })).json();
-    expect(audit.length).toBeGreaterThanOrEqual(5);
+  it('exports are recorded and audited', async () => {
+    const { sql } = await import('drizzle-orm');
+    const stored = (await t.app.db.execute(sql`SELECT count(*)::int AS n FROM note_exports WHERE note_revision_id = ${noteId} AND status = 'done'`)).rows[0] as any;
+    expect(Number(stored.n)).toBeGreaterThanOrEqual(4);
+    const audit = (await t.app.db.execute(sql`SELECT after FROM audit_log WHERE action = 'note.export' AND object_id = ${noteId}`)).rows as any[];
+    expect(audit.length).toBeGreaterThanOrEqual(4);
     expect(audit[0].after.format).toBeTruthy();
-    const events = (await t.app.db.execute((await import('drizzle-orm')).sql`SELECT count(*)::int AS n FROM outbox WHERE type = 'note.exported'`)).rows[0] as any;
-    expect(Number(events.n)).toBeGreaterThanOrEqual(5);
+    const events = (await t.app.db.execute(sql`SELECT count(*)::int AS n FROM outbox WHERE type = 'note.exported'`)).rows[0] as any;
+    expect(Number(events.n)).toBeGreaterThanOrEqual(4);
   });
 
   it('viewers see nothing until publication, then the published version beside the bill', async () => {
@@ -204,7 +191,7 @@ describe('exports', () => {
     expect(pdfLink.statusCode).toBe(200);
     expect(pdfLink.headers['x-document-version']).toBe(String(summary.approvedVersion));
     expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/export?format=html&version=1`, headers: await t.as(users.viewer) })).statusCode).toBe(403);
-    const publish = (await t.app.inject({ method: 'GET', url: `/api/v1/admin/audit?action=note.publish&objectId=${noteId}`, headers: await t.as(users.admin) })).json();
-    expect(publish.length).toBe(1);
+    const publish = (await t.app.db.execute((await import('drizzle-orm')).sql`SELECT count(*)::int AS n FROM audit_log WHERE action = 'note.publish' AND object_id = ${noteId}`)).rows[0] as any;
+    expect(Number(publish.n)).toBe(1);
   });
 });

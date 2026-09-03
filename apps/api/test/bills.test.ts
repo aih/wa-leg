@@ -159,13 +159,6 @@ describe('bills module', () => {
     expect(counts['bill.amendment_added']).toBeGreaterThanOrEqual(2);
   });
 
-  it('records ingest runs and refuses ingest to non-admins', async () => {
-    const denied = await t.app.inject({ method: 'POST', url: '/api/v1/admin/ingest/runs', headers: await t.as(users.drafter), payload: { source: 'refresh' } });
-    expect(denied.statusCode).toBe(403);
-    const runs = await t.app.inject({ method: 'GET', url: '/api/v1/admin/ingest/runs', headers: await t.as(users.admin) });
-    expect(runs.statusCode).toBe(200);
-  });
-
   it('marks a version missing when neither XML nor HTM exists', async () => {
     const row = (await t.app.db.execute(sql`SELECT status FROM bill_versions WHERE bill_key = 'WA:2025-26:SB5814' AND version_code = 'PL'`)).rows[0] as any;
     // 5814-S.PL is not in the fixture directory

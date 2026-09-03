@@ -46,15 +46,6 @@ describe('templates and reference', () => {
     expect(one.headers.etag).toBeTruthy();
   });
 
-  it('template editing is admin only and creates a new version', async () => {
-    for (const u of [users.drafter, users.reviewer]) expect((await t.app.inject({ method: 'PUT', url: '/api/v1/templates/no-fiscal-impact', headers: await t.as(u), payload: { description: 'x' } })).statusCode).toBe(403);
-    const ok = await t.app.inject({ method: 'PUT', url: '/api/v1/templates/no-fiscal-impact', headers: await t.as(users.admin), payload: { description: 'Edited in a test' } });
-    expect(ok.statusCode).toBe(200);
-    expect(ok.json().version).toBe(2);
-    const list = await t.app.inject({ method: 'GET', url: '/api/v1/templates', headers: await t.as(users.drafter) });
-    expect(list.json().find((x: any) => x.id === 'no-fiscal-impact').description).toBe('Edited in a test');
-  });
-
   it('serves reference sets and the base template context', async () => {
     const fy = await t.app.inject({ method: 'GET', url: '/api/v1/reference/fiscal-years', headers: await t.as(users.viewer) });
     expect(fy.statusCode).toBe(200);
@@ -68,16 +59,13 @@ describe('templates and reference', () => {
     expect(ctx.json().ref.salary.EXCISE_TAX_EX_2).toBe('59,844');
   });
 
-  it('previews a template with tokens substituted', async () => {
-    const res = await t.app.inject({ method: 'GET', url: '/api/v1/templates/sales-use-tax-exemption/preview', headers: await t.as(users.drafter) });
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type']).toContain('text/html');
-    expect(res.body).toContain('FY 2026');
-    expect(res.body).toContain('140-Department of Revenue');
+  it('template write routes are gone', async () => {
+    expect((await t.app.inject({ method: 'PUT', url: '/api/v1/templates/no-fiscal-impact', headers: await t.as(users.admin), payload: { description: 'x' } })).statusCode).toBe(404);
+    expect((await t.app.inject({ method: 'GET', url: '/api/v1/templates/sales-use-tax-exemption/preview', headers: await t.as(users.drafter) })).statusCode).toBe(404);
   });
 });
 
-describe('notes: create, document autosave with If-Match, versions, comments', () => {
+describe('notes: create, document autosave with If-Match, comments', () => {
   it('a reviewer creates a note on SHB 2402 from the sales-use-tax-exemption template', async () => {
     const res = await t.app.inject({
       method: 'POST',
@@ -132,8 +120,8 @@ describe('notes: create, document autosave with If-Match, versions, comments', (
     expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}`, headers: await t.as(users.drafter) })).statusCode).toBe(200);
     expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}`, headers: await t.as(users.both) })).statusCode).toBe(200); // reviewer role
     expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}`, headers: await t.as(users.reviewer) })).statusCode).toBe(200);
-    const denial = await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit?action=permission.denied&objectId=' + revisionId, headers: await t.as(users.admin) });
-    expect(denial.json().length).toBeGreaterThanOrEqual(1);
+    const denial = (await t.app.db.execute((await import('drizzle-orm')).sql`SELECT count(*)::int AS n FROM audit_log WHERE action = 'permission.denied' AND object_id = ${revisionId}`)).rows[0] as any;
+    expect(Number(denial.n)).toBeGreaterThanOrEqual(1);
     const onBill = await t.app.inject({ method: 'GET', url: '/api/v1/bills/2025-26/HB2402/notes', headers: await t.as(users.viewer) });
     expect(onBill.json()).toEqual([]);
     const onBillReviewer = await t.app.inject({ method: 'GET', url: '/api/v1/bills/2025-26/HB2402/notes', headers: await t.as(users.reviewer) });
@@ -142,7 +130,7 @@ describe('notes: create, document autosave with If-Match, versions, comments', (
     expect(mine.json().map((n: any) => n.noteRevisionId)).toContain(revisionId);
   });
 
-  it('autosave uses If-Match: a stale version gets 412 with the current head, force stores a new head', async () => {
+  it('autosave uses If-Match: a stale version gets 412 with the current head', async () => {
     const head = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/document`, headers: await t.as(users.drafter) })).json();
     const doc = head.doc as PMNode;
     // Fill two receipts cells.
@@ -174,13 +162,13 @@ describe('notes: create, document autosave with If-Match, versions, comments', (
     expect(stale.json().details.version).toBe(2);
     expect(stale.json().details.updatedBy).toBe('dev-drafter');
     expect(stale.json().details.doc.type).toBe('doc');
-    // Force keeps the server head as a labelled snapshot and stores version 3.
+    // `force` is not a query parameter any more; the stale save is still refused.
     const forced = await t.app.inject({ method: 'PUT', url: `/api/v1/notes/${revisionId}/document?force=true`, headers: { ...(await t.as(users.drafter)), 'if-match': '"1"' }, payload: { doc, mode: 'limited' } });
-    expect(forced.statusCode).toBe(200);
-    expect(forced.json().version).toBe(3);
+    expect(forced.statusCode).toBe(412);
     const versions = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/versions`, headers: await t.as(users.drafter) })).json();
-    expect(versions.map((v: any) => v.version)).toEqual([3, 2, 1]);
-    expect(versions.find((v: any) => v.version === 2).label).toBe('Superseded by a forced save');
+    expect(versions.map((v: any) => v.version)).toEqual([2, 1]);
+    const v1 = await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/versions/1`, headers: await t.as(users.reviewer) });
+    expect(v1.json().version).toBe(1);
   });
 
   it('only the assigned drafter may edit; reviewers and other drafters get 403', async () => {
@@ -189,23 +177,6 @@ describe('notes: create, document autosave with If-Match, versions, comments', (
     expect(asReviewer.statusCode).toBe(403);
     const asOther = await t.app.inject({ method: 'PUT', url: `/api/v1/notes/${revisionId}/document`, headers: { ...(await t.as(users.both)), 'if-match': `"${head.version}"` }, payload: { doc: head.doc, mode: 'limited' } });
     expect(asOther.statusCode).toBe(403);
-  });
-
-  it('snapshots, restores, and diffs versions', async () => {
-    const snap = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${revisionId}/versions`, headers: await t.as(users.drafter), payload: { label: 'Before review' } });
-    expect(snap.statusCode).toBe(201);
-    const restored = await t.app.inject({ method: 'POST', url: `/api/v1/notes/${revisionId}/versions/1/restore`, headers: await t.as(users.drafter) });
-    expect(restored.statusCode).toBe(201);
-    expect(restored.json().version).toBe(4);
-    const diff = await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/diff?from=1&to=3`, headers: await t.as(users.reviewer) });
-    expect(diff.statusCode).toBe(200);
-    const d = diff.json();
-    expect(d.html).toContain('diff-line');
-    expect(d.tables.some((c: any) => c.table === 'revenue' && c.row === 'gf' && c.new === -4310000)).toBe(true);
-    const same = (await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/diff?from=1&to=4`, headers: await t.as(users.reviewer) })).json();
-    expect(same.summary).toBe('No changes');
-    const v3 = await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/versions/3`, headers: await t.as(users.reviewer) });
-    expect(v3.json().version).toBe(3);
   });
 
   it('comments anchor to ranges and survive edits; replies, resolve, delete', async () => {
@@ -235,27 +206,30 @@ describe('notes: create, document autosave with If-Match, versions, comments', (
     expect((await t.app.inject({ method: 'DELETE', url: `/api/v1/notes/${revisionId}/comments/c_test1`, headers: await t.as(users.reviewer) })).statusCode).toBe(204);
   });
 
-  it('validates the head and lists the note history in the audit log', async () => {
-    const v = await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/validate`, headers: await t.as(users.reviewer) });
-    expect(v.statusCode).toBe(200);
-    expect(v.json()).toHaveProperty('unfilledSlots');
-    const audit = await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/audit`, headers: await t.as(users.drafter) });
-    expect(audit.statusCode).toBe(200);
-    const actions = audit.json().map((a: any) => a.action);
-    expect(actions).toEqual(expect.arrayContaining(['note.create', 'note.document_save', 'note.snapshot', 'note.restore', 'note.comment_create', 'note.comment_delete']));
-    expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${revisionId}/audit`, headers: await t.as(users.viewer) })).statusCode).toBe(403);
+  it('writes the note history to the audit log; the removed note routes answer 404', async () => {
+    const rows = (await t.app.db.execute((await import('drizzle-orm')).sql`SELECT action FROM audit_log WHERE object_id = ${revisionId}`)).rows as any[];
+    expect(rows.map((a) => a.action)).toEqual(expect.arrayContaining(['note.create', 'note.document_save', 'note.comment_create', 'note.comment_delete']));
+    for (const [method, path] of [
+      ['GET', 'audit'],
+      ['GET', 'validate'],
+      ['GET', 'diff?from=1&to=2'],
+      ['POST', 'versions'],
+      ['POST', 'versions/1/restore'],
+      ['GET', 'exports'],
+      ['GET', 'lock'],
+      ['GET', 'context'],
+    ] as const) {
+      expect((await t.app.inject({ method, url: `/api/v1/notes/${revisionId}/${path}`, headers: await t.as(users.drafter) })).statusCode).toBe(404);
+    }
   });
 
-  it('indexes internal notes for search with visibility from the note state', async () => {
+  it('internal notes are not indexed for search', async () => {
     await t.app.bus.drain();
     await t.app.searchSvc.backend.refresh();
-    const idsFor = async (u: (typeof users)[keyof typeof users]) => {
-      const res = await t.app.inject({ method: 'GET', url: '/api/v1/search?q=SHB%202402', headers: await t.as(u) });
-      expect(res.statusCode).toBe(200);
-      return (res.json().direct.related.fiscal_notes as any[]).map((n) => n.note_id);
-    };
-    expect(await idsFor(users.drafter)).toContain(`fn:int:${revisionId}`);
-    expect(await idsFor(users.viewer)).not.toContain(`fn:int:${revisionId}`);
-    expect(await idsFor(users.reviewer)).not.toContain(`fn:int:${revisionId}`);
+    const res = await t.app.inject({ method: 'GET', url: '/api/v1/search?q=SHB%202402', headers: await t.as(users.drafter) });
+    expect(res.statusCode).toBe(200);
+    expect((res.json().direct.related.fiscal_notes as any[]).map((n) => n.note_id)).not.toContain(`fn:int:${revisionId}`);
+    const unconsumed = (await t.app.db.execute((await import('drizzle-orm')).sql`SELECT count(*)::int AS n FROM outbox_consumptions WHERE consumer = 'search:notes'`)).rows[0] as any;
+    expect(Number(unconsumed.n)).toBe(0);
   });
 });

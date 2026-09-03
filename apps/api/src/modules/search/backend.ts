@@ -1,7 +1,7 @@
 // SearchBackend interface (design/research/search.md section 7.2) and the flat search document.
 import type { Principal } from '../identity/index.js';
 
-export type DocType = 'bill' | 'section' | 'amendment' | 'fiscal_note' | 'rcw_section' | 'template';
+export type DocType = 'bill' | 'section' | 'amendment' | 'fiscal_note' | 'rcw_section';
 
 export interface SearchDoc {
   id: string;
@@ -51,7 +51,6 @@ export interface SearchDoc {
   fiscal_note_count?: number | null;
   fiscal_note_status?: string | null;
   fiscal_note_package_ids?: string[];
-  assigned_user_ids?: string[];
   /** Amendments */
   amendment_id?: string | null;
   target_version_code?: string | null;
@@ -67,17 +66,11 @@ export interface SearchDoc {
   source?: string | null;
   package_id?: string | null;
   ofm_kind?: string | null;
-  note_version?: number | null;
-  author_id?: string | null;
-  reviewer_ids?: string[];
   /** RCW sections */
   cite?: string | null;
   caption?: string | null;
   affected_by?: { bill_key: string; version_code: string; action: string; display: string }[];
   affected_by_bill_keys?: string[];
-  /** Templates */
-  template_id?: string | null;
-  name?: string | null;
   /** Common */
   url?: string | null;
   visibility: 'public' | 'restricted';
@@ -105,7 +98,6 @@ export interface SearchFilters {
   version_code?: string;
   date_from?: string;
   date_to?: string;
-  assigned_to_me?: boolean;
   bill_key?: string;
 }
 
