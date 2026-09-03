@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { can } from '../identity/can.js';
 import { forbidden } from '../../lib/errors.js';
 import { writeAudit } from '../../lib/audit.js';
+import { APP_VERSION, GIT_SHA } from '../../lib/version.js';
 
 export const AuditRowSchema = z.object({
   id: z.number(),
@@ -18,7 +19,7 @@ export const AuditRowSchema = z.object({
   at: z.string(),
 });
 
-const HealthSchema = z.object({ ok: z.boolean(), checks: z.record(z.string(), z.object({ ok: z.boolean(), detail: z.string().optional() })) });
+const HealthSchema = z.object({ ok: z.boolean(), version: z.string(), commit: z.string(), checks: z.record(z.string(), z.object({ ok: z.boolean(), detail: z.string().optional() })) });
 
 export async function adminRoutes(app: FastifyInstance): Promise<void> {
   const r = app.withTypeProvider<ZodTypeProvider>();
@@ -52,7 +53,7 @@ export async function adminRoutes(app: FastifyInstance): Promise<void> {
         }
       }
       const ok = Object.values(checks).every((c) => c.ok);
-      return reply.code(ok ? 200 : 503).send({ ok, checks });
+      return reply.code(ok ? 200 : 503).send({ ok, version: APP_VERSION, commit: GIT_SHA, checks });
     },
   );
 

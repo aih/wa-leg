@@ -1,6 +1,8 @@
 # API image: Fastify service and the wa-leg CLI, with Chromium for PDF export.
 # Build from the repository root: docker build -f deploy/api.Dockerfile .
 FROM node:22-bookworm-slim
+ARG GIT_SHA=unknown
+ENV GIT_SHA=$GIT_SHA
 ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH CI=true PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 RUN corepack enable && corepack prepare pnpm@11.25.0 --activate
 # Headless Chromium and its system libraries, shared by every user of the image.

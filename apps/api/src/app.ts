@@ -11,6 +11,7 @@ import {
 } from 'fastify-type-provider-zod';
 import { ZodError } from 'zod';
 import type { Config } from './config.js';
+import { APP_VERSION } from './lib/version.js';
 import { createDb, type Db, type DbHandle } from './db/client.js';
 import { HttpError } from './lib/errors.js';
 import { OutboxRelay } from './lib/outbox.js';
@@ -100,7 +101,7 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
       openapi: '3.1.0',
       info: {
         title: 'Fiscal Note Workbench API',
-        version: '1.0.0',
+        version: APP_VERSION,
         description: 'REST API for the DOR fiscal note proof of concept. All paths are served under /api/v1.',
       },
       servers: [{ url: API_PREFIX }],

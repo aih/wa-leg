@@ -52,6 +52,9 @@ button.linkish { background: none; border: none; color: var(--accent); padding: 
 button:disabled { opacity: .55; cursor: not-allowed; }
 .main { flex: 1; padding: 1rem 1.25rem 3rem; max-width: 80rem; width: 100%; margin: 0 auto; }
 .main:has(> .bill-page) { max-width: none; padding: 0; }
+.footer { display: flex; gap: 1rem; justify-content: flex-end; align-items: center; padding: .4rem 1rem; border-top: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: .85rem; }
+.footer a { color: var(--muted); }
+.footer code { font-size: .85em; }
 .hero { max-width: 44rem; }
 .landing .lede { font-size: 1.1rem; max-width: 44rem; }
 .landing-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1rem 2.5rem; }
