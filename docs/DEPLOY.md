@@ -12,14 +12,14 @@ https://waleg.linkedlegislation.org. Everything the box runs is in `deploy/`.
 | Security group | `waleg-site`: 80 and 443 from anywhere, 22 from the address that ran `provision.sh` |
 | Instance profile | `uscode-site` (shared with the uscode box): SSM agent registration |
 | Images | ECR `waleg/api`, `waleg/web`, `waleg/oidc`, built for arm64 and tagged with the short git SHA (`-dirty` when built from a changed tree) and `latest` |
-| Stack | `deploy/docker-compose.prod.yml`: Postgres 16, the API, the dev OIDC issuer, Mailpit, Caddy |
+| Stack | `deploy/docker-compose.prod.yml`: Postgres 16, the API, the dev OIDC issuer, Caddy |
 | Data | `/srv/waleg/data/{legiscan,lawfiles,exports}` bind mounts; Postgres and Caddy state in named volumes |
 | DNS | Route 53 hosted zone `Z007577931KDAIYFR232H` (`linkedlegislation.org`); `waleg` A record to the Elastic IP |
 | Deploy trigger | `.github/workflows/deploy.yml`: after the CI workflow succeeds on `main`, or by hand from the Actions tab (available once the file is on `main`) |
 
 Caddy serves the web bundle and terminates TLS with a Let's Encrypt certificate. `/api/*` goes to the
-API, `/oidc/*` to the dev issuer (prefix stripped; the issuer URL is `https://waleg.linkedlegislation.org/oidc`),
-`/mail/*` to the Mailpit inbox that receives the notification emails. Search uses the Postgres backend;
+API, `/oidc/*` to the dev issuer (prefix stripped; the issuer URL is `https://waleg.linkedlegislation.org/oidc`).
+Search uses the Postgres backend;
 there is no OpenSearch on the box. PDF export uses the Chromium installed in the API image.
 
 Approximate monthly cost: instance $12, storage $2.40, Elastic IP $3.60, ECR storage about $0.20.
@@ -117,5 +117,4 @@ docker compose -f docker-compose.prod.yml run --rm --no-deps api pnpm wa-leg dem
 
 `design/ARCHITECTURE.md` describes ECS Fargate, RDS, Amazon OpenSearch Service and Entra ID. This
 deployment is the demo shape: one box, Postgres in a container, the Postgres search backend, and the
-development issuer with its fixed test users. The Mailpit inbox at `/mail/` is public and shows every
-notification email the demo sends.
+development issuer with its fixed test users.

@@ -6,7 +6,7 @@ import type { DocType, Facet, SearchBackend, SearchDoc, SearchHit, SearchRequest
 import { pgTextArray } from '../../lib/sql.js';
 import { expandSynonyms } from './synonyms.js';
 
-const DOC_TYPE_WEIGHT: Record<DocType, number> = { bill: 2.0, fiscal_note: 1.5, section: 1.0, amendment: 0.9, rcw_section: 0.8, template: 0.7 };
+const DOC_TYPE_WEIGHT: Record<DocType, number> = { bill: 2.0, fiscal_note: 1.5, section: 1.0, amendment: 0.9, rcw_section: 0.8 };
 
 function toQuery(q: string): string {
   // websearch_to_tsquery handles quotes and OR; synonyms are expanded as OR alternatives.
@@ -30,11 +30,11 @@ export class PostgresBackend implements SearchBackend {
       delete payload.history_text;
       const body = [d.body, d.text, d.description, d.history_text, d.sponsor_names, d.caption].filter(Boolean).join('\n');
       await this.db.execute(sql`INSERT INTO search_docs (id, doc_type, bill_key, biennium, chamber, type, bill_number, display, status, committee, has_fiscal_note,
-          fiscal_note_status, visibility, allowed_roles, allowed_user_ids, assigned_user_ids, rcw_cites, rcw_chapters, rcw_titles, sponsor_last_names,
+          fiscal_note_status, visibility, allowed_roles, allowed_user_ids, rcw_cites, rcw_chapters, rcw_titles, sponsor_last_names,
           version_code, version_label, is_latest_version, last_action_date, title, heading, body, bill_number_forms, payload, updated_at, source_hash)
         VALUES (${d.id}, ${d.doc_type}, ${d.bill_key ?? null}, ${d.biennium ?? null}, ${d.chamber ?? null}, ${d.type ?? null}, ${d.bill_number ?? null}, ${d.display ?? null},
           ${d.status ?? null}, ${d.committee?.name ?? null}, ${d.has_fiscal_note ?? false}, ${d.fiscal_note_status ?? null}, ${d.visibility},
-          ${pgTextArray(d.allowed_roles)}::text[], ${pgTextArray(d.allowed_user_ids)}::text[], ${pgTextArray(d.assigned_user_ids ?? [])}::text[],
+          ${pgTextArray(d.allowed_roles)}::text[], ${pgTextArray(d.allowed_user_ids)}::text[],
           ${pgTextArray(d.rcw_cites ?? [])}::text[], ${pgTextArray(d.rcw_chapters ?? [])}::text[], ${pgTextArray(d.rcw_titles ?? [])}::text[],
           ${pgTextArray((d.sponsors ?? []).map((s) => s.last_name ?? '').filter(Boolean))}::text[],
           ${d.version_code ?? null}, ${d.version_label ?? null}, ${d.is_latest_version ?? null}, ${d.last_action_date ?? null},
@@ -43,7 +43,7 @@ export class PostgresBackend implements SearchBackend {
         ON CONFLICT (id) DO UPDATE SET doc_type = EXCLUDED.doc_type, bill_key = EXCLUDED.bill_key, biennium = EXCLUDED.biennium, chamber = EXCLUDED.chamber,
           type = EXCLUDED.type, bill_number = EXCLUDED.bill_number, display = EXCLUDED.display, status = EXCLUDED.status, committee = EXCLUDED.committee,
           has_fiscal_note = EXCLUDED.has_fiscal_note, fiscal_note_status = EXCLUDED.fiscal_note_status, visibility = EXCLUDED.visibility,
-          allowed_roles = EXCLUDED.allowed_roles, allowed_user_ids = EXCLUDED.allowed_user_ids, assigned_user_ids = EXCLUDED.assigned_user_ids,
+          allowed_roles = EXCLUDED.allowed_roles, allowed_user_ids = EXCLUDED.allowed_user_ids,
           rcw_cites = EXCLUDED.rcw_cites, rcw_chapters = EXCLUDED.rcw_chapters, rcw_titles = EXCLUDED.rcw_titles, sponsor_last_names = EXCLUDED.sponsor_last_names,
           version_code = EXCLUDED.version_code, version_label = EXCLUDED.version_label, is_latest_version = EXCLUDED.is_latest_version,
           last_action_date = EXCLUDED.last_action_date, title = EXCLUDED.title, heading = EXCLUDED.heading, body = EXCLUDED.body,
@@ -114,7 +114,6 @@ export class PostgresBackend implements SearchBackend {
     if (f.bill_key) conds.push(sql`bill_key = ${f.bill_key}`);
     if (f.date_from) conds.push(sql`last_action_date >= ${f.date_from}::date`);
     if (f.date_to) conds.push(sql`last_action_date <= ${f.date_to}::date`);
-    if (f.assigned_to_me) conds.push(sql`${principal.userId} = ANY(assigned_user_ids)`);
     return conds;
   }
 

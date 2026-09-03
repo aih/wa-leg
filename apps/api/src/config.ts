@@ -51,9 +51,6 @@ const ConfigSchema = z.object({
   SEARCH_BACKEND: z.enum(['opensearch', 'postgres']).default('opensearch'),
   OPENSEARCH_URL: z.string().default('http://localhost:9201'),
   OPENSEARCH_INDEX_PREFIX: z.string().default('waleg_'),
-  SMTP_URL: z.string().default('smtp://localhost:1025'),
-  MAIL_FROM: z.string().default('fiscal-notes@dor.wa.gov.test'),
-  NOTIFY_EMAIL: bool.default(true),
   EXPORT_DIR: z.string().default('.cache/exports').transform((p) => (isAbsolute(p) ? p : join(REPO_ROOT, p))),
   PDF_ENABLED: bool.default(true),
   LAWFILES_CACHE_DIR: z.string().default('.cache/lawfiles').transform((p) => (isAbsolute(p) ? p : join(REPO_ROOT, p))),
@@ -61,17 +58,9 @@ const ConfigSchema = z.object({
   CURRENT_BIENNIUM: z.string().default('2025-26'),
   TEMPLATES_DIR: z.string().default(join(REPO_ROOT, 'design', 'templates')),
   REFERENCE_DIR: z.string().default(join(REPO_ROOT, 'reference')),
-  /** Same-division drafters may read each other's drafts (personas-dashboards.md, "configurable"). */
-  DIVISION_READ: bool.default(true),
-  /** Reviewer may edit the document while the review is active. */
-  REVIEWER_EDIT: bool.default(true),
-  /** Open item: where the 72-hour clock starts. `request` = requestedAt from the request record. */
-  STATUTORY_CLOCK_START: z.enum(['request']).default('request'),
-  STATUTORY_HOURS: z.coerce.number().default(72),
-  HEARING_LEAD_HOURS: z.coerce.number().default(4),
+  /** Anonymous access to GET /published and the published exports. */
+  PUBLISHED_PUBLIC: bool.default(false),
   OUTBOX_POLL_MS: z.coerce.number().int().default(500),
-  DEADLINE_POLL_MS: z.coerce.number().int().default(60_000),
-  AUTO_REVISION_ON_NEW_VERSION: bool.default(false),
 });
 
 export type Config = z.infer<typeof ConfigSchema> & { roleMap: Record<string, string> };

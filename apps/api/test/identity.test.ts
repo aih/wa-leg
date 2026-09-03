@@ -55,9 +55,8 @@ describe('identity and foundation routes', () => {
     expect(res.headers.location).toBe('http://localhost:5173/inbox');
     const setCookie = res.headers['set-cookie'] as string[];
     expect(setCookie.some((c) => c.startsWith('session='))).toBe(true);
-    const audit = await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit?action=auth.login', headers: await t.as(users.admin) });
-    expect(audit.statusCode).toBe(200);
-    expect(audit.json()[0]).toMatchObject({ actorId: 'dev-drafter', action: 'auth.login', objectType: 'user' });
+    const audit = (await t.app.db.execute((await import('drizzle-orm')).sql`SELECT actor_id, action, object_type FROM audit_log WHERE action = 'auth.login' ORDER BY id DESC LIMIT 1`)).rows[0] as any;
+    expect(audit).toMatchObject({ actor_id: 'dev-drafter', action: 'auth.login', object_type: 'user' });
   });
 
   it('logout clears the cookie', async () => {
@@ -83,11 +82,10 @@ describe('identity and foundation routes', () => {
     expect(res.json().checks.postgres.ok).toBe(true);
   });
 
-  it('audit query is refused for drafters and the denial is itself audited', async () => {
-    const res = await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit', headers: await t.as(users.drafter) });
-    expect(res.statusCode).toBe(403);
-    const audit = await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit?action=permission.denied', headers: await t.as(users.admin) });
-    expect(audit.json()[0]).toMatchObject({ actorId: 'dev-drafter', action: 'permission.denied' });
+  it('the admin audit and ingest routes are gone', async () => {
+    expect((await t.app.inject({ method: 'GET', url: '/api/v1/admin/audit', headers: await t.as(users.admin) })).statusCode).toBe(404);
+    expect((await t.app.inject({ method: 'GET', url: '/api/v1/admin/ingest/runs', headers: await t.as(users.admin) })).statusCode).toBe(404);
+    expect((await t.app.inject({ method: 'GET', url: '/api/v1/notifications', headers: await t.as(users.drafter) })).statusCode).toBe(404);
   });
 
   it('outbox relay delivers each event once per consumer', async () => {

@@ -17,8 +17,6 @@ function katex(): { path: string; text: string } {
 export interface HtmlExportOptions {
   title: string;
   mode: EditorMode;
-  /** Keep comment marks (rendered as highlighted text with the thread in a footnote list). */
-  comments?: Map<string, { author: string; body: string; date: Date }>;
   linkOrigin: string;
   footer: string;
   /** `file` links the KaTeX stylesheet from disk (PDF rendering); `inline` embeds it (download). */
@@ -46,9 +44,6 @@ table.note-table tr[data-row="total"] td { font-weight: 700; border-top: 2px sol
 .slot { border-bottom: 1px dotted #bbb; }
 .checkbox { font-size: 1.1em; }
 a.bill-cite { color: #1f5fa8; }
-mark.comment { background: #fff0b3; }
-.comments { font-size: 9pt; color: #333; border-top: 1px solid #999; margin-top: 1.5em; padding-top: .5em; }
-.comments li { margin: .2em 0; }
 .footer { font-size: 8pt; color: #555; margin-top: 2em; border-top: 1px solid #999; padding-top: .3em; }
 @media print { .footer { display: none; } }
 `;
@@ -58,10 +53,9 @@ function escape(s: string): string {
 }
 
 export function docToHtmlDocument(doc: PMNode, opts: HtmlExportOptions): string {
-  const body = docToHtml(doc, { mode: opts.mode, unwrapSlots: false, stripComments: !opts.comments, renderMath: true, citationsAs: 'link', linkOrigin: opts.linkOrigin });
+  const body = docToHtml(doc, { mode: opts.mode, unwrapSlots: false, stripComments: true, renderMath: true, citationsAs: 'link', linkOrigin: opts.linkOrigin });
   const k = katex();
   const style = opts.katex === 'file' ? `<link rel="stylesheet" href="file://${k.path}">` : `<style>${k.text}</style>`;
-  const comments = opts.comments && opts.comments.size > 0 ? `<section class="comments" aria-label="Comments"><h2>Comments</h2><ol>${Array.from(opts.comments.entries()).map(([id, c]) => `<li id="comment-${escape(id)}"><strong>${escape(c.author)}</strong> (${c.date.toISOString().slice(0, 10)}): ${escape(c.body)}</li>`).join('')}</ol></section>` : '';
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -73,7 +67,6 @@ ${style}
 <body>
 <article class="sheet note-html">
 ${body}
-${comments}
 <p class="footer">${escape(opts.footer)}</p>
 </article>
 </body>

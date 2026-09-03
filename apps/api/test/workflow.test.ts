@@ -173,8 +173,8 @@ describe('workflow: draft, review, changes, approval, publication', () => {
     expect(log.find((x: any) => x.event === 'REQUEST_CHANGES')).toMatchObject({ fromState: 'in_review', toState: 'changes_requested', actorId: 'dev-reviewer', actorName: 'Rae Reviewer', comment: 'Fix the FTE table' });
     expect(log.find((x: any) => x.seq === 3)).toMatchObject({ event: 'SUBMIT', fromState: 'changes_requested', toState: 'in_review', actorId: 'dev-drafter', comment: 'FTE table corrected' });
     expect(log.find((x: any) => x.event === 'PUBLISH')).toMatchObject({ fromState: 'approved', toState: 'published', comment: null });
-    const audit = (await t.app.inject({ method: 'GET', url: `/api/v1/admin/audit?objectId=${noteId}`, headers: await t.as(users.admin) })).json();
-    const actions = audit.map((a: any) => a.action);
+    const audit = (await t.app.db.execute((await import('drizzle-orm')).sql`SELECT action FROM audit_log WHERE object_id = ${noteId}`)).rows as any[];
+    const actions = audit.map((a) => a.action);
     for (const a of ['note.create', 'workflow.instance_create', 'workflow.submit', 'workflow.request_changes', 'workflow.approve', 'workflow.publish', 'note.publish', 'permission.denied']) expect(actions).toContain(a);
     // A viewer sees the published note's history too.
     expect((await t.app.inject({ method: 'GET', url: `/api/v1/notes/${noteId}/transitions`, headers: await t.as(users.viewer) })).statusCode).toBe(200);

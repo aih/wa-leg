@@ -39,13 +39,6 @@ services:
       timeout: 5s
       retries: 30
 
-  mail:
-    # SMTP sink with a web inbox (MIT). SMTP on 1025, UI on http://localhost:8026
-    image: axllent/mailpit:latest
-    ports:
-      - "1025:1025"
-      - "8026:8025"
-
   dev-oidc:
     # Development OpenID Connect issuer with one test user per role.
     build:

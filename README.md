@@ -24,7 +24,7 @@ Requirements: Node 22, pnpm 11 (`corepack enable`), Docker.
 
 ```sh
 cp .env.example .env
-docker compose up -d            # Postgres 5433, OpenSearch 9201, mail sink 8026, dev OIDC 4801
+docker compose up -d            # Postgres 5433, OpenSearch 9201, dev OIDC 4801
 pnpm install
 pnpm wa-leg db migrate
 pnpm wa-leg db seed
@@ -101,12 +101,6 @@ requests keep every resolution, the document version each cites, and a link to t
 reviewer or the drafter can reopen an item, which reopens its thread and the request. Endpoints:
 `GET /notes/{id}/change-requests`, `POST .../items/{itemId}/address`, `POST .../items/{itemId}/reopen`,
 `POST .../{crId}/close`.
-
-Deadlines: the statutory clock (request time + 72 hours, `STATUTORY_HOURS`), the hearing cutoff (next hearing
-minus `HEARING_LEAD_HOURS`), and a per-assignment due time. A poller (`DEADLINE_POLL_MS`) emits due-soon and
-overdue events; dashboards sort by the earliest deadline and label the band (`Due later`, `Due within 24
-hours`, `Due within 4 hours`, `Overdue`). Notifications land in the inbox and, when `NOTIFY_EMAIL` is on, in
-the SMTP sink at http://localhost:8026.
 
 When the bills ingest adds a new version of a bill with an open note, the drafter is notified and the
 workspace offers **Create revision**; the new revision starts in `todo` with the same drafter and chain, and

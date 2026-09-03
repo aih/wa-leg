@@ -2,9 +2,7 @@ import type { FastifyInstance, FastifyReply } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import type { NotesService } from './service.js';
-import { badRequest, forbidden } from '../../lib/errors.js';
-import { can } from '../identity/can.js';
-import { writeAudit } from '../../lib/audit.js';
+import { badRequest } from '../../lib/errors.js';
 
 const AnyObject = z.looseObject({});
 const noteId = z.object({ id: z.string().uuid() });
@@ -104,7 +102,6 @@ export function notesRoutes(svc: NotesService) {
           tags: ['notes'],
           summary: 'Save head document (autosave). Requires If-Match with the current version.',
           params: noteId,
-          querystring: z.object({ force: z.union([z.boolean(), z.string()]).optional() }),
           body: z.object({ doc: AnyObject, mode: z.enum(['limited', 'full']), clientId: z.string().optional() }),
           response: { 200: AnyObject, 403: AnyObject, 412: AnyObject },
         },
@@ -113,8 +110,7 @@ export function notesRoutes(svc: NotesService) {
       async (req, reply) => {
         const ifMatch = req.headers['if-match'];
         if (!ifMatch || Array.isArray(ifMatch)) throw badRequest('if_match_required', 'If-Match header with the current version is required');
-        const force = req.query.force === true || req.query.force === 'true';
-        const res = await svc.saveDocument(req.principal!, req.params.id, ifMatch, req.body as never, force, req.id);
+        const res = await svc.saveDocument(req.principal!, req.params.id, ifMatch, req.body as never, req.id);
         reply.header('etag', `"${res.version}"`);
         return res as unknown as Record<string, unknown>;
       },
@@ -122,17 +118,11 @@ export function notesRoutes(svc: NotesService) {
 
     r.get(
       '/notes/:id/versions',
-      { schema: { tags: ['notes'], summary: 'Document versions (autosave heads and named snapshots)', params: noteId, response: { 200: z.array(AnyObject) } }, preHandler: app.requireAuth },
+      { schema: { tags: ['notes'], summary: 'Document versions', params: noteId, response: { 200: z.array(AnyObject) } }, preHandler: app.requireAuth },
       async (req) => {
         await svc.assertCan(req.principal!, 'note.read', req.params.id, req.id);
         return svc.listVersions(req.params.id);
       },
-    );
-
-    r.post(
-      '/notes/:id/versions',
-      { schema: { tags: ['notes'], summary: 'Name a snapshot of the head', params: noteId, body: z.object({ label: z.string().optional() }).default({}), response: { 201: z.object({ version: z.number() }) } }, preHandler: app.requireAuth },
-      async (req, reply) => reply.code(201).send(await svc.snapshot(req.principal!, req.params.id, req.body.label, req.id)),
     );
 
     r.get(
@@ -141,30 +131,6 @@ export function notesRoutes(svc: NotesService) {
       async (req) => {
         await svc.assertCan(req.principal!, 'note.read', req.params.id, req.id);
         return (await svc.getDocument(req.params.id, req.params.v)) as unknown as Record<string, unknown>;
-      },
-    );
-
-    r.post(
-      '/notes/:id/versions/:v/restore',
-      { schema: { tags: ['notes'], summary: 'Restore a version as the new head', params: noteId.extend({ v: z.coerce.number().int() }), response: { 201: z.object({ version: z.number() }) } }, preHandler: app.requireAuth },
-      async (req, reply) => reply.code(201).send(await svc.restore(req.principal!, req.params.id, req.params.v, req.id)),
-    );
-
-    r.get(
-      '/notes/:id/diff',
-      { schema: { tags: ['notes'], summary: 'Redline between two document versions plus a table-cell diff', params: noteId, querystring: z.object({ from: z.coerce.number().int(), to: z.coerce.number().int() }), response: { 200: AnyObject } }, preHandler: app.requireAuth },
-      async (req) => {
-        await svc.assertCan(req.principal!, 'note.read', req.params.id, req.id);
-        return (await svc.diff(req.params.id, req.query.from, req.query.to)) as unknown as Record<string, unknown>;
-      },
-    );
-
-    r.get(
-      '/notes/:id/validate',
-      { schema: { tags: ['notes'], summary: 'Validate the head document (required slots, table reconciliation)', params: noteId, response: { 200: AnyObject } }, preHandler: app.requireAuth },
-      async (req) => {
-        await svc.assertCan(req.principal!, 'note.read', req.params.id, req.id);
-        return (await svc.validate(req.params.id)) as unknown as Record<string, unknown>;
       },
     );
 
@@ -204,7 +170,7 @@ export function notesRoutes(svc: NotesService) {
     );
 
     // ---- exports ----
-    const exportQuery = z.object({ format: z.enum(['html', 'pdf', 'docx', 'xml']), version: z.coerce.number().int().optional(), comments: z.union([z.boolean(), z.string()]).optional(), strict: z.union([z.boolean(), z.string()]).optional() });
+    const exportQuery = z.object({ format: z.enum(['html', 'pdf', 'docx', 'xml']), version: z.coerce.number().int().optional(), strict: z.union([z.boolean(), z.string()]).optional() });
     const sendExport = async (reply: FastifyReply, res: { filename: string; contentType: string; body: Buffer; exportId: string; version: number }, inline: boolean) => {
       reply.header('content-type', res.contentType);
       reply.header('content-disposition', `${inline ? 'inline' : 'attachment'}; filename="${res.filename}"`);
@@ -222,40 +188,10 @@ export function notesRoutes(svc: NotesService) {
         preHandler: app.requireAuth,
         handler: async (req, reply) => {
           const q = req.query as z.infer<typeof exportQuery>;
-          const res = await svc.exports.export(req.principal!, (req.params as { id: string }).id, { format: q.format, version: q.version, comments: truthy(q.comments), strict: truthy(q.strict) }, req.id);
+          const res = await svc.exports.export(req.principal!, (req.params as { id: string }).id, { format: q.format, version: q.version, strict: truthy(q.strict) }, req.id);
           return sendExport(reply, res, method === 'GET' && (q.format === 'pdf' || q.format === 'html'));
         },
       });
     }
-    r.get(
-      '/notes/:id/exports',
-      { schema: { tags: ['notes'], summary: 'Stored exports of this revision', params: noteId, response: { 200: z.array(AnyObject) } }, preHandler: app.requireAuth },
-      async (req) => svc.exports.list(req.principal!, req.params.id, req.id),
-    );
-    r.get(
-      '/notes/:id/exports/:exportId',
-      { schema: { tags: ['notes'], summary: 'Download a stored export', params: noteId.extend({ exportId: z.string().uuid() }) }, preHandler: app.requireAuth },
-      async (req, reply) => sendExport(reply, await svc.exports.stored(req.principal!, req.params.id, req.params.exportId, req.id), false),
-    );
-    r.get(
-      '/export-jobs/:jobId',
-      { schema: { tags: ['notes'], summary: 'Export job status (exports run synchronously; the job is the stored export)', params: z.object({ jobId: z.string().uuid() }), response: { 200: AnyObject } }, preHandler: app.requireAuth },
-      async (req) => svc.exports.job(req.principal!, req.params.jobId) as unknown as Record<string, unknown>,
-    );
-
-    // Audit of one note (participants see their own note's history).
-    r.get(
-      '/notes/:id/audit',
-      { schema: { tags: ['notes'], summary: 'Audit rows for this note revision', params: noteId, response: { 200: z.array(AnyObject) } }, preHandler: app.requireAuth },
-      async (req) => {
-        const ctx = await svc.resource(req.params.id);
-        if (!can(req.principal!, 'audit.read', ctx.res)) {
-          await writeAudit(app.db, { actorId: req.principal!.userId, action: 'permission.denied', objectType: 'note_revision', objectId: req.params.id, after: { action: 'audit.read' }, requestId: req.id });
-          throw forbidden();
-        }
-        const rows = (await app.db.execute((await import('drizzle-orm')).sql`SELECT id, actor_id, action, object_type, object_id, before, after, request_id, at FROM audit_log WHERE object_id = ${req.params.id} ORDER BY at DESC, id DESC LIMIT 500`)).rows as any[];
-        return rows.map((row) => ({ id: Number(row.id), actorId: row.actor_id, action: row.action, objectType: row.object_type, objectId: row.object_id, before: row.before ?? null, after: row.after ?? null, requestId: row.request_id ?? null, at: new Date(row.at).toISOString() }));
-      },
-    );
   };
 }

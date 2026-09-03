@@ -36,9 +36,6 @@ services:
       OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
       OIDC_REDIRECT_URI: https://${SITE_ADDRESS}/api/v1/auth/callback
       SEARCH_BACKEND: postgres
-      SMTP_URL: smtp://mail:1025
-      MAIL_FROM: fiscal-notes@dor.wa.gov.test
-      NOTIFY_EMAIL: "true"
       PDF_ENABLED: "true"
       LEGISCAN_DIR: /data/legiscan
       LAWFILES_CACHE_DIR: /data/lawfiles
@@ -61,20 +58,12 @@ services:
       CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
       REDIRECT_URIS: https://${SITE_ADDRESS}/api/v1/auth/callback
 
-  mail:
-    image: axllent/mailpit:latest
-    restart: unless-stopped
-    environment:
-      MP_WEBROOT: /mail
-      MP_MAX_MESSAGES: "500"
-
   proxy:
     image: ${ECR_REGISTRY}/waleg/web:${IMAGE_TAG:-latest}
     restart: unless-stopped
     depends_on:
       - api
       - oidc
-      - mail
     environment:
       SITE_ADDRESS: ${SITE_ADDRESS}
       ACME_EMAIL: ${ACME_EMAIL}

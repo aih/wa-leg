@@ -110,16 +110,4 @@ export class TemplatesService {
     if (!r) throw notFound(`Template ${id}`);
     return row(r);
   }
-
-  async update(id: string, patch: { name?: string; description?: string; html?: string; tags?: string[]; kind?: string; mode?: string }, actor: string): Promise<TemplateFull> {
-    const current = await this.get(id);
-    const html = patch.html ?? current.html;
-    const version = current.version + 1;
-    await this.db.execute(sql`UPDATE templates SET current = false WHERE id = ${id}`);
-    await this.db.execute(sql`INSERT INTO templates (id, version, name, kind, mode, description, file, tags, parts, tables, slots, tokens, html, etag, current, updated_by)
-      VALUES (${id}, ${version}, ${patch.name ?? current.name}, ${patch.kind ?? current.kind}, ${patch.mode ?? current.mode}, ${patch.description ?? current.description}, ${current.file ?? null},
-        ${JSON.stringify(patch.tags ?? current.tags)}::jsonb, ${JSON.stringify(current.parts)}::jsonb, ${JSON.stringify(current.tables)}::jsonb, ${JSON.stringify(current.slots)}::jsonb,
-        ${JSON.stringify(current.tokens)}::jsonb, ${html}, ${etagOf(html)}, true, ${actor})`);
-    return this.get(id);
-  }
 }
