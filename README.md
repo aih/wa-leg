@@ -146,6 +146,12 @@ pnpm load                       # autocannon against the running API; writes doc
 The admin pages are `/admin/audit` (admin, manager), `/admin/ingest` (admin) and `/admin/templates`
 (template_editor). `pnpm wa-leg token --user dev-viewer` prints a bearer token for scripts.
 
+## Releases
+
+`pnpm release X.Y.Z` bumps the version, tags `vX.Y.Z`, pushes, and creates the GitHub release from
+`CHANGELOG.md`; `docs/RELEASE.md` has the steps. The footer of every page and `GET /api/v1/health` show the
+release number and the short commit hash of the running build.
+
 ## Data
 
 Unzip the Legiscan dataset to `data/` and load it:

@@ -4,6 +4,7 @@ import { loginUrl } from '../lib/api';
 import { SearchBox } from './SearchBox';
 import { useEffect, useState } from 'react';
 import { notificationsApi } from '../notes/api';
+import { APP_VERSION, COMMIT_URL, GIT_SHA, RELEASE_URL } from '../lib/version';
 
 export function Shell() {
   const { principal, loading, hasRole, logout } = useSession();
@@ -51,6 +52,15 @@ export function Shell() {
       <main id="main" className="main" tabIndex={-1}>
         <Outlet />
       </main>
+      <footer className="footer">
+        <span>Fiscal Note Workbench</span>
+        <a href={RELEASE_URL} target="_blank" rel="noreferrer">
+          v{APP_VERSION}
+        </a>
+        <a href={COMMIT_URL} target="_blank" rel="noreferrer" title="Commit">
+          <code>{GIT_SHA}</code>
+        </a>
+      </footer>
     </div>
   );
 }
