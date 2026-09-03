@@ -14,7 +14,7 @@ test.describe('search', () => {
 
   test('"phthalates" returns section hits with highlights and facets', async ({ page }) => {
     await loginAs(page, 'dev-drafter', '/search?q=phthalates');
-    await expect(page.getByRole('heading', { name: /results/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /\d+ results?\b/ })).toBeVisible();
     const hits = page.locator('.hits > li');
     await expect(hits.first()).toBeVisible();
     await expect(page.locator('.hits mark').first()).toBeVisible();
