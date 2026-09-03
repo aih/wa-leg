@@ -23,7 +23,7 @@ const tag = `v${version}`;
 const sh = (cmd, opts = {}) => execSync(cmd, { cwd: root, stdio: ['ignore', 'pipe', 'inherit'], ...opts }).toString().trim();
 const run = (cmd) => {
   console.log(`$ ${cmd}`);
-  if (!dryRun) sh(cmd, { stdio: 'inherit' });
+  if (!dryRun) execSync(cmd, { cwd: root, stdio: 'inherit' });
 };
 
 // Preconditions: clean tree, tag unused, changelog has an Unreleased section with content.
