@@ -5,6 +5,15 @@ Entries go under **Unreleased** as work lands. `pnpm release <version>` moves th
 
 ## Unreleased
 
+### Fixed
+
+- Reply box in the Comments tab: typed characters landed in reverse order. The thread list rebuilt its
+  component on every keystroke, which remounted the field and put the caret back at the start.
+- Note editor: text could not be deleted from a slot inside a locked paragraph. A locked block containing
+  the edit blocked the transaction; only a locked block wholly inside the deleted range does now.
+- Note editor: the system-filled header fields (Bill Number, Title, Agency) took typed text although they
+  refused deletion. Readonly and computed slots now refuse both and render as non-editable.
+
 ## 0.2.0 (2026-09-03)
 
 One path from draft to Committee: a fiscal note is drafted, submitted, returned with a change request or
