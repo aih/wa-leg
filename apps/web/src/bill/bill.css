@@ -16,14 +16,12 @@
   --target: #e08a00;
   --rail-w: 3rem;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --version: #7db2f0;
-    --ins-wash: rgba(125, 178, 240, 0.18);
-    --del-wash: rgba(255, 139, 143, 0.18);
-    --diff-ins: rgba(127, 211, 154, 0.2);
-    --diff-del: rgba(255, 139, 143, 0.2);
-  }
+:root[data-theme='dark'] {
+  --version: #7db2f0;
+  --ins-wash: rgba(125, 178, 240, 0.18);
+  --del-wash: rgba(255, 139, 143, 0.18);
+  --diff-ins: rgba(127, 211, 154, 0.2);
+  --diff-del: rgba(255, 139, 143, 0.2);
 }
 @media (max-width: 40em) {
   :root { --indent-step: 1em; }
