@@ -56,6 +56,7 @@ input:not([type='checkbox']):not([type='radio']), select, textarea { font: inher
 .note-editor-body .locked { position: relative; }
 .note-editor-body p.locked, .note-editor-body h1.locked, .note-editor-body h2.locked, .note-editor-body h3.locked { background: color-mix(in srgb, var(--surface) 70%, var(--bg)); }
 .note-editor-body .slot { border-bottom: 1px dotted var(--accent); padding: 0 .1em; min-width: .5em; display: inline; }
+.note-editor-body .slot.slot-readonly { border-bottom-style: none; cursor: default; }
 .note-editor-body .slot.slot-empty { outline: 1px dashed var(--accent); outline-offset: 1px; background: color-mix(in srgb, var(--accent) 8%, transparent); border-radius: 2px; }
 .note-editor-body .slot.slot-empty::after { content: attr(data-hint); color: var(--muted); font-style: italic; pointer-events: none; }
 .note-editor-body .block-slot-empty { outline: 1px dashed var(--accent); outline-offset: 2px; border-radius: 2px; min-height: 1.4em; }

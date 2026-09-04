@@ -177,13 +177,17 @@ function recomputePlugin(): Plugin {
   });
 }
 
-/** Refuse edits inside locked boilerplate and computed cells unless the transaction says otherwise. */
-function lockPlugin(): Plugin {
+/** Refuse edits inside locked boilerplate and computed cells unless the transaction says otherwise. Exported for tests. */
+export function lockPlugin(): Plugin {
   const isProtected = (state: EditorState, pos: number): boolean => {
     const $pos = state.doc.resolve(Math.min(Math.max(pos, 0), state.doc.content.size));
     for (let d = $pos.depth; d > 0; d--) {
       const n = $pos.node(d);
-      if (n.type.name === 'slot') return false; // slots inside locked text stay editable
+      if (n.type.name === 'slot') {
+        // Readonly and computed slots are system-filled; other slots inside locked text stay editable.
+        if (n.attrs.computed || n.attrs.readonly) return true;
+        return false;
+      }
       if (n.type.name === 'noteCell') {
         if (n.attrs.computed || n.attrs.readonly) return true;
         return false;
@@ -205,10 +209,11 @@ function lockPlugin(): Plugin {
         if (isProtected(state, from) || (to !== from && isProtected(state, Math.max(from, to - 1)))) return false;
         let blocked = false;
         if (to > from) {
-          state.doc.nodesBetween(from, to, (node) => {
+          state.doc.nodesBetween(from, to, (node, pos) => {
             if (blocked) return false;
-            if (node.attrs?.locked && node.type.name !== 'slot') {
-              // A locked block wholly inside the range is being deleted or replaced.
+            // Only a locked block wholly inside the range is being deleted or replaced; a locked block
+            // that merely contains the range is edited through the editable slots it holds.
+            if (node.attrs?.locked && node.type.name !== 'slot' && pos >= from && pos + node.nodeSize <= to) {
               blocked = true;
               return false;
             }
@@ -232,6 +237,9 @@ function decorationPlugin(): Plugin<DecorationSet> {
         if (id && !node.attrs.readonly && !node.attrs.computed) {
           const filled = slotFilled(node.toJSON() as PMNode);
           if (!filled) decos.push(Decoration.node(pos, pos + node.nodeSize, { class: 'slot-empty', 'data-hint': String(node.attrs.hint ?? id), 'aria-label': `${node.attrs.required ? 'Required' : 'Optional'}: ${node.attrs.hint ?? id}` }));
+        } else if (node.attrs.readonly || node.attrs.computed) {
+          // System-filled: the caret skips it and screen readers announce it as read-only text.
+          decos.push(Decoration.node(pos, pos + node.nodeSize, { class: 'slot-readonly', contenteditable: 'false', title: 'Filled by the system' }));
         }
         return false;
       }
