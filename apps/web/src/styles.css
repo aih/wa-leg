@@ -45,7 +45,15 @@ a { color: var(--accent); }
 .nav a { text-decoration: none; padding: .25rem 0; border-bottom: 2px solid transparent; color: var(--fg); }
 .nav a[aria-current='page'] { border-bottom-color: var(--accent); font-weight: 600; }
 .session { margin-left: auto; display: flex; gap: .75rem; align-items: center; }
-.session .linkish[aria-pressed='true'] { font-weight: 700; }
+button.theme-toggle { position: relative; display: inline-flex; align-items: center; justify-content: space-between; width: 3.4rem; padding: .25rem .4rem; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--muted); cursor: pointer; }
+.theme-toggle .theme-icon { position: relative; z-index: 1; display: block; }
+.theme-toggle .sun { color: var(--warn); }
+.theme-toggle[aria-pressed='true'] .sun { color: var(--muted); }
+.theme-toggle[aria-pressed='true'] .moon { color: var(--accent); }
+/* The knob sits under whichever icon is the current mode, and slides across on toggle. */
+.theme-knob { position: absolute; z-index: 0; top: 50%; left: .175rem; width: 1.35rem; height: 1.35rem; margin-top: -.675rem; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); transition: transform .18s ease; }
+.theme-toggle[aria-pressed='true'] .theme-knob { transform: translateX(1.7rem); }
+@media (prefers-reduced-motion: reduce) { .theme-knob { transition: none; } }
 .who { font-weight: 600; }
 button, .button { font: inherit; padding: .45rem .9rem; border-radius: 4px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-fg); cursor: pointer; text-decoration: none; display: inline-block; }
 button.secondary, .button.secondary { background: var(--surface); color: var(--fg); border-color: var(--line); }
