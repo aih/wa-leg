@@ -76,10 +76,8 @@ input:not([type='checkbox']):not([type='radio']), select, textarea { font: inher
 .note-editor-body mark.comment { background: #fff0b3; color: inherit; border-bottom: 2px solid #d9a400; }
 .note-editor-body mark.comment[data-resolved='true'] { background: none; border-bottom: 1px dotted var(--muted); }
 .note-editor-body .comment-active { background: #ffd666; box-shadow: 0 0 0 2px #ffd666; }
-@media (prefers-color-scheme: dark) {
-  .note-editor-body mark.comment { background: #5a4600; }
-  .note-editor-body .comment-active { background: #7a5c00; box-shadow: 0 0 0 2px #7a5c00; }
-}
+:root[data-theme='dark'] .note-editor-body mark.comment { background: #5a4600; }
+:root[data-theme='dark'] .note-editor-body .comment-active { background: #7a5c00; box-shadow: 0 0 0 2px #7a5c00; }
 .note-editor-body .tiptap-mathematics-render { padding: 0 .1em; }
 
 /* ---- comments ---- */

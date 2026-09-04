@@ -1,11 +1,12 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { loginAs } from './helpers';
+import { loginAs, setTheme } from './helpers';
 
 const URL = '/bills/2025-26/HB2402/S#sec-2';
 
-async function open(page: Page, url = URL) {
+async function open(page: Page, url = URL, scheme?: 'light' | 'dark') {
   await loginAs(page, 'dev-drafter', url);
+  if (scheme) await setTheme(page, scheme);
   await expect(page.getByRole('region', { name: 'Reading column' })).toBeVisible();
 }
 
@@ -126,9 +127,8 @@ const schemes = ['light', 'dark'] as const;
 for (const scheme of schemes) {
   for (const width of widths) {
     test(`axe: bill page at ${width}px ${scheme}`, async ({ page }) => {
-      await page.emulateMedia({ colorScheme: scheme });
       await page.setViewportSize({ width, height: 900 });
-      await open(page);
+      await open(page, URL, scheme);
       const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
       expect(results.violations, JSON.stringify(results.violations.map((v) => ({ id: v.id, nodes: v.nodes.map((n) => n.target) })), null, 1)).toEqual([]);
     });
@@ -137,9 +137,9 @@ for (const scheme of schemes) {
 
 test('axe: compare view light and dark at 1280px', async ({ page }) => {
   for (const scheme of schemes) {
-    await page.emulateMedia({ colorScheme: scheme });
     await page.setViewportSize({ width: 1280, height: 900 });
     await loginAs(page, 'dev-drafter', '/bills/2025-26/HB2402/compare?from=I&to=S&at=sec-3');
+    await setTheme(page, scheme);
     await expect(page.getByRole('region', { name: 'Version comparison' })).toBeVisible();
     const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
     expect(results.violations, JSON.stringify(results.violations.map((v) => ({ id: v.id, nodes: v.nodes.map((n) => n.target) })), null, 1)).toEqual([]);

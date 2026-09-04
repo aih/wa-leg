@@ -5,6 +5,13 @@ Entries go under **Unreleased** as work lands. `pnpm release <version>` moves th
 
 ## Unreleased
 
+### Changed
+
+- The app opens in light mode regardless of the operating system setting. A **Dark mode** toggle in the
+  header switches themes; the choice is stored in the browser and applied before the first paint.
+
+## 0.2.1 (2026-09-04)
+
 ### Fixed
 
 - Reply box in the Comments tab: typed characters landed in reverse order. The thread list rebuilt its

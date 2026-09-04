@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { loginAs } from './helpers';
+import { loginAs, setTheme } from './helpers';
 
 /**
  * Axe clean on every route, at four widths and two themes. The bill viewer routes have their own sweep in
@@ -44,10 +44,10 @@ const ROUTES: { path: string; user: string | null; ready: string; exclude?: stri
 for (const route of ROUTES) {
   for (const scheme of ['light', 'dark'] as const) {
     test(`axe: ${route.name} ${scheme}`, async ({ page }) => {
-      await page.emulateMedia({ colorScheme: scheme });
       const path = route.path.replace('__note__', revisionId);
       if (route.user) await loginAs(page, route.user, path);
       else await page.goto(path);
+      await setTheme(page, scheme);
       await page.locator(route.ready).first().waitFor({ timeout: 15_000 });
       for (const width of WIDTHS) {
         await page.setViewportSize({ width, height: 900 });

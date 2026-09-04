@@ -3,11 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="alternate icon" href="/favicon-32.png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>Fiscal Note Workbench</title>
+    <script>
+      // Apply the stored theme before first paint (see src/lib/theme.ts).
+      try { document.documentElement.dataset.theme = localStorage.getItem('ui.theme') === 'dark' ? 'dark' : 'light'; } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

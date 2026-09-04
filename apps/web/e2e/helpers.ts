@@ -7,6 +7,12 @@ export async function loginAs(page: Page, sub: string, returnTo = '/'): Promise<
   await page.waitForURL((u) => !u.pathname.startsWith('/api/'));
 }
 
+/** Switch the app between light and dark. The choice lives in localStorage, so the page is reloaded to pick it up. */
+export async function setTheme(page: Page, theme: 'light' | 'dark'): Promise<void> {
+  await page.evaluate((t) => localStorage.setItem('ui.theme', t), theme);
+  await page.reload();
+}
+
 /** Fail on any WCAG 2.2 AA violation on the current page; the bill viewer is checked in its own spec. */
 export async function axeClean(page: Page): Promise<void> {
   const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).exclude('.bill-viewer').analyze();

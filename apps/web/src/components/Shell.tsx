@@ -3,9 +3,11 @@ import { useSession } from '../lib/session';
 import { loginUrl } from '../lib/api';
 import { SearchBox } from './SearchBox';
 import { APP_VERSION, COMMIT_URL, GIT_SHA, RELEASE_URL } from '../lib/version';
+import { useTheme } from '../lib/theme';
 
 export function Shell() {
   const { principal, loading, hasRole, logout } = useSession();
+  const { theme, toggle } = useTheme();
   return (
     <div className="shell">
       <a className="skip-link" href="#main">
@@ -22,6 +24,9 @@ export function Shell() {
           <NavLink to="/guide">Guide</NavLink>
         </nav>
         <div className="session">
+          <button type="button" className="linkish" aria-pressed={theme === 'dark'} onClick={toggle}>
+            Dark mode
+          </button>
           {loading ? (
             <span aria-live="polite">Loading…</span>
           ) : principal ? (

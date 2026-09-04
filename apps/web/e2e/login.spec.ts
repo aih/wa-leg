@@ -17,7 +17,7 @@ test('anonymous visitor sees the sign-in prompt, the search box and the test use
 test('drafter signs in through the dev issuer and lands on Notes', async ({ page }) => {
   await loginAs(page, 'dev-drafter');
   await expect(page).toHaveURL(/\/notes$/);
-  await expect(page.getByText('Dana Drafter')).toBeVisible();
+  await expect(page.getByRole('banner').getByText('Dana Drafter')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Notes' })).toBeVisible();
   const nav = page.getByRole('navigation', { name: 'Primary' });
   await expect(nav.getByRole('link', { name: 'Notes' })).toBeVisible();
