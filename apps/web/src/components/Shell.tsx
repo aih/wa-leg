@@ -24,8 +24,17 @@ export function Shell() {
           <NavLink to="/guide">Guide</NavLink>
         </nav>
         <div className="session">
-          <button type="button" className="linkish" aria-pressed={theme === 'dark'} onClick={toggle}>
-            Dark mode
+          <button
+            type="button"
+            className="theme-toggle"
+            aria-pressed={theme === 'dark'}
+            aria-label="Dark mode"
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            onClick={toggle}
+          >
+            <SunIcon />
+            <MoonIcon />
+            <span className="theme-knob" aria-hidden="true" />
           </button>
           {loading ? (
             <span aria-live="polite">Loading…</span>
@@ -56,5 +65,27 @@ export function Shell() {
         </a>
       </footer>
     </div>
+  );
+}
+
+function SunIcon() {
+  return (
+    <svg className="theme-icon sun" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="12" r="4.5" fill="currentColor" />
+      <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M19.4 4.6l-2.1 2.1M6.7 17.3l-2.1 2.1" />
+      </g>
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg className="theme-icon moon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
+      <path
+        d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"
+        fill="currentColor"
+      />
+    </svg>
   );
 }

@@ -7,8 +7,9 @@ Entries go under **Unreleased** as work lands. `pnpm release <version>` moves th
 
 ### Changed
 
-- The app opens in light mode regardless of the operating system setting. A **Dark mode** toggle in the
-  header switches themes; the choice is stored in the browser and applied before the first paint.
+- The app opens in light mode regardless of the operating system setting. A sun/moon switch in the header
+  toggles themes and shows which one is on; the choice is stored in the browser and applied before the
+  first paint.
 
 ## 0.2.1 (2026-09-04)
 
