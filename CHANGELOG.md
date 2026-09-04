@@ -5,6 +5,8 @@ Entries go under **Unreleased** as work lands. `pnpm release <version>` moves th
 
 ## Unreleased
 
+## 0.2.2 (2026-09-04)
+
 ### Changed
 
 - The app opens in light mode regardless of the operating system setting. A sun/moon switch in the header
